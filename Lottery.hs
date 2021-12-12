@@ -1,3 +1,14 @@
+------------------------------------------------------------------------
+-- Lotto.hs is a lottery built using plutus for the Cardano Blockchain
+-- Author: L Ley 
+-- First published date: Dec 8, 2021
+-- Licenses: Apache-2.0 License
+-- Credits: 1) This could not have been created this without the amazaing  
+--          tutorials by Lars Brünjes for the plutus pioneer program
+--          https://github.com/input-output-hk/plutus-pioneer-program
+--          2) The plutus use cases, in particular https://github.com/input-output-hk/plutus/blob/f7466c86fe3afc593746e44257adbf7785f7cedb/plutus-use-cases/src/Plutus/Contracts/Governance.hs
+-------------------------------------------------------------------------
+
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveAnyClass        #-}
 {-# LANGUAGE DeriveGeneric         #-}
