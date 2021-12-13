@@ -140,7 +140,7 @@ ownsLottoToken mph'' tokenName'' = Constraints.mustSpendAtLeast (lottoValue mph'
 
 {-# INLINABLE transition #-}
 transition :: Lottery -> State (Maybe LottoDatum) -> LottoRedeemer -> Maybe (TxConstraints Void Void, State (Maybe LottoDatum))
-transition lot s r = case (stateValue s, stateData s, r) of
+transition _ s r = case (stateValue s, stateData s, r) of
     (_, Just(LottoDatum a d t n w m j), Open)           ->   Just ( Constraints.mustBeSignedBy (a)
                                                          , State (Just (LottoDatum a d t n w m j)) (lovelaceValueOf j)
                                                          )
