@@ -40,12 +40,12 @@ myTrace = do
     logInfo @String "starting lotto"
     
     -- lotto admin wallet    
-    h <- activateContractWallet (Wallet 1) startEndpoint
+    h <- activateContractWallet (Wallet 1) initEndpoint
     
     let pkh      = pubKeyHash $ walletPubKey $ Wallet 1
-        jackpot'   = 50000000
+        jackpot'   = 10000000
         ticket'    = 2000000
-        deadline'  = slotToEndPOSIXTime def 50
+        deadline'  = slotToEndPOSIXTime def 500
 
         sp = StartParams
                 { spAdmin          = pkh
@@ -55,7 +55,7 @@ myTrace = do
                 }
         useTT = True
 
-    callEndpoint @"start" h (sp, useTT)    
+    callEndpoint @"init" h (sp, useTT)    
     void $ Emulator.waitNSlots 5
                  
     Last m <- observableState h
@@ -73,6 +73,10 @@ myTrace = do
             -- lotto player wallet
             h3 <- activateContractWallet (Wallet 3) $ useEndpoints lot
 
+            -- start lotto 
+            callEndpoint @"start" h1 sp
+            void $ Emulator.waitNSlots 5
+            
             -- lotto play to buy lotto ticket with number 123
             callEndpoint @"buy" h2 123
             void $ Emulator.waitNSlots 5
@@ -102,6 +106,47 @@ myTrace = do
             -- claim jackpot 
             callEndpoint @"payout" h2 () 
             void $ Emulator.waitNSlots 5
+            
+            
+            -- **** start the next lotto ****
+            callEndpoint @"start" h1 sp
+            void $ Emulator.waitNSlots 5
+            
+            -- lotto play to buy lotto ticket with number 123
+            callEndpoint @"buy" h2 123
+            void $ Emulator.waitNSlots 5
+            
+            -- callEndpoint @"buy" h2 456
+            -- void $ Emulator.waitNSlots 5
+            
+            callEndpoint @"buy" h3 789
+            void $ Emulator.waitNSlots 5
+            
+            -- try to close but not lotto admin            
+            --callEndpoint @"close" h2 123
+            --void $ Emulator.waitNSlots 5
+            
+            -- lotto admin to close lotto with number 123
+            callEndpoint @"close" h1 789
+            void $ Emulator.waitNSlots 5
+         
+            -- lotto player to redeem ticket with winning number 123
+            --callEndpoint @"redeem" h2 ()
+            --void $ Emulator.waitNSlots 5
+            
+            -- lotto player try to redeem but does not have a winning ticket
+            callEndpoint @"redeem" h3 () 
+            void $ Emulator.waitNSlots 5
+            
+            -- claim jackpot 
+            callEndpoint @"payout" h3 () 
+            void $ Emulator.waitNSlots 5
+            
+            
+            
+            
+            
+            
 
 
 
