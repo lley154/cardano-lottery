@@ -242,25 +242,37 @@ buyTicket lot num = do
     let ticketNum = tokenName(strToBS (show num)) 
     
     void $ mapErrorSM $ runStep (lottoClient lot) $ Buy ticketNum pkh'
-  
-
-closeLotto :: Lottery -> Integer -> Contract w s Text ()
-closeLotto lot num = do
-        
+    
     pk    <- Contract.ownPubKey
     utxos <- utxoAt (pubKeyAddress pk)
     
     case Map.keys utxos of
         []       -> Contract.logError @String "no utxo found"
         oref : _ -> do
-            let ticketNum = tokenName(strToBS(show num)) 
-                val       = Value.singleton (curSymbol oref ticketNum) ticketNum 1
-                lookups   = Constraints.mintingPolicy (policy oref ticketNum) <> Constraints.unspentOutputs utxos
+            let tn'       = tokenName(strToBS(show num)) 
+                val       = Value.singleton (curSymbol oref tn') tn' 1
+                lookups   = Constraints.mintingPolicy (policy oref tn') <> Constraints.unspentOutputs utxos
             logInfo $ "value: " ++ show val
             logInfo $ "lookups: " ++ show lookups
+  
 
+closeLotto :: Lottery -> Integer -> Contract w s Text ()
+closeLotto lot num = do
+        
     let ticketNum = tokenName(strToBS (show num)) 
     void $ mapErrorSM $ runStep (lottoClient lot) $ Close ticketNum
+    
+    pk    <- Contract.ownPubKey
+    utxos <- utxoAt (pubKeyAddress pk)
+    
+    case Map.keys utxos of
+        []       -> Contract.logError @String "no utxo found"
+        oref : _ -> do
+            let tn'       = tokenName(strToBS(show num)) 
+                val       = Value.singleton (curSymbol oref tn') tn' 1
+                lookups   = Constraints.mintingPolicy (policy oref tn') <> Constraints.unspentOutputs utxos
+            logInfo $ "value: " ++ show val
+            logInfo $ "lookups: " ++ show lookups
 
 
 redeemLotto :: Lottery -> Contract w s Text ()
