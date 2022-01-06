@@ -45,7 +45,7 @@ myTrace = do
     let pkh      = pubKeyHash $ walletPubKey $ Wallet 1
         jackpot'   = 10000000
         ticket'    = 2000000
-        deadline'  = slotToEndPOSIXTime def 500
+        deadline'  = slotToEndPOSIXTime def 50
 
         sp = StartParams
                 { spAdmin          = pkh
@@ -107,7 +107,7 @@ myTrace = do
             callEndpoint @"payout" h2 () 
             void $ Emulator.waitNSlots 5
             
-            
+            {-
             -- **** start the next lotto ****
             callEndpoint @"start" h1 sp
             void $ Emulator.waitNSlots 5
@@ -141,7 +141,7 @@ myTrace = do
             -- claim jackpot 
             callEndpoint @"payout" h3 () 
             void $ Emulator.waitNSlots 5
-            
+            -}
             
             
             
