@@ -81,6 +81,7 @@ data LottoRedeemer =
      | Close ByteString 
      | Redeem PubKeyHash 
      | Payout 
+     | CollectFees
     deriving Show
       
 PlutusTx.unstableMakeIsData ''LottoRedeemer
@@ -96,6 +97,7 @@ data LottoDatum = LottoDatum
     , jackpot      :: Integer
     , seqNum       :: Integer
     , treasury     :: Integer
+    , adminFees    :: Integer
     } deriving (Show, Generic, FromJSON, ToJSON, Prelude.Eq)
 
 PlutusTx.unstableMakeIsData ''LottoDatum
@@ -160,44 +162,49 @@ ownsLottoToken mph'' tn'' = Constraints.mustSpendAtLeast (lottoValue mph'' tn'')
 -- j = jackpot
 -- s = lotto sequence number
 -- t = lotto treasury
+-- f = lotto admin fees
 
 {-# INLINABLE transition #-}
 transition :: Lottery -> State (Maybe LottoDatum) -> LottoRedeemer -> Maybe (TxConstraints Void Void, State (Maybe LottoDatum))
 transition _ s' r = case (stateValue s', stateData s', r) of
-    (_, Just(LottoDatum a d c n w m j s t), Init)          
+    (_, Just(LottoDatum a d c n w m j s t f), Init)          
         | j > 0                                           ->   Just ( Constraints.mustBeSignedBy (a)
-                                                         , State (Just (LottoDatum a d c n w m j s t)) (lovelaceValueOf j)
+                                                         , State (Just (LottoDatum a d c n w m j s t f)) (lovelaceValueOf j)
                                                          )
-    (v, Just(LottoDatum a _ _ _ w m j s t), Start sp n') 
+    (v, Just(LottoDatum a _ _ _ w m j s t f), Start sp n') 
         | (spJackpot sp > 0)                              ->     let a' = spAdmin sp
                                                                      d' = spDeadline sp
                                                                      c' = spTicket sp
                                                                      j' = spJackpot sp
                                                                  in Just ( Constraints.mustBeSignedBy (a)
-                                                         , State (Just (LottoDatum a' d' c' n' w m (j + j') (s + 1) t)) $ v                 <> 
+                                                         , State (Just (LottoDatum a' d' c' n' w m (j + j') (s + 1) t f)) $ v                 <> 
                                                              (lovelaceValueOf j')
                                                          )                                                         
-    (v, Just (LottoDatum a d c n w m j s t), Buy tn pkh)  
+    (v, Just (LottoDatum a d c n w m j s t f), Buy tn pkh)  
         | n /= tn                                       ->  let constraints = Constraints.mustPayToPubKey pkh (lottoValue m tn)
                                                                              <> Constraints.mustValidateIn (Interval.to d)
                                                                              <> Constraints.mustMintValue (lottoValue m tn)  
-                                                             in Just ( constraints, State (Just (LottoDatum a d t n w m (j + c) s t)) $ v   <>
-                                                             (lovelaceValueOf c)
+                                                             in Just ( constraints, State (Just (LottoDatum a d c n w m (j + 49 * c) s (t + 49 * c) (f + 2 * c))) $ v   <>
+                                                             (lovelaceValueOf (c * 49 + c * 49 + c * 2))
                                                          )
-    (v, Just(LottoDatum a d c n w m j s t), Close tn) 
+    (v, Just(LottoDatum a d c n w m j s t f), Close tn) 
         | n /= tn                                       ->   Just ( Constraints.mustBeSignedBy a
-                                                         , State (Just (LottoDatum a d c tn w m j s t)) $ v
+                                                         , State (Just (LottoDatum a d c tn w m j s t f)) $ v
                                                          )
     -- TODO add winner to wins map
-    (v, Just(LottoDatum a d c n _ m j s t), Redeem pkh)     ->  let constraints = ownsLottoToken m n  
+    (v, Just(LottoDatum a d c n _ m j s t f), Redeem pkh)     ->  let constraints = ownsLottoToken m n  
                                                                               <> Constraints.mustValidateIn (Interval.to d)   
                                                               in Just ( constraints
-                                                         , State (Just (LottoDatum a d c n pkh m j s t)) $ v
+                                                         , State (Just (LottoDatum a d c n pkh m j s t f)) $ v
                                                          )
     -- TODO payout logic for all winners                                                     
-    (v, Just(LottoDatum a d c n w m j s t), Payout)         -> Just (Constraints.mustBeSignedBy (w)
-                                                         , State (Just (LottoDatum a d c n w m 0 s t)) $ v                                 <>
+    (v, Just(LottoDatum a d c n w m j s t f), Payout)         -> Just (Constraints.mustBeSignedBy (w)
+                                                         , State (Just (LottoDatum a d c n w m 0 s t f)) $ v                                 <>
                                                          (lovelaceValueOf (negate j))
+                                                         )
+    (v, Just(LottoDatum a d c n w m j s t f), CollectFees)   -> Just (Constraints.mustBeSignedBy (a)
+                                                         , State (Just (LottoDatum a d c n w m j s t 0)) $ v                                 <>
+                                                         (lovelaceValueOf (negate f))
                                                          )
     _                                                   ->   Nothing
 
@@ -254,6 +261,7 @@ initLotto sp useTT = do
               ,  jackpot    = spJackpot sp
               ,  seqNum     = 0 
               ,  treasury   = 0
+              ,  adminFees  = 0
               }
         client = lottoClient lottery
         
@@ -272,7 +280,7 @@ startLotto lot sp' = do
         Nothing             -> throwError "lottery not found"
         Just ((o, _), _) -> case tyTxOutData o of
 
-            Just(LottoDatum _ _ _ _ _ _ _ s' _) -> do
+            Just(LottoDatum _ _ _ _ _ _ _ s' _ _) -> do
                 logInfo @String "setting lotto sequence to start of winning ticket number"
                 let tn' = strToBS((show s') ++ "-") -- intialize winning ticket with lotto seq
                 
@@ -295,7 +303,7 @@ buyTicket lot num = do
         Nothing             -> throwError "lottery not found"
         Just ((o, _), _) -> case tyTxOutData o of
 
-            Just(LottoDatum _ _ _ n' _ _ _ _ _) -> do
+            Just(LottoDatum _ _ _ n' _ _ _ _ _ _) -> do
                 logInfo @String "appending lotto sequence to lotto ticket: "
      
                 -- TODO num > 0
@@ -329,7 +337,7 @@ closeLotto lot num = do
         Nothing             -> throwError "lottery not found"
         Just ((o, _), _) -> case tyTxOutData o of
 
-            Just(LottoDatum _ _ _ n' _ _ _ _ _) -> do
+            Just(LottoDatum _ _ _ n' _ _ _ _ _ _) -> do
                 logInfo @String "appending lotto sequence to lotto ticket: "
      
                 -- TODO num > 0
@@ -358,9 +366,27 @@ redeemLotto lot = do
     
      pkh' <- pubKeyHash <$> Contract.ownPubKey      
      void $ mapErrorSM $ runStep (lottoClient lot) $ Redeem pkh'
+     
+     pk    <- Contract.ownPubKey
+     utxos <- utxoAt (pubKeyAddress pk)
+     logInfo $ "utxos: " ++ show utxos
 
 payoutLotto :: Lottery -> Contract w s Text ()
-payoutLotto lot = void $ mapErrorSM $ runStep (lottoClient lot) $ Payout
+payoutLotto lot = do
+    
+    void $ mapErrorSM $ runStep (lottoClient lot) $ Payout
+   
+
+collectFees :: Lottery -> Contract w s Text ()
+collectFees lot = do
+    
+    void $ mapErrorSM $ runStep (lottoClient lot) $ CollectFees
+    
+    pk    <- Contract.ownPubKey
+    utxos <- utxoAt (pubKeyAddress pk)
+    logInfo $ "utxos: " ++ show utxos
+
+    
 
 type LottoInitSchema =
         Endpoint "init"       (StartParams, Bool)
@@ -370,6 +396,7 @@ type LottoUseSchema =
     .\/ Endpoint "close"       Integer
     .\/ Endpoint "redeem"      ()
     .\/ Endpoint "payout"      ()
+    .\/ Endpoint "collect"     ()
     
 
 initEndpoint :: Contract (Last Lottery) LottoInitSchema Text ()
@@ -379,13 +406,14 @@ initEndpoint = forever
               $ endpoint @"init" $ \(sp, useTT) -> initLotto sp useTT
 
 useEndpoints :: Lottery -> Contract () LottoUseSchema Text ()
-useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select` buy `select` close `select` redeem `select` payout
+useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select` buy `select` close `select` redeem `select` payout `select` collect
   where
     start     = endpoint @"start"      $ startLotto lot
     buy       = endpoint @"buy"        $ buyTicket lot
     close     = endpoint @"close"      $ closeLotto lot
     redeem    = endpoint @"redeem"     $ const $ redeemLotto lot
     payout    = endpoint @"payout"     $ const $ payoutLotto lot
+    collect   = endpoint @"collect"    $ const $ collectFees lot
     
     
     
