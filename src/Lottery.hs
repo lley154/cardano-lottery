@@ -54,7 +54,7 @@ import           Ledger.Ada                   as Ada
 import           Ledger.Constraints           as Constraints
 import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Value                 as Value
---import qualified PlutusTx.AssocMap            as AssocMap
+import qualified PlutusTx.AssocMap            as AssocMap
 import           Prelude                      (String, Semigroup (..), Show (..))
 import qualified Prelude
 
@@ -66,6 +66,7 @@ PlutusTx.makeLift ''Lottery
 
 data StartParams = StartParams
     { spAdmin          :: !PubKeyHash
+    , spBenAddress     :: !PubKeyHash
     , spDeadline       :: !POSIXTime
     , spTicket         :: !Integer
     , spJackpot        :: !Integer
@@ -92,7 +93,7 @@ data LottoDatum = LottoDatum
     , deadline     :: POSIXTime
     , cost         :: Integer
     , winNum       :: ByteString
-    , winner       :: PubKeyHash
+    , winners      :: AssocMap.Map PubKeyHash ByteString
     , mph          :: MintingPolicyHash
     , jackpot      :: Integer
     , seqNum       :: Integer
@@ -171,13 +172,14 @@ transition _ s' r = case (stateValue s', stateData s', r) of
         | j > 0                                           ->   Just ( Constraints.mustBeSignedBy (a)
                                                          , State (Just (LottoDatum a d c n w m j s t f)) (lovelaceValueOf j)
                                                          )
-    (v, Just(LottoDatum a _ _ _ w m j s t f), Start sp n') 
+    (v, Just(LottoDatum a _ _ _ _ m j s t f), Start sp tn) 
         | (spJackpot sp > 0)                              ->     let a' = spAdmin sp
                                                                      d' = spDeadline sp
                                                                      c' = spTicket sp
                                                                      j' = spJackpot sp
+                                                                     b' = spBenAddress sp
                                                                  in Just ( Constraints.mustBeSignedBy (a)
-                                                         , State (Just (LottoDatum a' d' c' n' w m (j + j') (s + 1) t f)) $ v                 <> 
+                                                         , State (Just (LottoDatum a' d' c' tn (AssocMap.singleton b' tn) m (j + j') (s + 1) t f)) $ v                 <> 
                                                              (lovelaceValueOf j')
                                                          )                                                         
     (v, Just (LottoDatum a d c n w m j s t f), Buy tn pkh)  
@@ -185,24 +187,24 @@ transition _ s' r = case (stateValue s', stateData s', r) of
                                                                              <> Constraints.mustValidateIn (Interval.to d)
                                                                              <> Constraints.mustMintValue (lottoValue m tn)  
                                                              in Just ( constraints, State (Just (LottoDatum a d c n w m (j + 49 * c) s (t + 49 * c) (f + 2 * c))) $ v   <>
-                                                             (lovelaceValueOf (c * 49 + c * 49 + c * 2))
+                                                             (lovelaceValueOf (c * 100))
                                                          )
     (v, Just(LottoDatum a d c n w m j s t f), Close tn) 
         | n /= tn                                       ->   Just ( Constraints.mustBeSignedBy a
                                                          , State (Just (LottoDatum a d c tn w m j s t f)) $ v
                                                          )
     -- TODO add winner to wins map
-    (v, Just(LottoDatum a d c n _ m j s t f), Redeem pkh)     ->  let constraints = ownsLottoToken m n  
+    (v, Just(LottoDatum a d c n w m j s t f), Redeem pkh) ->  let constraints = ownsLottoToken m n  
                                                                               <> Constraints.mustValidateIn (Interval.to d)   
                                                               in Just ( constraints
-                                                         , State (Just (LottoDatum a d c n pkh m j s t f)) $ v
+                                                         , State (Just (LottoDatum a d c n (AssocMap.insert pkh n w) m j s t f)) $ v
                                                          )
     -- TODO payout logic for all winners                                                     
-    (v, Just(LottoDatum a d c n w m j s t f), Payout)         -> Just (Constraints.mustBeSignedBy (w)
+    (v, Just(LottoDatum a d c n w m j s t f), Payout)     -> Just (Constraints.mustBeSignedBy ((AssocMap.keys w)!!1)
                                                          , State (Just (LottoDatum a d c n w m 0 s t f)) $ v                                 <>
                                                          (lovelaceValueOf (negate j))
                                                          )
-    (v, Just(LottoDatum a d c n w m j s t f), CollectFees)   -> Just (Constraints.mustBeSignedBy (a)
+    (v, Just(LottoDatum a d c n w m j s t f), CollectFees) -> Just (Constraints.mustBeSignedBy (a)
                                                          , State (Just (LottoDatum a d c n w m j s t 0)) $ v                                 <>
                                                          (lovelaceValueOf (negate f))
                                                          )
@@ -241,7 +243,7 @@ mapErrorSM = mapError $ Data.Text.pack . show
 
 initLotto :: StartParams -> Bool -> Contract (Last Lottery) s Text ()
 initLotto sp useTT = do
-    pkh <- pubKeyHash <$> Contract.ownPubKey
+    --pkh <- pubKeyHash <$> Contract.ownPubKey
     tt  <- if useTT then Just <$> mapErrorSM getThreadToken else return Nothing
     
     let lottery = Lottery
@@ -256,7 +258,7 @@ initLotto sp useTT = do
               ,  deadline   = spDeadline sp
               ,  cost       = spTicket sp
               ,  winNum     = ticketNum
-              ,  winner     = pkh
+              ,  winners    = AssocMap.singleton (spBenAddress sp) ticketNum -- beneficiary address is always the 1st element in the map
               ,  mph        = mph'
               ,  jackpot    = spJackpot sp
               ,  seqNum     = 0 
