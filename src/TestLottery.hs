@@ -73,17 +73,27 @@ myTrace = do
             
             -- lotto player wallet
             h3 <- activateContractWallet (Wallet 3) $ useEndpoints lot
+            
+            -- lotto sponsor wallet
+            h4 <- activateContractWallet (Wallet 4) $ useEndpoints lot
+            
+            let sponsor_pkh = pubKeyHash $ walletPubKey $ Wallet 4            
+                sp' = StartParams
+                          { spAdmin          = pkh
+                          , spBenAddress     = sponsor_pkh
+                          , spJackpot        = jackpot'
+                          , spTicket         = ticket'
+                          , spDeadline       = deadline'
+                          }
 
             -- start lotto 
-            callEndpoint @"start" h1 sp
+            callEndpoint @"start" h1 sp'
             void $ Emulator.waitNSlots 5
             
             -- lotto play to buy lotto ticket with number 123
             callEndpoint @"buy" h2 123
             void $ Emulator.waitNSlots 5
             
-            -- callEndpoint @"buy" h2 456
-            -- void $ Emulator.waitNSlots 5
             
             callEndpoint @"buy" h3 789
             void $ Emulator.waitNSlots 5
@@ -104,48 +114,70 @@ myTrace = do
             --callEndpoint @"redeem" h3 () 
             --void $ Emulator.waitNSlots 5
             
-            -- claim jackpot 
+            
+            -- calculate payout
+            callEndpoint @"calc_payout" h1 () 
+            void $ Emulator.waitNSlots 5
+                        
+            -- claim jackpot for lucky winner
             callEndpoint @"payout" h2 () 
             void $ Emulator.waitNSlots 5
             
-            -- collect admin fees
-            callEndpoint @"collect" h1 ()
+            -- claim 50% of jackpot for the sponsor
+            callEndpoint @"payout" h4 () 
             void $ Emulator.waitNSlots 5
             
             
-            {-
+            -- collect admin fees 
+            callEndpoint @"collect" h1 ()
+            void $ Emulator.waitNSlots 5
+
+            
+         
+            
             -- ****************************** 
             -- **** start the next lotto ****
-            callEndpoint @"start" h1 sp
+            callEndpoint @"start" h1 sp'
             void $ Emulator.waitNSlots 5
             
             -- lotto player to buy lotto ticket with number 123
-            callEndpoint @"buy" h2 123
+            --callEndpoint @"buy" h2 123
+            --void $ Emulator.waitNSlots 5
+            
+            -- lotto player to buy with ticket number 456
+            callEndpoint @"buy" h3 456
             void $ Emulator.waitNSlots 5
             
-            -- lotto player to buy with ticket number 789
-            callEndpoint @"buy" h3 789
-            void $ Emulator.waitNSlots 5
             
-            
-            -- lotto admin to close lotto with number 789
-            callEndpoint @"close" h1 789
+            -- lotto admin to close lotto with number 456
+            callEndpoint @"close" h1 456
             void $ Emulator.waitNSlots 5
          
          
-            -- lotto player try to redeem but does not have a winning ticket
+            -- lotto player try to redeem and has winning ticket
             callEndpoint @"redeem" h3 () 
             void $ Emulator.waitNSlots 5
             
+
+            -- calculate payout
+            callEndpoint @"calc_payout" h1 () 
+            void $ Emulator.waitNSlots 5
+                                                
             -- claim jackpot 
             callEndpoint @"payout" h3 () 
             void $ Emulator.waitNSlots 5
             
-            -- collect admin fees
-            callEndpoint @"collect" h1 ()
+             -- claim 50% of jackpot for sponsor 
+            callEndpoint @"payout" h4 () 
             void $ Emulator.waitNSlots 5
             
-            -}
+             -- collect admin fees
+            callEndpoint @"collect" h1 ()
+            void $ Emulator.waitNSlots 5
+                
+
+           
+            
             
             
             
