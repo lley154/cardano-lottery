@@ -17,20 +17,35 @@ module TestLottery
     , myTrace
     ) where
 
-
+--import           Control.Lens                (view)
 import           Control.Monad              hiding (fmap)
 import           Control.Monad.Freer.Extras as Extras
-import           Data.Default               (Default (..))
+--import           Data.Default               (Default (..))
 import           Data.Monoid                (Last (..))
-import           Ledger
+import           Data.Default               (Default (def))
+--import           Ledger
 import           Ledger.Value()
 import           Ledger.Ada                 as Ada()
-import           Ledger.TimeSlot
+import qualified Ledger.TimeSlot            as TimeSlot
 import           Plutus.Contract.Test
 import           Plutus.Trace.Emulator      as Emulator
+--import           Plutus.Trace               as Trace
 import           PlutusTx.Prelude
 import           Prelude                    (IO, String, Show (..))
 import           Lottery
+--import           Wallet.Emulator            (Wallet (..), knownWallet, knownWallets, walletPubKeyHash)
+
+{-
+t1, t2 :: ContractInstanceTag
+t1 = Trace.walletInstanceTag w1
+t2 = Trace.walletInstanceTag w2
+
+theContract :: POSIXTime -> Contract () LottoSchema ContractError ()
+theContract startTime = crowdfunding $ theCampaign startTime
+-}
+
+slotCfg :: TimeSlot.SlotConfig
+slotCfg = def
 
 test :: IO ()
 test = runEmulatorTraceIO $ myTrace 
@@ -40,12 +55,15 @@ myTrace = do
     logInfo @String "starting lotto"
     
     -- lotto admin wallet    
-    h <- activateContractWallet (Wallet 1) initEndpoint
+    h <- Emulator.activateContractWallet (knownWallet 1) initEndpoint
+    --slotCfg <- Emulator.getSlotConfig
+    --now <- view Emulator.currentSlot <$> Emulator.chainState
     
-    let pkh      = pubKeyHash $ walletPubKey $ Wallet 1
+    let pkh      = walletPubKeyHash (knownWallet 1)
         jackpot'   = 10000000
         ticket'    = 20000
-        deadline'  = slotToEndPOSIXTime def 100
+        --deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg $ now + 50
+        deadline' = TimeSlot.scSlotZeroTime slotCfg + 50
 
         sp = StartParams
                 { spAdmin          = pkh
@@ -56,28 +74,28 @@ myTrace = do
                 }
         useTT = True
 
-    callEndpoint @"init" h (sp, useTT)    
+    Emulator.callEndpoint @"init" h (sp, useTT)    
     void $ Emulator.waitNSlots 5
                  
-    Last m <- observableState h
+    Last m <- Emulator.observableState h
     case m of
         Nothing -> Extras.logError @String "error finding lottery"
         Just lot -> do
             Extras.logInfo $ "found lottery " ++ show lot
 
             -- lotto admin wallet
-            h1 <- activateContractWallet (Wallet 1) $ useEndpoints lot
+            h1 <- Emulator.activateContractWallet (knownWallet 1) $ useEndpoints lot
             
             -- lotto player wallet
-            h2 <- activateContractWallet (Wallet 2) $ useEndpoints lot
+            h2 <- Emulator.activateContractWallet (knownWallet 2) $ useEndpoints lot
             
             -- lotto player wallet
-            h3 <- activateContractWallet (Wallet 3) $ useEndpoints lot
+            h3 <- Emulator.activateContractWallet (knownWallet 3) $ useEndpoints lot
             
             -- lotto sponsor wallet
-            h4 <- activateContractWallet (Wallet 4) $ useEndpoints lot
+            h4 <- Emulator.activateContractWallet (knownWallet 4) $ useEndpoints lot
             
-            let sponsor_pkh = pubKeyHash $ walletPubKey $ Wallet 4            
+            let sponsor_pkh = walletPubKeyHash (knownWallet 4)            
                 sp' = StartParams
                           { spAdmin          = pkh
                           , spBenAddress     = sponsor_pkh
@@ -89,10 +107,22 @@ myTrace = do
             -- start lotto 
             callEndpoint @"start" h1 sp'
             void $ Emulator.waitNSlots 5
+            let pkh      = walletPubKeyHash (knownWallet 1)
+
+            Extras.logInfo $ "wallet 1 pkh " ++ show pkh
+            Extras.logInfo $ "wallet 1 " ++ show (knownWallet 1)
+            
             
             -- lotto play to buy lotto ticket with number 123
             callEndpoint @"buy" h2 123
             void $ Emulator.waitNSlots 5
+            let pkh'      = walletPubKeyHash (knownWallet 2)
+
+            Extras.logInfo $ "wallet 2 pkh " ++ show pkh'
+            Extras.logInfo $ "wallet 2 " ++ show (knownWallet 2)
+            
+            
+            {-
             
             
             callEndpoint @"buy" h3 789
@@ -132,7 +162,7 @@ myTrace = do
             callEndpoint @"collect" h1 ()
             void $ Emulator.waitNSlots 5
 
-            
+            {-
          
             
             -- ****************************** 
@@ -177,8 +207,9 @@ myTrace = do
                 
 
            
+            -}
             
-            
+            -}
             
             
             
