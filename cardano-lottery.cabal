@@ -1,24 +1,24 @@
 cabal-version:      2.4
 name:               cardano-lottery
-version:            0.1.0.0
+version:            0.2.1.0
 
 -- A short (one-line) description of the package.
--- synopsis:
+-- synopsis: A lottery build using plutus for the cardano blockchain
 
 -- A longer description of the package.
--- description:
+-- description:A lottery build using plutus for the cardano blockchain
+-- using a state machine design pattern with configurable lottery parameters
 
 -- A URL where users can report bugs.
 -- bug-reports:
 
 license: Apache-2.0
 license-files: LICENSE
-author:             Your name
-maintainer:         Your email
+author: Lawrence Ley
+maintainer: lawrence.ley@contextsolutions.ca
 
 -- A copyright notice.
--- copyright:
--- category:
+-- copyright: @ 2022 Lawrence Ley
 -- extra-source-files: CHANGELOG.md
 
 flag defer-plugin-errors

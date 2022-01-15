@@ -17,33 +17,21 @@ module TestLottery
     , myTrace
     ) where
 
---import           Control.Lens                (view)
+
 import           Control.Monad              hiding (fmap)
 import           Control.Monad.Freer.Extras as Extras
---import           Data.Default               (Default (..))
 import           Data.Monoid                (Last (..))
 import           Data.Default               (Default (def))
---import           Ledger
 import           Ledger.Value()
 import           Ledger.Ada                 as Ada()
 import qualified Ledger.TimeSlot            as TimeSlot
 import           Plutus.Contract.Test
 import           Plutus.Trace.Emulator      as Emulator
 import qualified Plutus.V1.Ledger.Slot      as Slot 
---import           Plutus.Trace               as Trace
 import           PlutusTx.Prelude
 import           Prelude                    (IO, String, Show (..))
 import           Lottery
---import           Wallet.Emulator            (Wallet (..), knownWallet, knownWallets, walletPubKeyHash)
 
-{-
-t1, t2 :: ContractInstanceTag
-t1 = Trace.walletInstanceTag w1
-t2 = Trace.walletInstanceTag w2
-
-theContract :: POSIXTime -> Contract () LottoSchema ContractError ()
-theContract startTime = crowdfunding $ theCampaign startTime
--}
 
 slotCfg :: TimeSlot.SlotConfig
 slotCfg = def
@@ -57,14 +45,11 @@ myTrace = do
     
     -- lotto admin wallet    
     h <- Emulator.activateContractWallet (knownWallet 1) initEndpoint
-    --slotCfg <- Emulator.getSlotConfig
-    --now <- view Emulator.currentSlot <$> Emulator.chainState
     
     let pkh      = walletPubKeyHash (knownWallet 1)
         jackpot'   = 10000000
         ticket'    = 20000
         deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 50)
-        --deadline' = TimeSlot.scSlotZeroTime slotCfg + 50
 
         sp = StartParams
                 { spAdmin          = pkh

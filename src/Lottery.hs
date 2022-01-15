@@ -26,8 +26,6 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE LambdaCase #-}
 
-
-
 module Lottery
     ( Lottery (..)
     , LottoRedeemer (..)
@@ -40,48 +38,11 @@ module Lottery
     , useEndpoints
     ) where
 
-
-{-
-import           Control.Lens                 (makeClassyPrisms)
---import           Control.Monad                hiding (fmap)
-import           Control.Monad                (forever, guard)
-import qualified Data.Map                     as Map
-import           Data.Aeson                   (FromJSON, ToJSON)
---import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, genericParseJSON, defaultOptions, Options(..))
-import           Data.Monoid                  (Last (..))
-import           Data.Text                    (Text, pack)
-import           Data.ByteString              as BS (ByteString, append)
-import           Data.ByteString.Char8        as C8 (pack)
-import           Data.Maybe                   as Maybe
-import           Data.OpenApi.Schema qualified as OpenApi
-import           GHC.Generics                 (Generic)
-import           Plutus.Contract              as Contract
---import           Plutus.Contract.StateMachine
-import           Plutus.Contract.StateMachine (AsSMContractError, OnChainState (..), SMContractError, State (..),
-                                               StateMachine, StateMachineClient (..), Void, ThreadToken)
-import qualified Plutus.Contract.StateMachine as SM
-import qualified Ledger.Constraints           as Constraints()
-import qualified Ledger.Interval              as Interval
-import           Ledger.Typed.Tx
-import qualified PlutusTx
-import           PlutusTx.Prelude             hiding (Semigroup(..), check, unless)
-import           Ledger                       hiding (singleton)
-import           Ledger.Ada                   as Ada
-import           Ledger.Constraints           as Constraints
-import qualified Ledger.Typed.Scripts         as Scripts
-import           Ledger.Value                 as Value
-import qualified PlutusTx.AssocMap            as AssocMap
---import           Prelude                      (String, Semigroup (..), Show (..))
-import qualified Prelude                      as Haskell
--}
-
-
 import           Control.Lens                 (makeClassyPrisms)
 import           Control.Monad                (forever, void)
 import           Data.Aeson                   (FromJSON, ToJSON)
 import           Data.ByteString              as BS (ByteString, append)
 import           Data.ByteString.Char8        as C8 (pack)
---import           Data.Functor.Identity        (Identity (..))
 import           Data.Text                    (Text, pack)
 --import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
@@ -94,9 +55,7 @@ import           Ledger                       (POSIXTime, PubKeyHash, TxOutRef, 
 import           Ledger.Ada                   as Ada
 import           Ledger.Constraints           (TxConstraints)
 import qualified Ledger.Constraints           as Constraints
---import           Ledger.Crypto                (PubKey)
 import qualified Ledger.Interval              as Interval
---import           Ledger.Oracle
 import           Ledger.Scripts               (MintingPolicyHash)
 import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Tx              (TypedScriptTxOut (..))
@@ -109,13 +68,7 @@ import qualified Plutus.Contract.StateMachine as SM
 import qualified PlutusTx
 import qualified PlutusTx.AssocMap            as AssocMap
 import           PlutusTx.Prelude
---import           PlutusTx.Ratio               as R
 import qualified Prelude                      as Haskell
-
-
---data Lottery = Lottery
---    { lToken          :: !(Maybe ThreadToken)
---    } deriving (Show, Generic, FromJSON, ToJSON)
 
 newtype Lottery = Lottery
     { lToken          :: (Maybe ThreadToken)
@@ -134,7 +87,6 @@ data StartParams = StartParams
     } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
     
 PlutusTx.unstableMakeIsData ''StartParams
-
 
 data LottoRedeemer = 
        Init 
@@ -168,7 +120,7 @@ data LottoDatum = LottoDatum
 PlutusTx.unstableMakeIsData ''LottoDatum
 
 --{-# INLINABLE lottoNumbers #-}
---lottoNumbers :: ByteString
+--lottoNumbers :: BuiltinByteString
 --lottoNumbers = "0123456789"
 
 
@@ -421,29 +373,6 @@ startLotto lot sp' = do
                 
             _ -> logInfo @Haskell.String "no lotto datum found"
                 
-
-{-
-
-startLotto :: Lottery -> StartParams -> Contract w s LottoSMError ()
-startLotto lot sp' = do
-
-    let lClient = lottoClient lot
-    
-    l <- mapError StateMachineContractError $ SM.getOnChainState lClient
-    
-    case l of
-        Nothing             -> logInfo $ "No lotto state machine found"  ++ Haskell.show lot    
-        Just (SM.OnChainState{SM.ocsTxOut=TypedScriptTxOut{tyTxOutData=Just(LottoDatum _ _ _ _ _ _ _ s' _ _ _)}}, _) -> do
-
-                logInfo @Haskell.String "setting lotto sequence to start of winning ticket number"
-                let tn' = toBuiltin(strToBS((Haskell.show s') ++ "-")) -- intialize winning ticket with lotto seq
-                
-                void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Start sp' tn'
-                logInfo $ "lotto has started " ++ Haskell.show lot
-                
--}
-
-  
     
 buyTicket :: Lottery -> Integer -> Contract w s LottoSMError ()
 buyTicket lot num = do
@@ -451,18 +380,7 @@ buyTicket lot num = do
     pkh' <- Contract.ownPubKeyHash
     let lClient = lottoClient lot
     l <- mapError StateMachineContractError $ SM.getOnChainState lClient
- 
-{-    
-    case l of
-        Nothing             -> logInfo $ "No lotto state machine found"  ++ Haskell.show lot
-        Just (SM.OnChainState{SM.ocsTxOut=TypedScriptTxOut{tyTxOutData=Just(LottoDatum _ _ _ n' _ _ _ _ _ _ _)}}, _) -> do
-            let ticketNum  = strToBS(Haskell.show num)
-                n'' = fromBuiltin(n')
-                ticketNum' = toBuiltin(BS.append n'' ticketNum)
-                void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Buy ticketNum' pkh'
-                logInfo $ "appending lotto sequence to lotto ticket: " ++ Haskell.show lot
--}    
-    
+        
     case l of
         Nothing       -> logInfo $ "No lotto state machine found"  ++ Haskell.show lot
         Just (ocs, _) -> case tyTxOutData (ocsTxOut ocs) of
@@ -476,14 +394,21 @@ buyTicket lot num = do
                     ticketNum' = toBuiltin(BS.append n'' ticketNum)
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Buy ticketNum' pkh'
+                utxos <- utxosAt (pubKeyHashAddress pkh')
+                logInfo $ "utxos: " ++ Haskell.show utxos
+                {- 
+                case Map.keys utxos of
+                    []       -> Contract.logError @Haskell.String "no utxo found"
+                    oref : _ -> do
+                        let ticketNum = Value.tokenName(strToBS(Haskell.show num)) 
+                            val       = Value.singleton (curSymbol oref ticketNum) ticketNum 1
+                            lookups   = Constraints.mintingPolicy (policy oref ticketNum) <> Constraints.unspentOutputs utxos
+                        logInfo $ "value: " ++ Haskell.show val
+                        logInfo $ "lookups: " ++ Haskell.show lookups
+                -}
+            
             _ -> logInfo @Haskell.String "no lotto datum found"
             
-    
-    
-     --utxos <- utxosAt (pubKeyHashAddress pkh')
-     --logInfo $ "utxos: " ++ Haskell.show utxos
-
-
 
 closeLotto :: Lottery -> Integer -> Contract w s LottoSMError ()
 closeLotto lot num = do
@@ -573,7 +498,3 @@ useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select
     collect      = endpoint @"collect"     $ const $ collectFees lot
     calc_payout  = endpoint @"calc_payout" $ const $ calcPayoutLotto lot
     payout       = endpoint @"payout"      $ const $ payoutLotto lot
-    
-    
-    
-    
