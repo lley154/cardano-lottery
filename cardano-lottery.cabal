@@ -1,29 +1,82 @@
-Cabal-Version:      2.4
-Name:               cardano-lottery
-Version:            0.1.0.0
-Author:             Lawrence Ley 
-Maintainer:         lawrence.ley@contextsolutions.ca
-Build-Type:         Simple
-Copyright:          © 2021 Lawrence Ley
-License:            Apache-2.0
-License-files:      LICENSE
+cabal-version:      2.4
+name:               cardano-lottery
+version:            0.2.1.0
+
+-- A short (one-line) description of the package.
+-- synopsis: A lottery build using plutus for the cardano blockchain
+
+-- A longer description of the package.
+-- description:A lottery build using plutus for the cardano blockchain
+-- using a state machine design pattern with configurable lottery parameters
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+license: Apache-2.0
+license-files: LICENSE
+author: Lawrence Ley
+maintainer: lawrence.ley@contextsolutions.ca
+
+-- A copyright notice.
+-- copyright: @ 2022 Lawrence Ley
+-- extra-source-files: CHANGELOG.md
+
+flag defer-plugin-errors
+    description:
+        Defer errors from the plugin, useful for things like Haddock that can't handle it.
+    default: False
+    manual: True
+
+common lang
+    default-language:   Haskell2010
+    ghc-options:
+      -Wall -Wnoncanonical-monad-instances
+      -Wincomplete-uni-patterns -Wincomplete-record-updates
+      -Wredundant-constraints -Widentities -rtsopts
+      -- See Plutus Tx readme
+      -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+    if flag(defer-plugin-errors)
+        ghc-options: -fplugin-opt PlutusTx.Plugin:defer-errors
 
 library
-  hs-source-dirs:      src
-  exposed-modules:     Lottery
-                     , TestLottery
-  build-depends:       aeson
-                     , base ^>=4.14.1.0
-                     , bytestring
-                     , containers
-                     , data-default
-                     , freer-extras
-                     , plutus-contract
-                     , plutus-ledger
-                     , plutus-ledger-api
-                     , plutus-tx-plugin
-                     , plutus-tx
-                     , text
-  default-language:    Haskell2010
-  ghc-options:         -Wall -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas -fno-strictness -fno-spec-constr -fno-specialise
+    import: lang
+    exposed-modules:
+      Lottery 
+      TestLottery
+    build-depends:
+      base >= 4.9 && < 5,
+      aeson,
+      bytestring,
+      containers,
+      freer-extras,
+      playground-common,
+      plutus-contract,
+      plutus-tx-plugin,
+      plutus-tx,
+      plutus-ledger,
+      plutus-ledger-api,
+      openapi3,
+      text,
+      lens,
+      data-default
+    hs-source-dirs: src
+
+executable cardano-lottery-pab
+  import: lang
+  main-is: Main.hs
+  hs-source-dirs: app
+  other-modules: LottoContract
+  ghc-options:
+    -threaded
+  build-depends:
+    base >= 4.9 && < 5,
+    data-default -any,
+    plutus-contract -any,
+    plutus-pab -any,
+    aeson -any,
+    freer-simple -any,
+    prettyprinter -any,
+    freer-extras -any,
+    plutus-ledger -any,
+    openapi3 -any,
 
