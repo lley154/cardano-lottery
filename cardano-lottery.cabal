@@ -54,6 +54,7 @@ library
       plutus-tx-plugin,
       plutus-tx,
       plutus-ledger,
+      plutus-ledger-api,
       openapi3,
       text,
       lens,
