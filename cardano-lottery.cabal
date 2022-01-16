@@ -58,7 +58,8 @@ library
       openapi3,
       text,
       lens,
-      data-default
+      data-default,
+ 
     hs-source-dirs: src
 
 executable cardano-lottery-pab
@@ -79,4 +80,6 @@ executable cardano-lottery-pab
     freer-extras -any,
     plutus-ledger -any,
     openapi3 -any,
+    cardano-lottery -any,
+ 
 

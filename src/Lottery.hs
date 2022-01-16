@@ -61,6 +61,7 @@ import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Tx              (TypedScriptTxOut (..))
 import           Ledger.Value                 (TokenName, Value, flattenValue)
 import qualified Ledger.Value                 as Value
+import           Playground.Contract          as Playground
 import           Plutus.Contract              as Contract
 import           Plutus.Contract.StateMachine (OnChainState (..), SMContractError, State (..),
                                                StateMachine, StateMachineClient (..), Void, ThreadToken)
@@ -86,7 +87,7 @@ data StartParams = StartParams
     , spDeadline       :: !POSIXTime
     , spTicket         :: !Integer
     , spJackpot        :: !Integer
-    } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
+    } deriving (Haskell.Show, Generic, FromJSON, ToJSON, Playground.ToSchema)
     
 PlutusTx.unstableMakeIsData ''StartParams
 
