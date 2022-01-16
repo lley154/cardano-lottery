@@ -44,7 +44,7 @@ import           Data.Aeson                   (FromJSON, ToJSON)
 import           Data.ByteString              as BS (ByteString, append)
 import           Data.ByteString.Char8        as C8 (pack)
 import           Data.Text                    (Text, pack)
---import qualified Data.Map                     as Map
+import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
 import           Data.OpenApi.Schema qualified as OpenApi
 import           GHC.Generics                 (Generic)
@@ -67,7 +67,9 @@ import           Plutus.Contract.StateMachine (OnChainState (..), SMContractErro
 import qualified Plutus.Contract.StateMachine as SM
 import qualified PlutusTx
 import qualified PlutusTx.AssocMap            as AssocMap
-import           PlutusTx.Prelude
+--import           PlutusTx.Prelude
+import           PlutusTx.Prelude      hiding (Monoid (..), Semigroup (..))
+import           Prelude                      (Semigroup (..))
 import qualified Prelude                      as Haskell
 
 newtype Lottery = Lottery
@@ -369,6 +371,7 @@ startLotto lot sp' = do
                 let tn' = toBuiltin(strToBS((Haskell.show s') ++ "-")) -- intialize winning ticket with lotto seq
                 
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Start sp' tn'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
                 logInfo $ "lotto has started " ++ Haskell.show lot
                 
             _ -> logInfo @Haskell.String "no lotto datum found"
@@ -394,18 +397,19 @@ buyTicket lot num = do
                     ticketNum' = toBuiltin(BS.append n'' ticketNum)
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Buy ticketNum' pkh'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
                 utxos <- utxosAt (pubKeyHashAddress pkh')
                 logInfo $ "utxos: " ++ Haskell.show utxos
-                {- 
+                
                 case Map.keys utxos of
                     []       -> Contract.logError @Haskell.String "no utxo found"
                     oref : _ -> do
-                        let ticketNum = Value.tokenName(strToBS(Haskell.show num)) 
-                            val       = Value.singleton (curSymbol oref ticketNum) ticketNum 1
-                            lookups   = Constraints.mintingPolicy (policy oref ticketNum) <> Constraints.unspentOutputs utxos
+                        let ticketNum'' = Value.tokenName(strToBS(Haskell.show num)) 
+                            val       = Value.singleton (curSymbol oref ticketNum'') ticketNum'' 1
+                            mint'   = Constraints.mintingPolicy (policy oref ticketNum'') 
                         logInfo $ "value: " ++ Haskell.show val
-                        logInfo $ "lookups: " ++ Haskell.show lookups
-                -}
+                        logInfo $ "lookups: " ++ Haskell.show mint'
+                
             
             _ -> logInfo @Haskell.String "no lotto datum found"
             
@@ -430,6 +434,7 @@ closeLotto lot num = do
                     ticketNum' = toBuiltin(BS.append n'' ticketNum)
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Close ticketNum'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
             _ -> logInfo @Haskell.String "no lotto datum found"
     
     pkh' <- Contract.ownPubKeyHash
