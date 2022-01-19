@@ -86,3 +86,57 @@ executable cardano-lottery-pab
     text -any
  
 
+executable cardano-lottery-scripts
+    main-is: Main.hs
+    hs-source-dirs:
+        scripts
+        test
+    default-language: Haskell2010
+    other-modules:
+    ghc-options: -Wall -Wnoncanonical-monad-instances
+                 -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints -Widentities -rtsopts
+                 -- See Plutus Tx readme
+                 -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+    build-depends:
+        base >= 4.9 && <5,
+        aeson -any,
+        bytestring -any,
+        cardano-crypto-class -any,
+        containers -any,
+        data-default -any,
+        flat -any,
+        freer-extras -any,
+        hedgehog -any,
+        prettyprinter -any,
+        QuickCheck -any,
+        tasty -any,
+        tasty-hunit -any,
+        tasty-golden -any,
+        tasty-quickcheck -any,
+        text -any,
+        lens -any,
+        mtl -any,
+        row-types -any,
+        freer-simple -any,
+        foldl -any,
+        streaming -any,
+        directory -any,
+        filepath -any,
+        serialise -any,
+        plutus-core -any,
+        plutus-ledger-api -any,
+        plutus-tx -any,
+        plutus-contract -any,
+        plutus-chain-index -any,
+        plutus-ledger -any,
+        optparse-applicative -any,
+        aeson-pretty -any,
+        cardano-api -any,
+        cardano-binary -any,
+        cardano-lottery -any,
+        cborg -any,
+        memory -any
+
+    if !(impl(ghcjs) || os(ghcjs))
+        build-depends: plutus-tx-plugin -any
