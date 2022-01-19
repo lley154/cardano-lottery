@@ -129,7 +129,7 @@ myTrace = do
             
             
             -- calculate payout
-            callEndpoint @"calc_payout" h1 () 
+            callEndpoint @"calc-payout" h1 () 
             void $ Emulator.waitNSlots 5
                         
             -- claim jackpot for lucky winner
@@ -173,7 +173,7 @@ myTrace = do
             
 
             -- calculate payout
-            callEndpoint @"calc_payout" h1 () 
+            callEndpoint @"calc-payout" h1 () 
             void $ Emulator.waitNSlots 5
                                                 
             -- claim jackpot 

@@ -40,15 +40,13 @@ module Lottery
 
 import           Control.Lens                 (makeClassyPrisms)
 import           Control.Monad                (forever, void)
-import           Data.Aeson                   (FromJSON, ToJSON)
 import           Data.ByteString              as BS (ByteString, append)
 import           Data.ByteString.Char8        as C8 (pack)
 import           Data.Text                    (Text, pack)
---import qualified Data.Map                     as Map
+import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
-import           Data.OpenApi.Schema qualified as OpenApi
-import           GHC.Generics                 (Generic)
-import           Ledger                       (POSIXTime, PubKeyHash, TxOutRef, ScriptContext, TxInfo, CurrencySymbol, 
+import qualified Data.OpenApi.Schema          as OpenApi
+import           Ledger                       (POSIXTime, PubKeyHash, ScriptContext, TxInfo, CurrencySymbol, 
                                                Validator, Address, scriptContextTxInfo, txInInfoOutRef, txInfoInputs, 
                                                txInfoMint, ownCurrencySymbol, mkMintingPolicyScript, scriptCurrencySymbol,
                                                scriptAddress, pubKeyHashAddress)
@@ -59,15 +57,17 @@ import qualified Ledger.Interval              as Interval
 import           Ledger.Scripts               (MintingPolicyHash)
 import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Tx              (TypedScriptTxOut (..))
-import           Ledger.Value                 (TokenName, Value, flattenValue)
+import           Ledger.Value                 (Value, flattenValue)
 import qualified Ledger.Value                 as Value
+import           Playground.Contract          as Playground
 import           Plutus.Contract              as Contract
 import           Plutus.Contract.StateMachine (OnChainState (..), SMContractError, State (..),
                                                StateMachine, StateMachineClient (..), Void, ThreadToken)
 import qualified Plutus.Contract.StateMachine as SM
 import qualified PlutusTx
 import qualified PlutusTx.AssocMap            as AssocMap
-import           PlutusTx.Prelude
+import           PlutusTx.Prelude      hiding (Monoid (..), Semigroup (..))
+import           Prelude                      (Semigroup (..))
 import qualified Prelude                      as Haskell
 
 newtype Lottery = Lottery
@@ -84,7 +84,7 @@ data StartParams = StartParams
     , spDeadline       :: !POSIXTime
     , spTicket         :: !Integer
     , spJackpot        :: !Integer
-    } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
+    } deriving (Haskell.Show, Generic, FromJSON, ToJSON, Playground.ToSchema)
     
 PlutusTx.unstableMakeIsData ''StartParams
 
@@ -200,8 +200,8 @@ calcPayouts j' w' = finalPayout
         -- update sponsor beneficiary with 50% of the jackpot
         finalPayout :: AssocMap.Map PubKeyHash Integer
         finalPayout = AssocMap.insert (pkhOnlyList!!0) halfPot totalPayout
-      
-      
+
+
 {-# INLINABLE getPayout #-}
 getPayout :: Maybe Integer -> Integer
 getPayout p = case p of
@@ -256,7 +256,7 @@ transition _ s' r = case (stateValue s', stateData s', r) of
                                                              , State (Just (LottoDatum a d c n (w ++ [(pkh, n)]) m j s t f b)) $ v
                                                              )
     (v, Just(LottoDatum a d c n w m j s t f _), CalcPayout)  
-        | length w > 1                                        ->  let b' = calcPayouts j w
+        | length w > 1                                       ->  let b' = calcPayouts j w
                                                                   in Just (Constraints.mustBeSignedBy (a)
                                                              , State (Just (LottoDatum a d c n w m j s t f b')) $ v
                                                              )    
@@ -369,6 +369,7 @@ startLotto lot sp' = do
                 let tn' = toBuiltin(strToBS((Haskell.show s') ++ "-")) -- intialize winning ticket with lotto seq
                 
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Start sp' tn'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
                 logInfo $ "lotto has started " ++ Haskell.show lot
                 
             _ -> logInfo @Haskell.String "no lotto datum found"
@@ -394,18 +395,19 @@ buyTicket lot num = do
                     ticketNum' = toBuiltin(BS.append n'' ticketNum)
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Buy ticketNum' pkh'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
                 utxos <- utxosAt (pubKeyHashAddress pkh')
                 logInfo $ "utxos: " ++ Haskell.show utxos
-                {- 
+                
                 case Map.keys utxos of
                     []       -> Contract.logError @Haskell.String "no utxo found"
                     oref : _ -> do
-                        let ticketNum = Value.tokenName(strToBS(Haskell.show num)) 
-                            val       = Value.singleton (curSymbol oref ticketNum) ticketNum 1
-                            lookups   = Constraints.mintingPolicy (policy oref ticketNum) <> Constraints.unspentOutputs utxos
+                        let ticketNum'' = Value.tokenName(strToBS(Haskell.show num)) 
+                            val       = Value.singleton (curSymbol oref ticketNum'') ticketNum'' 1
+                            mint'   = Constraints.mintingPolicy (policy oref ticketNum'') 
                         logInfo $ "value: " ++ Haskell.show val
-                        logInfo $ "lookups: " ++ Haskell.show lookups
-                -}
+                        logInfo $ "lookups: " ++ Haskell.show mint'
+                
             
             _ -> logInfo @Haskell.String "no lotto datum found"
             
@@ -430,6 +432,7 @@ closeLotto lot num = do
                     ticketNum' = toBuiltin(BS.append n'' ticketNum)
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Close ticketNum'
+                logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
             _ -> logInfo @Haskell.String "no lotto datum found"
     
     pkh' <- Contract.ownPubKeyHash
@@ -477,7 +480,7 @@ type LottoUseSchema =
     .\/ Endpoint "close"       Integer
     .\/ Endpoint "redeem"      ()
     .\/ Endpoint "collect"     ()
-    .\/ Endpoint "calc_payout" ()
+    .\/ Endpoint "calc-payout" ()
     .\/ Endpoint "payout"      ()
 
     
@@ -496,5 +499,5 @@ useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select
     close        = endpoint @"close"       $ closeLotto lot
     redeem       = endpoint @"redeem"      $ const $ redeemLotto lot
     collect      = endpoint @"collect"     $ const $ collectFees lot
-    calc_payout  = endpoint @"calc_payout" $ const $ calcPayoutLotto lot
+    calc_payout  = endpoint @"calc-payout" $ const $ calcPayoutLotto lot
     payout       = endpoint @"payout"      $ const $ payoutLotto lot

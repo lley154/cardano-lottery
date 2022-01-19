@@ -12,50 +12,37 @@
 
 module LottoContract(
     StarterContracts(..)
-    , handlers
     ) where
 
-import Control.Monad.Freer
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, genericParseJSON, defaultOptions, Options(..))
-import Data.Default (Default (def))
-import GHC.Generics (Generic)
-import Prettyprinter
---import Data.OpenApi.Schema qualified as OpenApi
---import Data.Row
---import Ledger (TxId)
-import Lottery as Lottery
-import Plutus.PAB.Effects.Contract.Builtin (Builtin, BuiltinHandler (..), HasDefinitions (..), SomeBuiltin (..))
-import Plutus.PAB.Effects.Contract.Builtin qualified as Builtin
-import Prelude
+
+import           Data.Aeson                             (FromJSON (..), ToJSON (..))                                                      
+import qualified Data.OpenApi                           as OpenApi
+import           GHC.Generics                           (Generic)
+import           Data.Text.Prettyprint.Doc              (Pretty (..), viaShow)
+import           Lottery                                as Lottery
+import qualified Plutus.PAB.Effects.Contract.Builtin    as Builtin
+import           Prelude                                hiding (init)
 
 
-data StarterContracts = InitLotto'
-                      | UseLotto' Lottery.Lottery
+data StarterContracts = 
+                        InitLottoContract
+                      | UseLottoContract Lottery.Lottery
                       deriving (Eq, Ord, Show, Generic)
+                      deriving anyclass OpenApi.ToSchema
                       deriving anyclass (FromJSON, ToJSON)
---    deriving anyclass OpenApi.ToSchema
- 
- {-   
-instance ToJSON StarterContracts where
-  toJSON = genericToJSON defaultOptions {
-             tagSingleConstructors = True }
-instance FromJSON StarterContracts where
-  parseJSON = genericParseJSON defaultOptions {
-             tagSingleConstructors = True }
--}
 
 instance Pretty StarterContracts where
     pretty = viaShow
-    
-instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [InitLotto']
-    getSchema =  \case
-        InitLotto'    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
-        UseLotto' _ -> Builtin.endpointsToSchemas @Lottery.LottoUseSchema   
-       
-    getContract = \case
-        InitLotto'    -> SomeBuiltin Lottery.initEndpoint
-        UseLotto' sp  -> SomeBuiltin Lottery.useEndpoints sp
 
-        
-        
+   
+instance Builtin.HasDefinitions StarterContracts where
+    getDefinitions = [InitLottoContract]
+    getSchema =  \case
+        UseLottoContract _   -> Builtin.endpointsToSchemas @Lottery.LottoUseSchema   
+        InitLottoContract    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
+   
+    getContract = \case
+        UseLottoContract lt  -> Builtin.SomeBuiltin $ Lottery.useEndpoints lt
+        InitLottoContract    -> Builtin.SomeBuiltin Lottery.initEndpoint
+
+
