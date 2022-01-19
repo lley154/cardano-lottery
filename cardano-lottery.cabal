@@ -71,15 +71,18 @@ executable cardano-lottery-pab
     -threaded
   build-depends:
     base >= 4.9 && < 5,
-    data-default -any,
-    plutus-contract -any,
-    plutus-pab -any,
     aeson -any,
-    freer-simple -any,
-    prettyprinter -any,
-    freer-extras -any,
-    plutus-ledger -any,
-    openapi3 -any,
     cardano-lottery -any,
+    data-default -any,
+    freer-simple -any,
+    freer-extras -any,
+    openapi3 -any,
+    plutus-contract -any,
+    plutus-ledger-api -any,
+    plutus-pab -any,
+    prettyprinter -any,
+    plutus-ledger -any,
+    req ^>= 3.9.0,
+    text -any
  
 

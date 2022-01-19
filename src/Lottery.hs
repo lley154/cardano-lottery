@@ -40,15 +40,15 @@ module Lottery
 
 import           Control.Lens                 (makeClassyPrisms)
 import           Control.Monad                (forever, void)
-import           Data.Aeson                   (FromJSON, ToJSON)
+--import           Data.Aeson                   (FromJSON, ToJSON)
 import           Data.ByteString              as BS (ByteString, append)
 import           Data.ByteString.Char8        as C8 (pack)
 import           Data.Text                    (Text, pack)
 import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
-import           Data.OpenApi.Schema qualified as OpenApi
-import           GHC.Generics                 (Generic)
-import           Ledger                       (POSIXTime, PubKeyHash, TxOutRef, ScriptContext, TxInfo, CurrencySymbol, 
+import qualified Data.OpenApi.Schema          as OpenApi
+--import           GHC.Generics                 (Generic)
+import           Ledger                       (POSIXTime, PubKeyHash, ScriptContext, TxInfo, CurrencySymbol, 
                                                Validator, Address, scriptContextTxInfo, txInInfoOutRef, txInfoInputs, 
                                                txInfoMint, ownCurrencySymbol, mkMintingPolicyScript, scriptCurrencySymbol,
                                                scriptAddress, pubKeyHashAddress)
@@ -59,7 +59,7 @@ import qualified Ledger.Interval              as Interval
 import           Ledger.Scripts               (MintingPolicyHash)
 import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Tx              (TypedScriptTxOut (..))
-import           Ledger.Value                 (TokenName, Value, flattenValue)
+import           Ledger.Value                 (Value, flattenValue)
 import qualified Ledger.Value                 as Value
 import           Playground.Contract          as Playground
 import           Plutus.Contract              as Contract

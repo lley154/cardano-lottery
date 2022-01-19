@@ -14,45 +14,45 @@ module LottoContract(
     StarterContracts(..)
     ) where
 
-import Control.Monad.Freer
-import Data.Aeson                           (FromJSON (..), ToJSON (..), genericToJSON, genericParseJSON, defaultOptions, Options(..))
-import Data.Default                         (Default (def))
-import qualified Data.OpenApi               as OpenApi
-import GHC.Generics                         (Generic)
-import Prettyprinter
-import Lottery                              as Lottery
-import           Plutus.PAB.Effects.Contract.Builtin (Builtin, SomeBuiltin (..), BuiltinHandler(contractHandler))
-import qualified Plutus.PAB.Effects.Contract.Builtin as Builtin
-import Prelude
+
+import           Data.Aeson                             (Result (..), FromJSON (..), ToJSON (..), genericToJSON, genericParseJSON
+                                                        , defaultOptions, Options(..), fromJSON)
+import           Data.Default                           (def)
+import qualified Data.Monoid                            as Monoid                                                        
+import qualified Data.OpenApi                           as OpenApi
+import           Data.Text                              (Text)
+import           GHC.Generics                           (Generic)
+import           Data.Text.Prettyprint.Doc              (Pretty (..), viaShow)
+import qualified Ledger.TimeSlot                        as TimeSlot
+import           Lottery                                as Lottery
+import           Plutus.PAB.Effects.Contract.Builtin    (SomeBuiltin (..))
+import qualified Plutus.PAB.Effects.Contract.Builtin    as Builtin
+import           Plutus.Contract                        (Contract, ownPubKeyHash)
+import qualified Plutus.V1.Ledger.Slot                  as Slot 
+import           Prelude                                hiding (init)
+import qualified Plutus.PAB.Simulator                   as Simulator
+import           Wallet.Emulator.Types                  (Wallet(..), getWallet, knownWallet, walletPubKeyHash)
 
 
-data StarterContracts = InitLottoContract
+data StarterContracts = 
+                        InitLottoContract
                       | UseLottoContract Lottery.Lottery
                       deriving (Eq, Ord, Show, Generic)
-                      deriving anyclass (FromJSON, ToJSON)
                       deriving anyclass OpenApi.ToSchema
- 
- {-   
-instance ToJSON StarterContracts where
-  toJSON = genericToJSON defaultOptions {
-             tagSingleConstructors = True }
-instance FromJSON StarterContracts where
-  parseJSON = genericParseJSON defaultOptions {
-             tagSingleConstructors = True }
--}
+                      deriving anyclass (FromJSON, ToJSON)
 
 instance Pretty StarterContracts where
     pretty = viaShow
-    
+
+   
 instance Builtin.HasDefinitions StarterContracts where
     getDefinitions = [InitLottoContract]
     getSchema =  \case
-        InitLottoContract    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
         UseLottoContract _   -> Builtin.endpointsToSchemas @Lottery.LottoUseSchema   
-       
+        InitLottoContract    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
+   
     getContract = \case
-        InitLottoContract    -> SomeBuiltin Lottery.initEndpoint
-        UseLottoContract lt  -> SomeBuiltin $ Lottery.useEndpoints lt
+        UseLottoContract lt  -> Builtin.SomeBuiltin $ Lottery.useEndpoints lt
+        InitLottoContract    -> Builtin.SomeBuiltin Lottery.initEndpoint
 
 
-        
