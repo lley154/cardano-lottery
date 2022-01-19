@@ -40,14 +40,12 @@ module Lottery
 
 import           Control.Lens                 (makeClassyPrisms)
 import           Control.Monad                (forever, void)
---import           Data.Aeson                   (FromJSON, ToJSON)
 import           Data.ByteString              as BS (ByteString, append)
 import           Data.ByteString.Char8        as C8 (pack)
 import           Data.Text                    (Text, pack)
 import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
 import qualified Data.OpenApi.Schema          as OpenApi
---import           GHC.Generics                 (Generic)
 import           Ledger                       (POSIXTime, PubKeyHash, ScriptContext, TxInfo, CurrencySymbol, 
                                                Validator, Address, scriptContextTxInfo, txInInfoOutRef, txInfoInputs, 
                                                txInfoMint, ownCurrencySymbol, mkMintingPolicyScript, scriptCurrencySymbol,
@@ -68,7 +66,6 @@ import           Plutus.Contract.StateMachine (OnChainState (..), SMContractErro
 import qualified Plutus.Contract.StateMachine as SM
 import qualified PlutusTx
 import qualified PlutusTx.AssocMap            as AssocMap
---import           PlutusTx.Prelude
 import           PlutusTx.Prelude      hiding (Monoid (..), Semigroup (..))
 import           Prelude                      (Semigroup (..))
 import qualified Prelude                      as Haskell
@@ -203,8 +200,8 @@ calcPayouts j' w' = finalPayout
         -- update sponsor beneficiary with 50% of the jackpot
         finalPayout :: AssocMap.Map PubKeyHash Integer
         finalPayout = AssocMap.insert (pkhOnlyList!!0) halfPot totalPayout
-      
-      
+
+
 {-# INLINABLE getPayout #-}
 getPayout :: Maybe Integer -> Integer
 getPayout p = case p of
@@ -259,7 +256,7 @@ transition _ s' r = case (stateValue s', stateData s', r) of
                                                              , State (Just (LottoDatum a d c n (w ++ [(pkh, n)]) m j s t f b)) $ v
                                                              )
     (v, Just(LottoDatum a d c n w m j s t f _), CalcPayout)  
-        | length w > 1                                        ->  let b' = calcPayouts j w
+        | length w > 1                                       ->  let b' = calcPayouts j w
                                                                   in Just (Constraints.mustBeSignedBy (a)
                                                              , State (Just (LottoDatum a d c n w m j s t f b')) $ v
                                                              )    
@@ -483,7 +480,7 @@ type LottoUseSchema =
     .\/ Endpoint "close"       Integer
     .\/ Endpoint "redeem"      ()
     .\/ Endpoint "collect"     ()
-    .\/ Endpoint "calc_payout" ()
+    .\/ Endpoint "calc-payout" ()
     .\/ Endpoint "payout"      ()
 
     
@@ -502,5 +499,5 @@ useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select
     close        = endpoint @"close"       $ closeLotto lot
     redeem       = endpoint @"redeem"      $ const $ redeemLotto lot
     collect      = endpoint @"collect"     $ const $ collectFees lot
-    calc_payout  = endpoint @"calc_payout" $ const $ calcPayoutLotto lot
+    calc_payout  = endpoint @"calc-payout" $ const $ calcPayoutLotto lot
     payout       = endpoint @"payout"      $ const $ payoutLotto lot
