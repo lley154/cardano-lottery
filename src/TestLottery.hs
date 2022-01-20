@@ -99,6 +99,7 @@ myTrace = do
             Extras.logInfo $ "wallet 1 " ++ show (knownWallet 1)
             
             
+
             -- lotto play to buy lotto ticket with number 123
             callEndpoint @"buy" h2 123
             void $ Emulator.waitNSlots 5
@@ -118,6 +119,7 @@ myTrace = do
             -- lotto admin to close lotto with number 123
             callEndpoint @"close" h1 123
             void $ Emulator.waitNSlots 5
+
          
             -- lotto player to redeem ticket with winning number 123
             callEndpoint @"redeem" h2 ()
@@ -144,7 +146,7 @@ myTrace = do
             -- collect admin fees 
             callEndpoint @"collect" h1 ()
             void $ Emulator.waitNSlots 5
-
+        
             
          {-
             
