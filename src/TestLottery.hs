@@ -11,7 +11,6 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
---{-# LANGUAGE ImportQualifiedPost   #-}
 
 
 module TestLottery
@@ -28,13 +27,12 @@ import           Ledger                     (Slot (..))
 import           Ledger.Value()
 import           Ledger.Ada                 as Ada()
 import qualified Ledger.TimeSlot            as TimeSlot
+import           Lottery
 import           Plutus.Contract.Test
 import           Plutus.Trace.Emulator      as Emulator
 import           PlutusTx.Prelude
 import           Prelude                    (IO, String, Show (..))
-import           Wallet.Emulator            (Wallet (..), knownWallet)
-import           Wallet.Emulator.Wallet     (mockWalletPaymentPubKeyHash)
-import           Lottery
+
 
 
 slotCfg :: TimeSlot.SlotConfig
@@ -51,9 +49,9 @@ myTrace = do
     h <- Emulator.activateContractWallet (knownWallet 1) initEndpoint
     
     let pkh      = mockWalletPaymentPubKeyHash (knownWallet 1)
-        jackpot'   = 10000000
-        ticket'    = 20000
-        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot 50)
+        jackpot'   = 10000000  -- 10 Ada
+        ticket'    = 20000     -- 0.02 Ada (base amount * 100 = 2 ADA)
+        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot 5000)
 
         sp = StartParams
                 { spAdmin          = pkh
@@ -147,9 +145,10 @@ myTrace = do
             void $ Emulator.waitNSlots 5
             
             
-            -- collect admin fees 
-            callEndpoint @"collect" h1 ()
-            void $ Emulator.waitNSlots 5
+            -- collect admin fees
+            -- note: need to have minimum amount of ada in fees before collecting 
+            --callEndpoint @"collect" h1 ()
+            --void $ Emulator.waitNSlots 5
         
             
          {-
