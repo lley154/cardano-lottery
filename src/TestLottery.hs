@@ -11,6 +11,8 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
+--{-# LANGUAGE ImportQualifiedPost   #-}
+
 
 module TestLottery
     ( test
@@ -22,14 +24,16 @@ import           Control.Monad              hiding (fmap)
 import           Control.Monad.Freer.Extras as Extras
 import           Data.Monoid                (Last (..))
 import           Data.Default               (Default (def))
+import           Ledger                     (Slot (..))
 import           Ledger.Value()
 import           Ledger.Ada                 as Ada()
 import qualified Ledger.TimeSlot            as TimeSlot
 import           Plutus.Contract.Test
 import           Plutus.Trace.Emulator      as Emulator
-import qualified Plutus.V1.Ledger.Slot      as Slot 
 import           PlutusTx.Prelude
 import           Prelude                    (IO, String, Show (..))
+import           Wallet.Emulator            (Wallet (..), knownWallet)
+import           Wallet.Emulator.Wallet     (mockWalletPaymentPubKeyHash)
 import           Lottery
 
 
@@ -46,10 +50,10 @@ myTrace = do
     -- lotto admin wallet    
     h <- Emulator.activateContractWallet (knownWallet 1) initEndpoint
     
-    let pkh      = walletPubKeyHash (knownWallet 1)
+    let pkh      = mockWalletPaymentPubKeyHash (knownWallet 1)
         jackpot'   = 10000000
         ticket'    = 20000
-        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 50)
+        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot 50)
 
         sp = StartParams
                 { spAdmin          = pkh
@@ -81,7 +85,7 @@ myTrace = do
             -- lotto sponsor wallet
             h4 <- Emulator.activateContractWallet (knownWallet 4) $ useEndpoints lot
             
-            let sponsor_pkh = walletPubKeyHash (knownWallet 4)            
+            let sponsor_pkh = mockWalletPaymentPubKeyHash (knownWallet 4)            
                 sp' = StartParams
                           { spAdmin          = pkh
                           , spBenAddress     = sponsor_pkh
@@ -93,7 +97,7 @@ myTrace = do
             -- start lotto 
             callEndpoint @"start" h1 sp'
             void $ Emulator.waitNSlots 5
-            let pkh' = walletPubKeyHash (knownWallet 1)
+            let pkh' = mockWalletPaymentPubKeyHash (knownWallet 1)
 
             Extras.logInfo $ "wallet 1 pkh " ++ show pkh'
             Extras.logInfo $ "wallet 1 " ++ show (knownWallet 1)
@@ -103,7 +107,7 @@ myTrace = do
             -- lotto play to buy lotto ticket with number 123
             callEndpoint @"buy" h2 123
             void $ Emulator.waitNSlots 5
-            let pkh'' = walletPubKeyHash (knownWallet 2)
+            let pkh'' = mockWalletPaymentPubKeyHash (knownWallet 2)
 
             Extras.logInfo $ "wallet 2 pkh " ++ show pkh''
             Extras.logInfo $ "wallet 2 " ++ show (knownWallet 2)

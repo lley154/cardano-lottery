@@ -55,6 +55,7 @@ library
       plutus-tx,
       plutus-ledger,
       plutus-ledger-api,
+      plutus-ledger-constraints,
       openapi3,
       text,
       lens,
@@ -83,7 +84,8 @@ executable cardano-lottery-pab-sim
     prettyprinter -any,
     plutus-ledger -any,
     req ^>= 3.9.0,
-    text -any
+    text -any,
+    bytestring -any
  
  
 executable cardano-lottery-pab-run

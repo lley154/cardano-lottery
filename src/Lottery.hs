@@ -46,10 +46,11 @@ import           Data.Text                    (Text, pack)
 import qualified Data.Map                     as Map
 import           Data.Monoid                  (Last (..))
 import qualified Data.OpenApi.Schema          as OpenApi
-import           Ledger                       (POSIXTime, PubKeyHash, ScriptContext, TxInfo, CurrencySymbol, 
+import           Ledger                       (POSIXTime, ScriptContext, TxInfo, CurrencySymbol, 
                                                Validator, Address, scriptContextTxInfo, txInInfoOutRef, txInfoInputs, 
                                                txInfoMint, ownCurrencySymbol, mkMintingPolicyScript, scriptCurrencySymbol,
                                                scriptAddress, pubKeyHashAddress)
+import           Ledger.Address               (PaymentPubKeyHash)
 import           Ledger.Ada                   as Ada
 import           Ledger.Constraints           (TxConstraints)
 import qualified Ledger.Constraints           as Constraints
@@ -71,7 +72,7 @@ import           Prelude                      (Semigroup (..))
 import qualified Prelude                      as Haskell
 
 newtype Lottery = Lottery
-    { lToken          :: (Maybe ThreadToken)
+    { lToken          :: Maybe ThreadToken
     } deriving stock    (Haskell.Show, Generic)
       deriving anyclass (ToJSON, FromJSON, OpenApi.ToSchema)
       deriving newtype  (Haskell.Eq, Haskell.Ord)
@@ -79,8 +80,8 @@ newtype Lottery = Lottery
 PlutusTx.makeLift ''Lottery
 
 data StartParams = StartParams
-    { spAdmin          :: !PubKeyHash
-    , spBenAddress     :: !PubKeyHash
+    { spAdmin          :: !PaymentPubKeyHash
+    , spBenAddress     :: !PaymentPubKeyHash
     , spDeadline       :: !POSIXTime
     , spTicket         :: !Integer
     , spJackpot        :: !Integer
@@ -91,12 +92,12 @@ PlutusTx.unstableMakeIsData ''StartParams
 data LottoRedeemer = 
        Init 
      | Start StartParams BuiltinByteString
-     | Buy BuiltinByteString PubKeyHash
+     | Buy BuiltinByteString PaymentPubKeyHash
      | Close BuiltinByteString 
-     | Redeem PubKeyHash 
+     | Redeem PaymentPubKeyHash 
      | CollectFees
      | CalcPayout
-     | Payout PubKeyHash
+     | Payout PaymentPubKeyHash
 
     deriving Haskell.Show
       
@@ -104,17 +105,17 @@ PlutusTx.unstableMakeIsData ''LottoRedeemer
 
     
 data LottoDatum = LottoDatum
-    { admin         :: PubKeyHash
+    { admin         :: PaymentPubKeyHash
     , deadline      :: POSIXTime
     , cost          :: Integer
     , winNum        :: BuiltinByteString
-    , winners       :: [(PubKeyHash, BuiltinByteString)]
+    , winners       :: [(PaymentPubKeyHash, BuiltinByteString)]
     , mph           :: MintingPolicyHash
     , jackpot       :: Integer
     , seqNum        :: Integer
     , treasury      :: Integer
     , adminFees     :: Integer
-    , beneficiaries :: AssocMap.Map PubKeyHash Integer
+    , beneficiaries :: AssocMap.Map PaymentPubKeyHash Integer
     } deriving (Haskell.Show, Generic, FromJSON, ToJSON, Haskell.Eq)
 
 PlutusTx.unstableMakeIsData ''LottoDatum
@@ -170,10 +171,10 @@ ownsLottoToken mph'' tn'' = Constraints.mustSpendAtLeast (lottoValue mph'' tn'')
 
 
 {-# INLINABLE calcPayouts #-}
-calcPayouts :: Integer -> [(PubKeyHash, BuiltinByteString)] -> AssocMap.Map PubKeyHash Integer
+calcPayouts :: Integer -> [(PaymentPubKeyHash, BuiltinByteString)] -> AssocMap.Map PaymentPubKeyHash Integer
 calcPayouts j' w' = finalPayout
     where         
-        pkhOnly :: [(PubKeyHash, BuiltinByteString)] -> [PubKeyHash]
+        pkhOnly :: [(PaymentPubKeyHash, BuiltinByteString)] -> [PaymentPubKeyHash]
         pkhOnly [] = []
         pkhOnly (x:xs) = fst x : pkhOnly xs
         
@@ -185,20 +186,20 @@ calcPayouts j' w' = finalPayout
         count :: Eq a => a -> [a] -> Integer
         count x  = length . filter (==x)
         
-        calcPayout :: [PubKeyHash] -> [(PubKeyHash, Integer)]
+        calcPayout :: [PaymentPubKeyHash] -> [(PaymentPubKeyHash, Integer)]
         calcPayout []     = []
         calcPayout (x:xs) = (x , (count x pkhOnlyList) * jackpotSplit) : calcPayout xs
         
         -- remove duplicate pkh's if any since they have already been included in the payout calc above
-        removeDups :: [(PubKeyHash, Integer)] -> [(PubKeyHash, Integer)]
+        removeDups :: [(PaymentPubKeyHash, Integer)] -> [(PaymentPubKeyHash, Integer)]
         removeDups []     = []
         removeDups (x:xs) = x : filter (/= x) (removeDups xs) 
         
-        totalPayout :: AssocMap.Map PubKeyHash Integer
+        totalPayout :: AssocMap.Map PaymentPubKeyHash Integer
         totalPayout = AssocMap.fromList $ removeDups $ calcPayout pkhOnlyList
         
         -- update sponsor beneficiary with 50% of the jackpot
-        finalPayout :: AssocMap.Map PubKeyHash Integer
+        finalPayout :: AssocMap.Map PaymentPubKeyHash Integer
         finalPayout = AssocMap.insert (pkhOnlyList!!0) halfPot totalPayout
 
 
@@ -378,7 +379,7 @@ startLotto lot sp' = do
 buyTicket :: Lottery -> Integer -> Contract w s LottoSMError ()
 buyTicket lot num = do
        
-    pkh' <- Contract.ownPubKeyHash
+    pkh' <- Contract.ownPaymentPubKeyHash
     let lClient = lottoClient lot
     l <- mapError StateMachineContractError $ SM.getOnChainState lClient
         
@@ -396,7 +397,7 @@ buyTicket lot num = do
     
                 void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Buy ticketNum' pkh'
                 logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
-                utxos <- utxosAt (pubKeyHashAddress pkh')
+                utxos <- utxosAt (pubKeyHashAddress pkh' Nothing)
                 logInfo $ "utxos: " ++ Haskell.show utxos
                 
                 case Map.keys utxos of
@@ -435,16 +436,16 @@ closeLotto lot num = do
                 logInfo $ "datum: " ++ Haskell.show (tyTxOutData (ocsTxOut ocs))
             _ -> logInfo @Haskell.String "no lotto datum found"
     
-    pkh' <- Contract.ownPubKeyHash
-    utxos <- utxosAt (pubKeyHashAddress pkh')
+    pkh' <- Contract.ownPaymentPubKeyHash
+    utxos <- utxosAt (pubKeyHashAddress pkh' Nothing)
     logInfo $ "utxos: " ++ Haskell.show utxos
 
 redeemLotto :: Lottery -> Contract w s LottoSMError ()
 redeemLotto lot = do 
     
-     pkh' <- Contract.ownPubKeyHash
+     pkh' <- Contract.ownPaymentPubKeyHash
      void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Redeem pkh'     
-     utxos <- utxosAt (pubKeyHashAddress pkh')
+     utxos <- utxosAt (pubKeyHashAddress pkh' Nothing)
      logInfo $ "utxos: " ++ Haskell.show utxos
      
 
@@ -452,8 +453,8 @@ collectFees :: Lottery -> Contract w s LottoSMError ()
 collectFees lot = do
     
     void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ CollectFees
-    pkh' <- Contract.ownPubKeyHash
-    utxos <- utxosAt (pubKeyHashAddress pkh')
+    pkh' <- Contract.ownPaymentPubKeyHash
+    utxos <- utxosAt (pubKeyHashAddress pkh' Nothing)
     logInfo $ "utxos: " ++ Haskell.show utxos
 
     
@@ -466,9 +467,9 @@ calcPayoutLotto lot = do
 payoutLotto :: Lottery -> Contract w s LottoSMError ()
 payoutLotto lot = do
     
-    pkh' <- Contract.ownPubKeyHash 
+    pkh' <- Contract.ownPaymentPubKeyHash 
     void $ mapError StateMachineContractError $ SM.runStep (lottoClient lot) $ Payout pkh'    
-    utxos <- utxosAt (pubKeyHashAddress pkh')
+    utxos <- utxosAt (pubKeyHashAddress pkh' Nothing)
     logInfo $ "utxos: " ++ Haskell.show utxos
     
 
