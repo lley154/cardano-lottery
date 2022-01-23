@@ -19,24 +19,20 @@ import           Control.Monad                       (void)
 import           Control.Monad.Freer                 (interpret)
 import           Control.Monad.IO.Class              (MonadIO (..))
 import           Data.Aeson                          (Result (..), fromJSON, encode)
-import           Data.ByteString.Lazy.Char8          as BSL
 import           Data.Default                        (def)
-import qualified Plutus.V1.Ledger.Slot               as Slot 
+import qualified Data.Monoid                         as Monoid
 import           Ledger.Address                      (Address, PaymentPubKeyHash, pubKeyHashAddress)
 import           Ledger.CardanoWallet   qualified as CW
 import           Lottery
 import qualified Ledger.TimeSlot                     as TimeSlot
 import           LottoContract                       (StarterContracts(..))
-import qualified Data.Monoid                         as Monoid
-import           Plutus.Contract
 import           Plutus.PAB.Effects.Contract.Builtin (Builtin, BuiltinHandler(contractHandler))
 import qualified Plutus.PAB.Effects.Contract.Builtin as Builtin
 import           Plutus.PAB.Simulator                (SimulatorEffectHandlers)
 import qualified Plutus.PAB.Simulator                as Simulator
 import qualified Plutus.PAB.Webserver.Server         as PAB.Server
+import qualified Plutus.V1.Ledger.Slot               as Slot 
 import           Wallet.Emulator.Wallet              (Wallet, knownWallet)
---import           Wallet.API                          (WalletAPIError, ownPaymentPubKeyHash)
---import           Wallet.API                          (ownPubKeyHash)
 
 
 {-
@@ -72,20 +68,12 @@ main = void $ Simulator.runSimulationWith handlers $ do
     void $ liftIO getLine
 
     cidInit <- Simulator.activateContract defaultWallet InitLottoContract
-
-    --adminPkh <- defaultWalletPaymentPubKeyHash
-    --adminPkh <- pubKeyHashAddress <$> Simulator.handleAgentThread defaultWallet (Just cid) ownPaymentPubKeyHash
-    --adminPkh <- Simulator.handleAgentThread defaultWallet (Just cidInit) ownPaymentPubKeyHash
-    --    where
-    --        ownPaymentPubKeyHashH :: (Member (State WalletState) effs) => Eff effs PaymentPubKeyHash
-    --        ownPaymentPubKeyHashH = gets (CW.paymentPubKeyHash . _mockWallet)
-
     Simulator.logString @(Builtin StarterContracts) $ "adminPkh = " ++ show defaultWalletPaymentPubKeyHash
     Simulator.logString @(Builtin StarterContracts) $ "adminPkhAddress = " ++ show defaultWalletPaymentPubKeyHashAddress
 
 
     let jackpot'   = 10000000 -- 10 Ada
-        ticket'    = 2000000  -- 2 Ada
+        ticket'    = 2000000  -- 2 Ada (base amount)
         deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 5000)
         sp         = StartParams
             { spAdmin       = defaultWalletPaymentPubKeyHash
@@ -104,8 +92,6 @@ main = void $ Simulator.runSimulationWith handlers $ do
     Simulator.logString @(Builtin StarterContracts) "Lotto init contract wallet 1 (lotto admin)"
     void $ liftIO getLine
 
-    --Simulator.logString @(Builtin StarterContracts) "Enter lotto admin contract ID"
-    --cidInit <- readCommandIO
     void $ Simulator.callEndpointOnInstance cidInit "init" (sp, useTT)
     Simulator.waitNSlots 5
 
@@ -118,8 +104,6 @@ main = void $ Simulator.runSimulationWith handlers $ do
     cid2 <- Simulator.activateContract (knownWallet 2) $ UseLottoContract lotToken
     cid3 <- Simulator.activateContract (knownWallet 3) $ UseLottoContract lotToken
     cid4 <- Simulator.activateContract (knownWallet 4) $ UseLottoContract lotToken
-
-    --benPkh <- Simulator.handleAgentThread (knownWallet 4) ownPaymentPubKeyHash
 
     let sp' = StartParams
             { spAdmin       = defaultWalletPaymentPubKeyHash
@@ -173,7 +157,6 @@ main = void $ Simulator.runSimulationWith handlers $ do
     void $ liftIO getLine
     void $ Simulator.callEndpointOnInstance cid1 "collect" ()
     Simulator.waitNSlots 5
-
 
     -- Pressing enter results in the balances being printed
     void $ liftIO getLine
