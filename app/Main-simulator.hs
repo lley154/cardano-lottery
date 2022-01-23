@@ -73,7 +73,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
 
 
     let jackpot'   = 10000000 -- 10 Ada
-        ticket'    = 2000000  -- 2 Ada (base amount)
+        ticket'    = 20000    -- 0.02 Ada (base amount * 100 = 2 Ada)
         deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 5000)
         sp         = StartParams
             { spAdmin       = defaultWalletPaymentPubKeyHash
@@ -153,10 +153,11 @@ main = void $ Simulator.runSimulationWith handlers $ do
     void $ Simulator.callEndpointOnInstance cid4 "payout" ()
     Simulator.waitNSlots 5
 
-    Simulator.logString @(Builtin StarterContracts) "Lotto collect contract wallet 1 (lotto admin)"
-    void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid1 "collect" ()
-    Simulator.waitNSlots 5
+    --Note: only collect fees if more than minimum amount of ada has been collected
+    --Simulator.logString @(Builtin StarterContracts) "Lotto collect contract wallet 1 (lotto admin)"
+    --void $ liftIO getLine
+    --void $ Simulator.callEndpointOnInstance cid1 "collect" ()
+    --Simulator.waitNSlots 5
 
     -- Pressing enter results in the balances being printed
     void $ liftIO getLine
