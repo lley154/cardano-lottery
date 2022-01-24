@@ -1,0 +1,19 @@
+[
+    {
+        "spAdmin": {
+            "unPaymentPubKeyHash" : { 
+                                    "getPubKeyHash": "92504412c753ab1a177492e2a32a2ce4bdd343575e7454bff14c85d6"
+            }
+        },
+        "spBenAddress" : { 
+                "unPaymentPubKeyHash" : {
+                                    "getPubKeyHash" : "92504412c753ab1a177492e2a32a2ce4bdd343575e7454bff14c85d6"
+                    }
+        },
+        "spJackpot"  : 10000000,
+        "spTicket"   : 20000,
+        "spDeadline" : 1596064091999
+    },
+    true
+]
+
