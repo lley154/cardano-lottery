@@ -1,3 +1,7 @@
+
+
+{-
+
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE DeriveAnyClass     #-}
 {-# LANGUAGE DerivingStrategies #-}
@@ -29,19 +33,34 @@ import qualified Plutus.PAB.Effects.Contract.Builtin as Builtin
 --import           Plutus.PAB.Simulator                (SimulatorEffectHandlers)
 --import qualified Plutus.PAB.Simulator                as Simulator
 import           Plutus.PAB.Core                     as Core
-import           Plutus.PAB.Run                      (runWith)
+--import           Plutus.PAB.Run                      (runWith)
+import           Plutus.PAB.LocalCluster.Run         (runWith)
 import qualified Plutus.PAB.Webserver.Server         as PAB.Server
 --import           Wallet.Emulator.Wallet              (Wallet, knownWallet)
 --import           Wallet.API                          (ownPubKeyHash)
 import           Control.Monad.Freer.Extras.Log      (LogMessage, LogMsg, LogObserve, logDebug, logInfo)
 
 
-slotCfg :: TimeSlot.SlotConfig
-slotCfg = def
+-}
+
+{-# LANGUAGE TypeApplications #-}
+-- | Start a local cluster of cardano nodes and PAB(s)
+module Main where
+
+import          LottoContract                       (StarterContracts(..))
+import          Plutus.PAB.Effects.Contract.Builtin (handleBuiltin)
+import          Plutus.PAB.LocalCluster.Run         (runWith)
 
 main :: IO ()
-main = do
-    runWith (Builtin.handleBuiltin @StarterContracts)
+main = runWith @StarterContracts handleBuiltin
+
+
+--slotCfg :: TimeSlot.SlotConfig
+--slotCfg = def
+
+--main :: IO ()
+--main = do
+--    runWith (Builtin.handleBuiltin @StarterContracts)
 --    shutdown <- PAB.Server.startServerDebug
     
 --    cidInit <- Core.activateContract (Wallet "xfs") InitLottoContract
@@ -52,9 +71,9 @@ main = do
 --defaultWallet :: Wallet
 --defaultWallet = knownWallet 1
 
-    logString @(Builtin StarterContracts) "********* PAB Server is running *********"
-    logString @(Builtin StarterContracts) "Activate Init Contract then press return"
-    void $ liftIO getLine
+--    logString @(Builtin StarterContracts) "********* PAB Server is running *********"
+--    logString @(Builtin StarterContracts) "Activate Init Contract then press return"
+--    void $ liftIO getLine
 
 
 

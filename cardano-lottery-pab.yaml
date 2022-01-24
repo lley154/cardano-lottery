@@ -32,7 +32,8 @@ nodeServerConfig:
     - getWallet: 1
     - getWallet: 2
     - getWallet: 3
-  pscNodeMode: MockNode
+  pscNodeMode: AlonzoNode
+  #pscNodeMode: MockNode
 
 chainIndexConfig:
   ciBaseUrl: http://localhost:9083

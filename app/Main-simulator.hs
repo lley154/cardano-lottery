@@ -89,6 +89,10 @@ main = void $ Simulator.runSimulationWith handlers $ do
     Simulator.logString @(Builtin StarterContracts) "useTT : "
     Simulator.logString @(Builtin StarterContracts) (show $ encode useTT)
 
+    let params = (sp, useTT)
+    Simulator.logString @(Builtin StarterContracts) "params : "
+    Simulator.logString @(Builtin StarterContracts) (show $ encode params)
+
     Simulator.logString @(Builtin StarterContracts) "Lotto init contract wallet 1 (lotto admin)"
     void $ liftIO getLine
 
