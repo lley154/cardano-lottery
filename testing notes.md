@@ -649,6 +649,11 @@ lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ curl -H "Content-T
 [pab:Warning:3177] [2022-01-24 17:36:52.77 UTC] WalletClientError "FailureResponse (Request {requestPath = (BaseUrl {baseUrlScheme = Http, baseUrlHost = \"127.0.0.1\", baseUrlPort = 46493, baseUrlPath = \"\"},\"/v2/wallets/5076b34c6949dbd150eb9c39039037543946bdce/transactions-sign\"), requestQueryString = fromList [], requestBody = Just ((),application/json;charset=utf-8), requestAccept = fromList [application/json;charset=utf-8,application/json], requestHeaders = fromList []), requestHttpVersion = HTTP/1.1, requestMethod = \"POST\"} (Response {responseStatusCode = Status {statusCode = 403, statusMessage = \"Forbidden\"}, responseHeaders = fromList [(\"Transfer-Encoding\",\"chunked\"),(\"Date\",\"Mon, 24 Jan 2022 17:36:52 GMT\"),(\"Server\",\"Warp/3.3.17\"),(\"Content-Type\",\"application/json;charset=utf-8\")], responseHttpVersion = HTTP/1.1, responseBody = \"{\\\"message\\\":\\\"The given encryption passphrase doesn't match the one I use to encrypt the root private key of the given wallet: 5076b34c6949dbd150eb9c39039037543946bdce\\\",\\\"code\\\":\\\"wrong_encryption_passphrase\\\"}\"})"
 
 
+cardano-wallet.api-server:Info:3966] [2022-01-24 17:36:52.70 UTC] {"string":"[RequestId 21] POST /v2/wallets/5076b34c6949dbd150eb9c39039037543946bdce/transactions-balance 202 Accepted in 0.069304522s"}
+[cardano-wallet.api-server:Info:3966] [2022-01-24 17:36:52.75 UTC] {"string":"[RequestId 22] [POST] /v2/wallets/5076b34c6949dbd150eb9c39039037543946bdce/transactions-sign"}
+[cardano-wallet.api-server:Info:3966] [2022-01-24 17:36:52.77 UTC] {"string":"[RequestId 22] POST /v2/wallets/5076b34c6949dbd150eb9c39039037543946bdce/transactions-sign 403 Forbidden in 0.019715701s"}
+
+
 
 lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ curl -H "Content-Type: application/json" --request POST -d @init.json localhost:9080/api/contract/instance/$INSTANCE_ID/endpoint/init
 []lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ 
@@ -955,3 +960,31 @@ lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ curl -s http://loc
     "getWalletId": "5076b34c6949dbd150eb9c39039037543946bdce"
   }
 }
+
+
+
+lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ curl -H "Content-Type: application/json" --request POST -d @init.json localhost:9080/api/contract/instance/$INSTANCE_ID/endpoint/init
+EndpointCallError (EndpointNotAvailable (ContractInstanceId {unContractInstanceId = fc05158c-c660-43a4-bcb9-c797d4ca604a}) (EndpointDescription {getEndpointDescription = "init"}))
+
+
+[pab:Warning:10018] [2022-01-24 19:27:03.40 UTC] WalletClientError "FailureResponse (Request {requestPath = (BaseUrl {baseUrlScheme = Http, baseUrlHost = \"127.0.0.1\", baseUrlPort = 46493, baseUrlPath = \"\"},\"/v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/transactions-balance\"), requestQueryString = fromList [], requestBody = Just ((),application/json;charset=utf-8), requestAccept = fromList [application/json;charset=utf-8,application/json], requestHeaders = fromList []), requestHttpVersion = HTTP/1.1, requestMethod = \"POST\"} (Response {responseStatusCode = Status {statusCode = 400, statusMessage = \"Bad Request\"}, responseHeaders = fromList [(\"Transfer-Encoding\",\"chunked\"),(\"Date\",\"Mon, 24 Jan 2022 19:27:03 GMT\"),(\"Server\",\"Warp/3.3.17\"),(\"Content-Type\",\"application/json;charset=utf-8\")], responseHttpVersion = HTTP/1.1, responseBody = \"{\\\"message\\\":\\\"I was unable to assign execution units to one of your redeemers: minting(f9fdc049adaa45b1043d31193dceb6127b31a8394cd0133f3231ef53); Its execution is failing with the following error: ValidationFailedV1 (CekError An error has occurred:  User error: The provided Plutus code called 'error'.) [\\\\\\\"S8\\\\\\\",\\\\\\\"PT5\\\\\\\"].\\\",\\\"code\\\":\\\"redeemer_script_failure\\\"}\"})"
+
+
+
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.08 UTC] {"string":"[RequestId 32] [GET] /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/keys/utxo_external/0?hash=true"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.08 UTC] {"string":"[RequestId 32] GET /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/keys/utxo_external/0 200 OK in 0.002541562s"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.12 UTC] {"string":"[RequestId 33] [POST] /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/transactions-balance"}
+[cardano-wallet.wallet-engine:Info:10934] [2022-01-24 19:27:03.12 UTC] {"string":"2d4cc31a: Selection report (summarized):\nSelectionReportSummarized:\n  computedFee: 0.131700\n  adaBalanceOfSelectedInputs: 20.000000\n  adaBalanceOfExtraCoinSource: 0.000000\n  adaBalanceOfExtraCoinSink: 0.000000\n  adaBalanceOfRequestedOutputs: 2.000000\n  adaBalanceOfGeneratedChangeOutputs: 17.868300\n  numberOfSelectedInputs: 1\n  numberOfSelectedCollateralInputs: 0\n  numberOfRequestedOutputs: 1\n  numberOfGeneratedChangeOutputs: 1\n  numberOfUniqueNonAdaAssetsInSelectedInputs: 0\n  numberOfUniqueNonAdaAssetsInRequestedOutputs: 0\n  numberOfUniqueNonAdaAssetsInGeneratedChangeOutputs: 0\n"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.12 UTC] {"string":"[RequestId 33] POST /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/transactions-balance 202 Accepted in 0.005562668s"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.17 UTC] {"string":"[RequestId 34] [GET] /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/keys/utxo_external/0?hash=true"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.17 UTC] {"string":"[RequestId 34] GET /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/keys/utxo_external/0 200 OK in 0.000887215s"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.38 UTC] {"string":"[RequestId 35] [POST] /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/transactions-balance"}
+[cardano-wallet.wallet-engine:Info:10934] [2022-01-24 19:27:03.39 UTC] {"string":"2d4cc31a: Selection report (summarized):\nSelectionReportSummarized:\n  computedFee: 1.491600\n  adaBalanceOfSelectedInputs: 100000.000000\n  adaBalanceOfExtraCoinSource: 0.000000\n  adaBalanceOfExtraCoinSink: 0.000000\n  adaBalanceOfRequestedOutputs: 10.000000\n  adaBalanceOfGeneratedChangeOutputs: 99988.508400\n  numberOfSelectedInputs: 1\n  numberOfSelectedCollateralInputs: 1\n  numberOfRequestedOutputs: 1\n  numberOfGeneratedChangeOutputs: 1\n  numberOfUniqueNonAdaAssetsInSelectedInputs: 0\n  numberOfUniqueNonAdaAssetsInRequestedOutputs: 1\n  numberOfUniqueNonAdaAssetsInGeneratedChangeOutputs: 0\n"}
+[cardano-wallet.api-server:Info:10934] [2022-01-24 19:27:03.40 UTC] {"string":"[RequestId 35] POST /v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/transactions-balance 400 Bad Request in 0.01885629s"}
+
+
+
+lawrence@lawrence-MacBookAir:~/Downloads/cardano-lottery/app$ curl -H "Content-Type: application/json" --request POST -d @init.json localhost:9080/api/contract/instance/$INSTANCE_ID/endpoint/init
+EndpointCallError (EndpointNotAvailable (ContractInstanceId {unContractInstanceId = fc05158c-c660-43a4-bcb9-c797d4ca604a}) (EndpointDescription {getEndpointDescription = "init"}))
+
+

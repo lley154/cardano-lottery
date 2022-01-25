@@ -2,12 +2,12 @@
     {
         "spAdmin": {
             "unPaymentPubKeyHash" : { 
-                                    "getPubKeyHash": "92504412c753ab1a177492e2a32a2ce4bdd343575e7454bff14c85d6"
+                                    "getPubKeyHash": "9ed7d88109a20fc0ffe82926040f0768a6bd1dbeceb8124a9050ff85"
             }
         },
         "spBenAddress" : { 
                 "unPaymentPubKeyHash" : {
-                                    "getPubKeyHash" : "92504412c753ab1a177492e2a32a2ce4bdd343575e7454bff14c85d6"
+                                    "getPubKeyHash" : "9ed7d88109a20fc0ffe82926040f0768a6bd1dbeceb8124a9050ff85"
                     }
         },
         "spJackpot"  : 10000000,

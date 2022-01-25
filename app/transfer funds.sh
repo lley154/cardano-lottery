@@ -61,3 +61,19 @@ curl --request POST \
             }
         ]
 }'
+
+curl --request POST \
+   --url http://localhost:46493/v2/wallets/5076b34c6949dbd150eb9c39039037543946bdce/transactions \
+   --header 'Content-Type: application/json' \
+   --data '{
+        "passphrase": "test123456",
+        "payments": [
+            {
+            "address": "addr1qx0d0kyppx3qls8laq5jvpq0qa52d0gahm8tsyj2jpg0lpvfl3say8wle02dgdjjhuzugrp5d7nefpc5ywm9q5khv9xqfyq43x",
+            "amount": {
+                "quantity": 20000000,
+                "unit": "lovelace"
+                }
+            }
+        ]
+}'

@@ -13,12 +13,12 @@
 module Main
     ( main
     ) where
-
+        
 
 import           Control.Monad                       (void)
 import           Control.Monad.Freer                 (interpret)
 import           Control.Monad.IO.Class              (MonadIO (..))
-import           Data.Aeson                          (Result (..), fromJSON, encode)
+import           Data.Aeson                          (Result (..), fromJSON)
 import           Data.Default                        (def)
 import qualified Data.Monoid                         as Monoid
 import           Ledger.Address                      (Address, PaymentPubKeyHash, pubKeyHashAddress)
@@ -34,12 +34,6 @@ import qualified Plutus.PAB.Webserver.Server         as PAB.Server
 import qualified Plutus.V1.Ledger.Slot               as Slot 
 import           Wallet.Emulator.Wallet              (Wallet, knownWallet)
 
-
-{-
-main :: IO ()
-main = do
-    runWith (Builtin.handleBuiltin @StarterContracts)
--}
 
 defaultWallet :: Wallet
 defaultWallet = knownWallet 1
@@ -83,20 +77,16 @@ main = void $ Simulator.runSimulationWith handlers $ do
             , spDeadline    = deadline'
             }
         useTT = True
-    
-    Simulator.logString @(Builtin StarterContracts) "sp parms: "
-    Simulator.logString @(Builtin StarterContracts) (show $ encode sp)
-    Simulator.logString @(Builtin StarterContracts) "useTT : "
-    Simulator.logString @(Builtin StarterContracts) (show $ encode useTT)
+
 
     let params = (sp, useTT)
     Simulator.logString @(Builtin StarterContracts) "params : "
-    Simulator.logString @(Builtin StarterContracts) (show $ encode params)
+    Simulator.logString @(Builtin StarterContracts) $ show params
 
     Simulator.logString @(Builtin StarterContracts) "Lotto init contract wallet 1 (lotto admin)"
     void $ liftIO getLine
 
-    void $ Simulator.callEndpointOnInstance cidInit "init" (sp, useTT)
+    void $ Simulator.callEndpointOnInstance cidInit "init" params
     Simulator.waitNSlots 5
 
     lotToken <- flip Simulator.waitForState cidInit $ \json -> case (fromJSON json :: Result (Monoid.Last Lottery.Lottery)) of
