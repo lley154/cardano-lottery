@@ -74,7 +74,7 @@ import qualified Prelude                      as Haskell
 newtype Lottery = Lottery
     { lToken          :: Maybe ThreadToken
     } deriving stock    (Haskell.Show, Generic)
-      deriving anyclass (ToJSON, FromJSON, OpenApi.ToSchema)
+      deriving anyclass (ToJSON, FromJSON, Playground.ToSchema)
       deriving newtype  (Haskell.Eq, Haskell.Ord)
 
 PlutusTx.makeLift ''Lottery
@@ -476,13 +476,13 @@ payoutLotto lot = do
 type LottoInitSchema =
         Endpoint "init"       (StartParams, Bool)
 type LottoUseSchema =
-        Endpoint "start"       StartParams
-    .\/ Endpoint "buy"         Integer
-    .\/ Endpoint "close"       Integer
-    .\/ Endpoint "redeem"      ()
-    .\/ Endpoint "collect"     ()
-    .\/ Endpoint "calc-payout" ()
-    .\/ Endpoint "payout"      ()
+        Endpoint "start"       (Lottery, StartParams)
+    .\/ Endpoint "buy"         (Lottery, Integer)
+    .\/ Endpoint "close"       (Lottery, Integer)
+    .\/ Endpoint "redeem"      (Lottery)
+    .\/ Endpoint "collect"     (Lottery)
+    .\/ Endpoint "calc-payout" (Lottery)
+    .\/ Endpoint "payout"      (Lottery)
 
     
 
@@ -492,13 +492,13 @@ initEndpoint = forever
               $ awaitPromise
               $ endpoint @"init" $ \(sp, useTT) -> initLotto sp useTT
 
-useEndpoints :: Lottery -> Contract () LottoUseSchema Text ()
-useEndpoints lot = forever $ handleError logError $ awaitPromise $ start `select` buy `select` close `select` redeem `select` collect `select` calc_payout `select` payout
+useEndpoints :: Contract () LottoUseSchema Text ()
+useEndpoints = forever $ handleError logError $ awaitPromise $ start `select` buy `select` close `select` redeem `select` collect `select` calc_payout `select` payout
   where
-    start        = endpoint @"start"       $ startLotto lot
-    buy          = endpoint @"buy"         $ buyTicket lot
-    close        = endpoint @"close"       $ closeLotto lot
-    redeem       = endpoint @"redeem"      $ const $ redeemLotto lot
-    collect      = endpoint @"collect"     $ const $ collectFees lot
-    calc_payout  = endpoint @"calc-payout" $ const $ calcPayoutLotto lot
-    payout       = endpoint @"payout"      $ const $ payoutLotto lot
+    start        = endpoint @"start"       $ \(lot, sp) -> startLotto lot sp
+    buy          = endpoint @"buy"         $ \(lot, tk) -> buyTicket lot tk
+    close        = endpoint @"close"       $ \(lot, tk) -> closeLotto lot tk
+    redeem       = endpoint @"redeem"      $ \(lot)     -> redeemLotto lot
+    collect      = endpoint @"collect"     $ \(lot)     -> collectFees lot
+    calc_payout  = endpoint @"calc-payout" $ \(lot)     -> calcPayoutLotto lot
+    payout       = endpoint @"payout"      $ \(lot)     -> payoutLotto lot

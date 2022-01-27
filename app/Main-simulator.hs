@@ -89,15 +89,15 @@ main = void $ Simulator.runSimulationWith handlers $ do
     void $ Simulator.callEndpointOnInstance cidInit "init" params
     Simulator.waitNSlots 5
 
-    lotToken <- flip Simulator.waitForState cidInit $ \json -> case (fromJSON json :: Result (Monoid.Last Lottery.Lottery)) of
-                    Success (Monoid.Last (Just lotToken))   -> Just lotToken
+    lot <- flip Simulator.waitForState cidInit $ \json -> case (fromJSON json :: Result (Monoid.Last Lottery.Lottery)) of
+                    Success (Monoid.Last (Just lot))   -> Just lot
                     _                                       -> Nothing
-    Simulator.logString @(Builtin StarterContracts) $ "Lotto found: " ++ show lotToken
+    Simulator.logString @(Builtin StarterContracts) $ "Lotto found: " ++ show lot
 
-    cid1 <- Simulator.activateContract defaultWallet $ UseLottoContract lotToken
-    cid2 <- Simulator.activateContract (knownWallet 2) $ UseLottoContract lotToken
-    cid3 <- Simulator.activateContract (knownWallet 3) $ UseLottoContract lotToken
-    cid4 <- Simulator.activateContract (knownWallet 4) $ UseLottoContract lotToken
+    cid1 <- Simulator.activateContract defaultWallet $ UseLottoContract
+    cid2 <- Simulator.activateContract (knownWallet 2) $ UseLottoContract
+    cid3 <- Simulator.activateContract (knownWallet 3) $ UseLottoContract
+    cid4 <- Simulator.activateContract (knownWallet 4) $ UseLottoContract
 
     let sp' = StartParams
             { spAdmin       = defaultWalletPaymentPubKeyHash
@@ -107,46 +107,88 @@ main = void $ Simulator.runSimulationWith handlers $ do
             , spDeadline    = deadline'
             }
 
+    let startParams = (lot, sp')
+    Simulator.logString @(Builtin StarterContracts) "start params : "
+    Simulator.logString @(Builtin StarterContracts) $ show startParams
+    
     Simulator.logString @(Builtin StarterContracts) "Lotto start contract wallet 1 (lotto admin)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid1 "start" sp'
+    void $ Simulator.callEndpointOnInstance cid1 "start" startParams
     Simulator.waitNSlots 5
+
+
+    let buyParams = (lot, 123::Integer)
+    Simulator.logString @(Builtin StarterContracts) "buy params : "
+    Simulator.logString @(Builtin StarterContracts) $ show buyParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto buy 123 contract wallet 2 (lotto player)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid2 "buy" (123 :: Integer)
+    void $ Simulator.callEndpointOnInstance cid2 "buy" buyParams
     Simulator.waitNSlots 5
+
+
+    let buyParams' = (lot, 789::Integer)
+    Simulator.logString @(Builtin StarterContracts) "buy params : "
+    Simulator.logString @(Builtin StarterContracts) $ show buyParams'
 
     Simulator.logString @(Builtin StarterContracts) "Lotto buy 789 contract wallet 3 (lotto player)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid3 "buy" (789 :: Integer)
+    void $ Simulator.callEndpointOnInstance cid3 "buy" buyParams'
     Simulator.waitNSlots 5
+
+    let closeParams = (lot, 123::Integer)
+    Simulator.logString @(Builtin StarterContracts) "close params : "
+    Simulator.logString @(Builtin StarterContracts) $ show closeParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto close 123 contract wallet 1 (lotto admin)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid1 "close" (123 :: Integer)
+    void $ Simulator.callEndpointOnInstance cid1 "close" closeParams
     Simulator.waitNSlots 5
 
+    
+    let redeemParams = (lot)
+    Simulator.logString @(Builtin StarterContracts) "redeem params : "
+    Simulator.logString @(Builtin StarterContracts) $ show redeemParams
+    
     Simulator.logString @(Builtin StarterContracts) "Lotto redeem contract wallet 2 (lotto player)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid2 "redeem" ()
+    void $ Simulator.callEndpointOnInstance cid2 "redeem" redeemParams
     Simulator.waitNSlots 5
+
+
+    let calcParams = (lot)
+    Simulator.logString @(Builtin StarterContracts) "calc params : "
+    Simulator.logString @(Builtin StarterContracts) $ show calcParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto calc-payout contract wallet 1 (lotto admin)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid1 "calc-payout" ()
+    void $ Simulator.callEndpointOnInstance cid1 "calc-payout" calcParams
     Simulator.waitNSlots 5
+
+    
+    let payoutParams = (lot)
+    Simulator.logString @(Builtin StarterContracts) "payout params : "
+    Simulator.logString @(Builtin StarterContracts) $ show payoutParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto payout contract wallet 2 (lotto player)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid2 "payout" ()
+    void $ Simulator.callEndpointOnInstance cid2 "payout" payoutParams
     Simulator.waitNSlots 5
+
+
+    let payParams = (lot)
+    Simulator.logString @(Builtin StarterContracts) "payout params : "
+    Simulator.logString @(Builtin StarterContracts) $ show payParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto payout contract wallet 4 (sponsor)"
     void $ liftIO getLine
-    void $ Simulator.callEndpointOnInstance cid4 "payout" ()
+    void $ Simulator.callEndpointOnInstance cid4 "payout" payParams
     Simulator.waitNSlots 5
 
+    --let collectParams = (lot)
+    --Simulator.logString @(Builtin StarterContracts) "collect params : "
+    --Simulator.logString @(Builtin StarterContracts) $ show collectParams
+    
     --Note: only collect fees if more than minimum amount of ada has been collected
     --Simulator.logString @(Builtin StarterContracts) "Lotto collect contract wallet 1 (lotto admin)"
     --void $ liftIO getLine

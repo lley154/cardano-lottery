@@ -23,9 +23,10 @@ import           Lottery
 import qualified Plutus.PAB.Effects.Contract.Builtin    as Builtin
 import           Prelude                                hiding (init)
 
-{-
+
 data StarterContracts = 
                         InitLottoContract
+                      | UseLottoContract
                       deriving (Eq, Ord, Show, Generic)
                       deriving anyclass OpenApi.ToSchema
                       deriving anyclass (FromJSON, ToJSON)
@@ -35,34 +36,13 @@ instance Pretty StarterContracts where
 
    
 instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [InitLottoContract]
-    getSchema =  \case  
-        InitLottoContract    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
-   
-    getContract = \case
-        InitLottoContract    -> Builtin.SomeBuiltin Lottery.initEndpoint
-
--}
-
-
-data StarterContracts = 
-                        InitLottoContract
-                      | UseLottoContract Lottery
-                      deriving (Eq, Ord, Show, Generic)
-                      deriving anyclass OpenApi.ToSchema
-                      deriving anyclass (FromJSON, ToJSON)
-
-instance Pretty StarterContracts where
-    pretty = viaShow
-
-   
-instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [InitLottoContract]
+    getDefinitions = [UseLottoContract,
+                      InitLottoContract ]
     getSchema =  \case
-        UseLottoContract _   -> Builtin.endpointsToSchemas @LottoUseSchema   
+        UseLottoContract     -> Builtin.endpointsToSchemas @LottoUseSchema   
         InitLottoContract    -> Builtin.endpointsToSchemas @LottoInitSchema
    
     getContract = \case
-        UseLottoContract lt  -> Builtin.SomeBuiltin $ useEndpoints lt
+        UseLottoContract     -> Builtin.SomeBuiltin useEndpoints
         InitLottoContract    -> Builtin.SomeBuiltin initEndpoint
 

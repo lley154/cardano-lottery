@@ -3,7 +3,7 @@ dbConfig:
     dbConfigPoolSize: 20
 
 pabWebserverConfig:
-  baseUrl: http://localhost:9180
+  baseUrl: http://localhost:9080
   staticDir: plutus-pab-client/dist
   permissiveCorsPolicy: False
   # Optional timeout (in seconds) for calls to endpoints that are not currently

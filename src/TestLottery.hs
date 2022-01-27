@@ -72,16 +72,16 @@ myTrace = do
             Extras.logInfo $ "found lottery " ++ show lot
 
             -- lotto admin wallet
-            h1 <- Emulator.activateContractWallet (knownWallet 1) $ useEndpoints lot
+            h1 <- Emulator.activateContractWallet (knownWallet 1) $ useEndpoints
             
             -- lotto player wallet
-            h2 <- Emulator.activateContractWallet (knownWallet 2) $ useEndpoints lot
+            h2 <- Emulator.activateContractWallet (knownWallet 2) $ useEndpoints
             
             -- lotto player wallet
-            h3 <- Emulator.activateContractWallet (knownWallet 3) $ useEndpoints lot
+            h3 <- Emulator.activateContractWallet (knownWallet 3) $ useEndpoints
             
             -- lotto sponsor wallet
-            h4 <- Emulator.activateContractWallet (knownWallet 4) $ useEndpoints lot
+            h4 <- Emulator.activateContractWallet (knownWallet 4) $ useEndpoints
             
             let sponsor_pkh = mockWalletPaymentPubKeyHash (knownWallet 4)            
                 sp' = StartParams
@@ -93,7 +93,7 @@ myTrace = do
                           }
 
             -- start lotto 
-            callEndpoint @"start" h1 sp'
+            callEndpoint @"start" h1 (lot, sp')
             void $ Emulator.waitNSlots 5
             let pkh' = mockWalletPaymentPubKeyHash (knownWallet 1)
 
@@ -103,7 +103,7 @@ myTrace = do
             
 
             -- lotto play to buy lotto ticket with number 123
-            callEndpoint @"buy" h2 123
+            callEndpoint @"buy" h2 (lot, 123)
             void $ Emulator.waitNSlots 5
             let pkh'' = mockWalletPaymentPubKeyHash (knownWallet 2)
 
@@ -111,43 +111,43 @@ myTrace = do
             Extras.logInfo $ "wallet 2 " ++ show (knownWallet 2)
                 
             
-            callEndpoint @"buy" h3 789
+            callEndpoint @"buy" h3 (lot, 789)
             void $ Emulator.waitNSlots 5
             
             -- try to close but not lotto admin            
-            -- callEndpoint @"close" h2 123
+            -- callEndpoint @"close" h2 (lot 123)
             -- void $ Emulator.waitNSlots 5
             
             -- lotto admin to close lotto with number 123
-            callEndpoint @"close" h1 123
+            callEndpoint @"close" h1 (lot, 123)
             void $ Emulator.waitNSlots 5
 
          
             -- lotto player to redeem ticket with winning number 123
-            callEndpoint @"redeem" h2 ()
+            callEndpoint @"redeem" h2 lot
             void $ Emulator.waitNSlots 5
             
             -- lotto player try to redeem but does not have a winning ticket
-            --callEndpoint @"redeem" h3 () 
+            --callEndpoint @"redeem" h3 lot
             --void $ Emulator.waitNSlots 5
             
             
             -- calculate payout
-            callEndpoint @"calc-payout" h1 () 
+            callEndpoint @"calc-payout" h1 lot
             void $ Emulator.waitNSlots 5
                         
             -- claim jackpot for lucky winner
-            callEndpoint @"payout" h2 () 
+            callEndpoint @"payout" h2 lot
             void $ Emulator.waitNSlots 5
             
             -- claim 50% of jackpot for the sponsor
-            callEndpoint @"payout" h4 () 
+            callEndpoint @"payout" h4 lot
             void $ Emulator.waitNSlots 5
             
             
             -- collect admin fees
             -- note: need to have minimum amount of ada in fees before collecting 
-            --callEndpoint @"collect" h1 ()
+            --callEndpoint @"collect" h1 lot
             --void $ Emulator.waitNSlots 5
         
             
