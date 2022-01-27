@@ -999,3 +999,651 @@ EndpointCallError (EndpointNotAvailable (ContractInstanceId {unContractInstanceI
 
 
 pab:Warning:1918] [2022-01-26 21:49:12.81 UTC] WalletClientError "FailureResponse (Request {requestPath = (BaseUrl {baseUrlScheme = Http, baseUrlHost = \"127.0.0.1\", baseUrlPort = 46493, baseUrlPath = \"\"},\"/v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-sign\"), requestQueryString = fromList [], requestBody = Just ((),application/json;charset=utf-8), requestAccept = fromList [application/json;charset=utf-8,application/json], requestHeaders = fromList []), requestHttpVersion = HTTP/1.1, requestMethod = \"POST\"} (Response {responseStatusCode = Status {statusCode = 403, statusMessage = \"Forbidden\"}, responseHeaders = fromList [(\"Transfer-Encoding\",\"chunked\"),(\"Date\",\"Wed, 26 Jan 2022 21:49:12 GMT\"),(\"Server\",\"Warp/3.3.17\"),(\"Content-Type\",\"application/json;charset=utf-8\")], responseHttpVersion = HTTP/1.1, responseBody = \"{\\\"message\\\":\\\"The given encryption passphrase doesn't match the one I use to encrypt the root private key of the given wallet: b6ac58e44f232e1fd863b7da0520b3c99d18bab5\\\",\\\"code\\\":\\\"wrong_encryption_passphrase\\\"}\"})"
+
+
+
+##################################### JAN 26 ########################################33
+pab:Info:2077] [2022-01-26 22:07:40.93 UTC] Initialising contract InitLottoContract with ID 89180b7e-d84a-41a7-a5c4-09a04a6dac2c
+[pab:Info:2077] [2022-01-26 22:07:40.93 UTC] Activated instance 89180b7e-d84a-41a7-a5c4-09a04a6dac2c on Wb6ac58e
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 1480}, tipBlockId = 86d57ff039b1cdd7dcfeeb760a4a7683bfefdf37ad0ade7ddc6ef737582b3dbf, tipBlockNo = BlockNumber {unBlockNumber = 668}}, targetPoint = Point {pointSlot = Slot {getSlot = 2085}, pointBlockId = f884df88dda0bd736c19c6f2c439763671cb48ccd0b7e09919bda86452e2eea6}})
+[pab:Info:2079] [2022-01-26 22:10:56.86 UTC] 89180b7e-d84a-41a7-a5c4-09a04a6dac2c: "lotto has been intialized Lottery {lToken = Just (ThreadToken {ttOutRef = TxOutRef {txOutRefId = 4db08b8c449cf658469eded2414924ddab35fa38599006f0fe308711b5050c98, txOutRefIdx = 0}, ttCurrencySymbol = 25b3ec827aa736b7a98d25d40092b421810eb27407939acf01c0024e})}"
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 2170}, tipBlockId = 1404b16bf526dd94a93213bf4c7bdf2b8a698096e2d1f84f499b6caa66fcf602, tipBlockNo = BlockNumber {unBlockNumber = 1031}}, targetPoint = Point {pointSlot = Slot {getSlot = 2883}, pointBlockId = dec2200cbea540de58b693f205d3cc1cabe8d0fa374009230ebb8a58ec770efe}
+
+
+curl -s http://localhost:9080/api/contract/definitions | jq
+
+
+[nix-shell:~/Downloads/cardano-lottery/app]$ curl -s http://localhost:9080/api/contract/definitions | jq
+[
+  {
+    "csrSchemas": [
+      {
+        "argument": {
+          "contents": [
+            {
+              "contents": [
+                [
+                  "spAdmin",
+                  {
+                    "contents": [
+                      [
+                        "unPaymentPubKeyHash",
+                        {
+                          "contents": [
+                            [
+                              "getPubKeyHash",
+                              {
+                                "tag": "FormSchemaString"
+                              }
+                            ]
+                          ],
+                          "tag": "FormSchemaObject"
+                        }
+                      ]
+                    ],
+                    "tag": "FormSchemaObject"
+                  }
+                ],
+                [
+                  "spBenAddress",
+                  {
+                    "contents": [
+                      [
+                        "unPaymentPubKeyHash",
+                        {
+                          "contents": [
+                            [
+                              "getPubKeyHash",
+                              {
+                                "tag": "FormSchemaString"
+                              }
+                            ]
+                          ],
+                          "tag": "FormSchemaObject"
+                        }
+                      ]
+                    ],
+                    "tag": "FormSchemaObject"
+                  }
+                ],
+                [
+                  "spDeadline",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ],
+                [
+                  "spTicket",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ],
+                [
+                  "spJackpot",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ]
+              ],
+              "tag": "FormSchemaObject"
+            },
+            {
+              "tag": "FormSchemaBool"
+            }
+          ],
+          "tag": "FormSchemaTuple"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "init"
+        }
+      }
+    ],
+    "csrDefinition": "InitLottoContract"
+  },
+  {
+    "csrSchemas": [
+      {
+        "argument": {
+          "contents": [
+            {
+              "contents": [
+                [
+                  "lToken",
+                  {
+                    "contents": {
+                      "contents": [
+                        [
+                          "ttOutRef",
+                          {
+                            "contents": [
+                              [
+                                "txOutRefId",
+                                {
+                                  "contents": [
+                                    [
+                                      "getTxId",
+                                      {
+                                        "tag": "FormSchemaString"
+                                      }
+                                    ]
+                                  ],
+                                  "tag": "FormSchemaObject"
+                                }
+                              ],
+                              [
+                                "txOutRefIdx",
+                                {
+                                  "tag": "FormSchemaInteger"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ],
+                        [
+                          "ttCurrencySymbol",
+                          {
+                            "contents": [
+                              [
+                                "unCurrencySymbol",
+                                {
+                                  "tag": "FormSchemaString"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ]
+                      ],
+                      "tag": "FormSchemaObject"
+                    },
+                    "tag": "FormSchemaMaybe"
+                  }
+                ]
+              ],
+              "tag": "FormSchemaObject"
+            },
+            {
+              "tag": "FormSchemaInteger"
+            }
+          ],
+          "tag": "FormSchemaTuple"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "buy"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            [
+              "lToken",
+              {
+                "contents": {
+                  "contents": [
+                    [
+                      "ttOutRef",
+                      {
+                        "contents": [
+                          [
+                            "txOutRefId",
+                            {
+                              "contents": [
+                                [
+                                  "getTxId",
+                                  {
+                                    "tag": "FormSchemaString"
+                                  }
+                                ]
+                              ],
+                              "tag": "FormSchemaObject"
+                            }
+                          ],
+                          [
+                            "txOutRefIdx",
+                            {
+                              "tag": "FormSchemaInteger"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ],
+                    [
+                      "ttCurrencySymbol",
+                      {
+                        "contents": [
+                          [
+                            "unCurrencySymbol",
+                            {
+                              "tag": "FormSchemaString"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ]
+                  ],
+                  "tag": "FormSchemaObject"
+                },
+                "tag": "FormSchemaMaybe"
+              }
+            ]
+          ],
+          "tag": "FormSchemaObject"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "calc-payout"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            {
+              "contents": [
+                [
+                  "lToken",
+                  {
+                    "contents": {
+                      "contents": [
+                        [
+                          "ttOutRef",
+                          {
+                            "contents": [
+                              [
+                                "txOutRefId",
+                                {
+                                  "contents": [
+                                    [
+                                      "getTxId",
+                                      {
+                                        "tag": "FormSchemaString"
+                                      }
+                                    ]
+                                  ],
+                                  "tag": "FormSchemaObject"
+                                }
+                              ],
+                              [
+                                "txOutRefIdx",
+                                {
+                                  "tag": "FormSchemaInteger"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ],
+                        [
+                          "ttCurrencySymbol",
+                          {
+                            "contents": [
+                              [
+                                "unCurrencySymbol",
+                                {
+                                  "tag": "FormSchemaString"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ]
+                      ],
+                      "tag": "FormSchemaObject"
+                    },
+                    "tag": "FormSchemaMaybe"
+                  }
+                ]
+              ],
+              "tag": "FormSchemaObject"
+            },
+            {
+              "tag": "FormSchemaInteger"
+            }
+          ],
+          "tag": "FormSchemaTuple"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "close"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            [
+              "lToken",
+              {
+                "contents": {
+                  "contents": [
+                    [
+                      "ttOutRef",
+                      {
+                        "contents": [
+                          [
+                            "txOutRefId",
+                            {
+                              "contents": [
+                                [
+                                  "getTxId",
+                                  {
+                                    "tag": "FormSchemaString"
+                                  }
+                                ]
+                              ],
+                              "tag": "FormSchemaObject"
+                            }
+                          ],
+                          [
+                            "txOutRefIdx",
+                            {
+                              "tag": "FormSchemaInteger"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ],
+                    [
+                      "ttCurrencySymbol",
+                      {
+                        "contents": [
+                          [
+                            "unCurrencySymbol",
+                            {
+                              "tag": "FormSchemaString"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ]
+                  ],
+                  "tag": "FormSchemaObject"
+                },
+                "tag": "FormSchemaMaybe"
+              }
+            ]
+          ],
+          "tag": "FormSchemaObject"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "collect"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            [
+              "lToken",
+              {
+                "contents": {
+                  "contents": [
+                    [
+                      "ttOutRef",
+                      {
+                        "contents": [
+                          [
+                            "txOutRefId",
+                            {
+                              "contents": [
+                                [
+                                  "getTxId",
+                                  {
+                                    "tag": "FormSchemaString"
+                                  }
+                                ]
+                              ],
+                              "tag": "FormSchemaObject"
+                            }
+                          ],
+                          [
+                            "txOutRefIdx",
+                            {
+                              "tag": "FormSchemaInteger"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ],
+                    [
+                      "ttCurrencySymbol",
+                      {
+                        "contents": [
+                          [
+                            "unCurrencySymbol",
+                            {
+                              "tag": "FormSchemaString"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ]
+                  ],
+                  "tag": "FormSchemaObject"
+                },
+                "tag": "FormSchemaMaybe"
+              }
+            ]
+          ],
+          "tag": "FormSchemaObject"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "payout"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            [
+              "lToken",
+              {
+                "contents": {
+                  "contents": [
+                    [
+                      "ttOutRef",
+                      {
+                        "contents": [
+                          [
+                            "txOutRefId",
+                            {
+                              "contents": [
+                                [
+                                  "getTxId",
+                                  {
+                                    "tag": "FormSchemaString"
+                                  }
+                                ]
+                              ],
+                              "tag": "FormSchemaObject"
+                            }
+                          ],
+                          [
+                            "txOutRefIdx",
+                            {
+                              "tag": "FormSchemaInteger"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ],
+                    [
+                      "ttCurrencySymbol",
+                      {
+                        "contents": [
+                          [
+                            "unCurrencySymbol",
+                            {
+                              "tag": "FormSchemaString"
+                            }
+                          ]
+                        ],
+                        "tag": "FormSchemaObject"
+                      }
+                    ]
+                  ],
+                  "tag": "FormSchemaObject"
+                },
+                "tag": "FormSchemaMaybe"
+              }
+            ]
+          ],
+          "tag": "FormSchemaObject"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "redeem"
+        }
+      },
+      {
+        "argument": {
+          "contents": [
+            {
+              "contents": [
+                [
+                  "lToken",
+                  {
+                    "contents": {
+                      "contents": [
+                        [
+                          "ttOutRef",
+                          {
+                            "contents": [
+                              [
+                                "txOutRefId",
+                                {
+                                  "contents": [
+                                    [
+                                      "getTxId",
+                                      {
+                                        "tag": "FormSchemaString"
+                                      }
+                                    ]
+                                  ],
+                                  "tag": "FormSchemaObject"
+                                }
+                              ],
+                              [
+                                "txOutRefIdx",
+                                {
+                                  "tag": "FormSchemaInteger"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ],
+                        [
+                          "ttCurrencySymbol",
+                          {
+                            "contents": [
+                              [
+                                "unCurrencySymbol",
+                                {
+                                  "tag": "FormSchemaString"
+                                }
+                              ]
+                            ],
+                            "tag": "FormSchemaObject"
+                          }
+                        ]
+                      ],
+                      "tag": "FormSchemaObject"
+                    },
+                    "tag": "FormSchemaMaybe"
+                  }
+                ]
+              ],
+              "tag": "FormSchemaObject"
+            },
+            {
+              "contents": [
+                [
+                  "spAdmin",
+                  {
+                    "contents": [
+                      [
+                        "unPaymentPubKeyHash",
+                        {
+                          "contents": [
+                            [
+                              "getPubKeyHash",
+                              {
+                                "tag": "FormSchemaString"
+                              }
+                            ]
+                          ],
+                          "tag": "FormSchemaObject"
+                        }
+                      ]
+                    ],
+                    "tag": "FormSchemaObject"
+                  }
+                ],
+                [
+                  "spBenAddress",
+                  {
+                    "contents": [
+                      [
+                        "unPaymentPubKeyHash",
+                        {
+                          "contents": [
+                            [
+                              "getPubKeyHash",
+                              {
+                                "tag": "FormSchemaString"
+                              }
+                            ]
+                          ],
+                          "tag": "FormSchemaObject"
+                        }
+                      ]
+                    ],
+                    "tag": "FormSchemaObject"
+                  }
+                ],
+                [
+                  "spDeadline",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ],
+                [
+                  "spTicket",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ],
+                [
+                  "spJackpot",
+                  {
+                    "tag": "FormSchemaInteger"
+                  }
+                ]
+              ],
+              "tag": "FormSchemaObject"
+            }
+          ],
+          "tag": "FormSchemaTuple"
+        },
+        "endpointDescription": {
+          "getEndpointDescription": "start"
+        }
+      }
+    ],
+    "csrDefinition": "UseLottoContract"
+  }
+]
+
+[pab:Info:1768] [2022-01-27 14:59:34.04 UTC] 7655417b-eb56-48c0-913f-56e235296dc5: "lotto has been intialized Lottery {lToken = Just (ThreadToken {ttOutRef = TxOutRef {txOutRefId = ede42dfb0526a4acc97088958648fdf56aed125cd633860aca977e3d2f193ff3, txOutRefIdx = 0}, ttCurrencySymbol = a291967c430b0a3a63b19463ae815f59c31b38685de69c704dcf5976})}"
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 1261}, tipBlockId = 8fcc5bc373c78a689c9e0d443a49a3a5f67f7da37f464c7ba39bb6fedfcb95a9, tipBlockNo = BlockNumber {unBlockNumber = 579}}, targetPoint = Point {pointSlot = Slot {getSlot = 1426}, pointBlockId = c9beab0836f0d37498501472aaf145093a1a9cf274ba854402338dbfdd3f4f88}})
+[pab:Info:2051] [2022-01-27 15:00:38.96 UTC] Initialising contract UseLottoContract with ID 4be96adf-f991-4fa2-ba0a-986217842056
+[pab:Info:2051] [2022-01-27 15:00:38.96 UTC] Activated instance 4be96adf-f991-4fa2-ba0a-986217842056 on Wb6ac58e
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 1261}, tipBlockId = 8fcc5bc373c78a689c9e0d443a49a3a5f67f7da37f464c7ba39bb6fedfcb95a9, tipBlockNo = BlockNumber {unBlockNumber = 579}}, targetPoint = Point {pointSlot = Slot {getSlot = 1924}, pointBlockId = 904ad009892f4db9de19c491b960ca9fc17f1c8181b73ddb171c8291d67abd88}})
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 1261}, tipBlockId = 8fcc5bc373c78a689c9e0d443a49a3a5f67f7da37f464c7ba39bb6fedfcb95a9, tipBlockNo = BlockNumber {unBlockNumber = 579}}, targetPoint = Point {pointSlot = Slot {getSlot = 2757}, pointBlockId = 90bfa028ac296359359d84ff2ba4579694df66eaa150af059349cab15a7d203f}})
+[pab:Info:2054] [2022-01-27 15:04:25.80 UTC] 4be96adf-f991-4fa2-ba0a-986217842056: "setting lotto sequence to start of winning ticket number "
+[cardano-wallet.api-server:Error:2304] [2022-01-27 15:04:25.94 UTC] {"string":"[RequestId 11] POST /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance 500 Internal Server Error in 0.053316004s"}
+[pab:Warning:2054] [2022-01-27 15:04:25.94 UTC] WalletClientError "FailureResponse (Request {requestPath = (BaseUrl {baseUrlScheme = Http, baseUrlHost = \"127.0.0.1\", baseUrlPort = 46493, baseUrlPath = \"\"},\"/v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance\"), requestQueryString = fromList [], requestBody = Just ((),application/json;charset=utf-8), requestAccept = fromList [application/json;charset=utf-8,application/json], requestHeaders = fromList []), requestHttpVersion = HTTP/1.1, requestMethod = \"POST\"} (Response {responseStatusCode = Status {statusCode = 500, statusMessage = \"Internal Server Error\"}, responseHeaders = fromList [(\"Transfer-Encoding\",\"chunked\"),(\"Date\",\"Thu, 27 Jan 2022 15:04:25 GMT\"),(\"Server\",\"Warp/3.3.17\"),(\"Content-Type\",\"application/json;charset=utf-8\")], responseHttpVersion = HTTP/1.1, responseBody = \"{\\\"message\\\":\\\"What was supposed to be an initial overestimation of fees turned out to be an underestimation, and I cannot recover. This is a cardano-wallet bug.\\\",\\\"code\\\":\\\"created_invalid_transaction\\\"}\"})"
+handleSyncAction failed with: RollbackFailure (TipMismatch {foundTip = Tip {tipSlot = Slot {getSlot = 1261}, tipBlockId = 8fcc5bc373c78a689c9e0d443a49a3a5f67f7da37f464c7ba39bb6fedfcb95a9, tipBlockNo = BlockNumber {unBlockNumber = 579}}, targetPoint = Point {pointSlot = Slot {getSlot = 4048}, pointBlockId = 80621bed6744bd709359e77a5569f2b3d52429365a0fd405d6665b9a0973576c}})
+

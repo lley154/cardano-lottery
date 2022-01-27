@@ -18,7 +18,8 @@ module Main
 import           Control.Monad                       (void)
 import           Control.Monad.Freer                 (interpret)
 import           Control.Monad.IO.Class              (MonadIO (..))
-import           Data.Aeson                          (Result (..), fromJSON)
+import           Data.Aeson                          (Result (..), fromJSON, encode)
+import qualified Data.ByteString.Lazy                as LB
 import           Data.Default                        (def)
 import qualified Data.Monoid                         as Monoid
 import           Ledger.Address                      (Address, PaymentPubKeyHash, pubKeyHashAddress)
@@ -94,6 +95,8 @@ main = void $ Simulator.runSimulationWith handlers $ do
                     _                                       -> Nothing
     Simulator.logString @(Builtin StarterContracts) $ "Lotto found: " ++ show lot
 
+    liftIO $ LB.writeFile "lotto.json" $ encode lot
+
     cid1 <- Simulator.activateContract defaultWallet $ UseLottoContract
     cid2 <- Simulator.activateContract (knownWallet 2) $ UseLottoContract
     cid3 <- Simulator.activateContract (knownWallet 3) $ UseLottoContract
@@ -110,6 +113,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let startParams = (lot, sp')
     Simulator.logString @(Builtin StarterContracts) "start params : "
     Simulator.logString @(Builtin StarterContracts) $ show startParams
+    liftIO $ LB.writeFile "start.json" $ encode startParams
     
     Simulator.logString @(Builtin StarterContracts) "Lotto start contract wallet 1 (lotto admin)"
     void $ liftIO getLine
@@ -120,6 +124,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let buyParams = (lot, 123::Integer)
     Simulator.logString @(Builtin StarterContracts) "buy params : "
     Simulator.logString @(Builtin StarterContracts) $ show buyParams
+    liftIO $ LB.writeFile "buy.json" $ encode buyParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto buy 123 contract wallet 2 (lotto player)"
     void $ liftIO getLine
@@ -139,6 +144,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let closeParams = (lot, 123::Integer)
     Simulator.logString @(Builtin StarterContracts) "close params : "
     Simulator.logString @(Builtin StarterContracts) $ show closeParams
+    liftIO $ LB.writeFile "close.json" $ encode closeParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto close 123 contract wallet 1 (lotto admin)"
     void $ liftIO getLine
@@ -149,6 +155,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let redeemParams = (lot)
     Simulator.logString @(Builtin StarterContracts) "redeem params : "
     Simulator.logString @(Builtin StarterContracts) $ show redeemParams
+    liftIO $ LB.writeFile "redeem.json" $ encode redeemParams
     
     Simulator.logString @(Builtin StarterContracts) "Lotto redeem contract wallet 2 (lotto player)"
     void $ liftIO getLine
@@ -159,6 +166,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let calcParams = (lot)
     Simulator.logString @(Builtin StarterContracts) "calc params : "
     Simulator.logString @(Builtin StarterContracts) $ show calcParams
+    liftIO $ LB.writeFile "calc.json" $ encode calcParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto calc-payout contract wallet 1 (lotto admin)"
     void $ liftIO getLine
@@ -169,6 +177,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
     let payoutParams = (lot)
     Simulator.logString @(Builtin StarterContracts) "payout params : "
     Simulator.logString @(Builtin StarterContracts) $ show payoutParams
+    liftIO $ LB.writeFile "payout.json" $ encode payoutParams
 
     Simulator.logString @(Builtin StarterContracts) "Lotto payout contract wallet 2 (lotto player)"
     void $ liftIO getLine

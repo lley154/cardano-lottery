@@ -24,8 +24,7 @@ import qualified Plutus.PAB.Effects.Contract.Builtin    as Builtin
 import           Prelude                                hiding (init)
 
 
-data StarterContracts = 
-                        InitLottoContract
+data StarterContracts = InitLottoContract
                       | UseLottoContract
                       deriving (Eq, Ord, Show, Generic)
                       deriving anyclass OpenApi.ToSchema
@@ -33,16 +32,16 @@ data StarterContracts =
 
 instance Pretty StarterContracts where
     pretty = viaShow
+ 
 
-   
 instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [UseLottoContract,
-                      InitLottoContract ]
+    getDefinitions = [ InitLottoContract, UseLottoContract ]
     getSchema =  \case
-        UseLottoContract     -> Builtin.endpointsToSchemas @LottoUseSchema   
         InitLottoContract    -> Builtin.endpointsToSchemas @LottoInitSchema
+        UseLottoContract     -> Builtin.endpointsToSchemas @LottoUseSchema   
    
     getContract = \case
-        UseLottoContract     -> Builtin.SomeBuiltin useEndpoints
         InitLottoContract    -> Builtin.SomeBuiltin initEndpoint
+        UseLottoContract     -> Builtin.SomeBuiltin useEndpoints
+     
 
