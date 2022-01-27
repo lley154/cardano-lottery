@@ -3,7 +3,7 @@ dbConfig:
     dbConfigPoolSize: 20
 
 pabWebserverConfig:
-  baseUrl: http://localhost:9080
+  baseUrl: http://localhost:9180
   staticDir: plutus-pab-client/dist
   permissiveCorsPolicy: False
   # Optional timeout (in seconds) for calls to endpoints that are not currently
@@ -14,11 +14,11 @@ pabWebserverConfig:
 walletServerConfig:
   tag: LocalWalletConfig
   walletSettings:
-    baseUrl: http://localhost:9081
+    baseUrl: http://localhost:46493
 
 nodeServerConfig:
-  pscBaseUrl: http://localhost:9082
-  pscSocketPath: ./node-server.sock
+  pscBaseUrl: http://localhost:2933
+  pscSocketPath: /run/user/1000/test-cluster5446/node/node-server.sock
   pscKeptBlocks: 100
   pscNetworkId: "1097911063" # Testnet network ID (main net = empty string)
   pscSlotConfig:

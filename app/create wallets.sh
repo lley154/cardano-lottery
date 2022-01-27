@@ -6,9 +6,11 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "name": "test_wallet_1",
-    "mnemonic_sentence": ["shift", "badge", "heavy", "action", "tube", "divide", "course", "quality", "capable", "velvet", "cart", "marriage", "vague", "aware", "maximum", "exist", "crime", "file", "analyst", "great", "cabbage", "course", "sad", "apology"],
-    "passphrase": "test123456"
+    "mnemonic_sentence": ["coin", "embrace", "brown", "before", "custom", "leaf", "source", "neck", "dizzy", "olympic", "lava", "kitchen", "govern", "home", "trigger", "risk", "buffalo", "any", "faint", "build", "kidney", "list", "lemon", "long"],
+    "passphrase": "cardano-wallet"
 }' | jq
+
+                      
 
 curl --request POST \
   --url http://localhost:46493/v2/wallets \

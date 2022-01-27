@@ -8,7 +8,7 @@ curl -H "Content-Type: application/json" --request POST -d @init.json localhost:
 
 
 
-curl http://127.0.0.1:46493/v2/wallets/2d4cc31a4b3116ab86bfe529d30d9c362acd0b44/addresses
+curl http://127.0.0.1:46493/v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/addresses
 
 
 curl http://127.0.0.1:46493/v2/addresses/addr1qx0d0kyppx3qls8laq5jvpq0qa52d0gahm8tsyj2jpg0lpvfl3say8wle02dgdjjhuzugrp5d7nefpc5ywm9q5khv9xqfyq43x

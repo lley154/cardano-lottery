@@ -72,7 +72,7 @@ source-repository-package
     plutus-pab
     plutus-use-cases
     quickcheck-dynamic
-  tag: v2022-01-17
+  tag: c330fc60d0cd174743c95de71e5c404b5008f186
 
 
 -- Copied from plutus-core
