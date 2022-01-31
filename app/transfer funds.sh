@@ -2,6 +2,13 @@
 
 curl http://localhost:46493/v2/wallets/ | jq
 
+curl http://cardano-server:8090/v2/wallets/ | jq
+
+
+curl --request GET \
+     --url 'http://cardano-server:8090/v2/wallets/92d1ad83159ce811e76c5cf1780222bb72678c8e/addresses?state=unused'
+
+
 
 curl --request GET \
      --url 'http://localhost:46493/v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/addresses?state=unused'

@@ -2,11 +2,11 @@
     {
         "lToken": {
             "ttCurrencySymbol": {
-                "unCurrencySymbol":"a291967c430b0a3a63b19463ae815f59c31b38685de69c704dcf5976"
+                "unCurrencySymbol":"4eef8f46dce141fa2d80dcde320c9507febbc11545fb7af002ae43cb"
             },
                 "ttOutRef": {
                     "txOutRefId": {
-                        "getTxId":"ede42dfb0526a4acc97088958648fdf56aed125cd633860aca977e3d2f193ff3"
+                        "getTxId":"aa08f1043563c3ba33402cae04a2605ceffe69982c88ac4ceb47bbb20e90934a"
                     },
                         "txOutRefIdx":0
                 }
