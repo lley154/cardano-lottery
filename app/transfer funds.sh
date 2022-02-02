@@ -8,6 +8,9 @@ curl http://cardano-server:8090/v2/wallets/ | jq
 curl --request GET \
      --url 'http://cardano-server:8090/v2/wallets/92d1ad83159ce811e76c5cf1780222bb72678c8e/addresses?state=unused'
 
+curl --request GET \
+     --url 'http://cardano-server:8090/v2/wallets/92d1ad83159ce811e76c5cf1780222bb72678c8e/addresses' | jq
+
 
 
 curl --request GET \

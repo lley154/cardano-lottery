@@ -69,7 +69,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
 
     let jackpot'   = 10000000 -- 10 Ada
         ticket'    = 20000    -- 0.02 Ada (base amount * 100 = 2 Ada)
-        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 5000)
+        deadline'  = TimeSlot.slotToEndPOSIXTime slotCfg (Slot.Slot 50000)
         sp         = StartParams
             { spAdmin       = defaultWalletPaymentPubKeyHash
             , spBenAddress  = defaultWalletPaymentPubKeyHash

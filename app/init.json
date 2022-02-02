@@ -2,17 +2,17 @@
     {
         "spAdmin": {
             "unPaymentPubKeyHash" : { 
-                                    "getPubKeyHash": "a88b42323f715b0b5f82983a35769b71cf95da7b2950e27fcb72988d"
+                                    "getPubKeyHash": "f9a1ec3877a529c78c5d5fa437a11a30fbb3ee03fd082629a5c291a3"
             }
         },
         "spBenAddress" : { 
                 "unPaymentPubKeyHash" : {
-                                    "getPubKeyHash" : "a88b42323f715b0b5f82983a35769b71cf95da7b2950e27fcb72988d"
+                                    "getPubKeyHash" : "f9a1ec3877a529c78c5d5fa437a11a30fbb3ee03fd082629a5c291a3"
                     }
         },
         "spJackpot"  : 10000000,
         "spTicket"   : 20000,
-        "spDeadline" : 1596064091999
+        "spDeadline" : 1596109091999
     },
     true
 ]

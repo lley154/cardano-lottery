@@ -2867,3 +2867,38 @@ Slotting parameters for tip are:
  Epoch length:       432000
  Active slot coeff:  5.0e-2
  Security parameter: 2160 block
+
+
+
+ ####################################### Jan 31 #################################
+
+simpleproxy -L localhost:8090 -R localhost:46493
+
+
+ export SHELLEY_TEST_DATA=~/src/plutus-apps/plutus-pab/local-cluster/cluster-data/cardano-node-shelley
+
+$ cabal build cardano-lottery-pab-run
+$ cabal exec cardano-lottery-pab-run
+
+
+cardano-wallet.network:Info:1376] [2022-02-01 01:51:20.78 UTC] {"string":"Protocol parameters for tip are:\n Decentralization level: 75.00%\n Transaction parameters: [Fee policy: 100000.0 + 100.0x, Tx max size: 16384, max exec units: max steps: 100000000000, max memory: 100000000]\n Desired number of pools: 3\n Minimum UTxO value: 0.034482 per word\n Eras:\n   - byron from -0\n   - shelley from -0\n   - allegra from -0\n   - mary from -0\n   - alonzo from -0\n Execution unit prices: 721 % 10000000 per step, 577 % 10000 per memory unit\n\nSlotting parameters for tip are:\n Slot length:        0.2s\n Epoch length:       100\n Active slot coeff:  0.5\n Security parameter: 5 block\n\n"}
+[c
+
+InitLotto - init endpoint
+
+[cardano-wallet.wallet-engine:Info:1883] [2022-02-01 02:37:04.86 UTC] {"string":"Submitting external transaction 43b65435 to local node..."}
+[cardano-wallet.wallet-engine:Info:1883] [2022-02-01 02:37:04.87 UTC] {"string":"Transaction 43b65435 accepted by local node\ntx:\n  43b65435\n  collateral 1st 410d1022\n  inputs 1st 410d1022\n  outputs address: 71920283...f3293571\n          coin: 10.000000\n          tokens:\n            - policy: 88eca2a9a3923342231def085b50c8f9467e2842c3cdb14207a1fc4d\n              tokens:\n                - token: 920283987ab7e8039e6d2cd3b6a5c884b576fd45f45b8fe4f3293571\n                  quantity: 1\n  outputs address: 012cbd70...7e11d40c\n          coin: 989.512866\n          tokens: []\n  []\n  metadata:\n  scriptValidity: valid\n"}
+[cardano-wallet.api-server:Info:1883] [2022-02-01 02:37:04.87 UTC] {"string":"[RequestId 19] POST /v2/proxy/transactions 202 Accepted in 0.014267784s"}
+[cardano-wallet.wallet-engine:Info:1811] [2022-02-01 02:37:05.33 UTC] {"string":"09d26cc1: discovered 1 new transaction(s)"}
+
+
+
+UseLottoContract - start endpoint
+
+[cardano-wallet.wallet-engine:Error:1920] [2022-02-01 02:45:18.79 UTC] {"string":"Transaction c2ba5716 failed: TxValidationErrorInMode (ShelleyTxValidationError ShelleyBasedEraAlonzo (ApplyTxError [UtxowFailure (WrappedShelleyEraFailure (UtxoFailure (UtxosFailure (ValidationTagMismatch (IsValid True) (FailedUnexpectedly [PlutusFailure \"\\nThe 3 arg plutus script (PlutusScript PlutusV1 ScriptHash \\\"920283987ab7e8039e6d2cd3b6a5c884b576fd45f45b8fe4f3293571\\\") fails.\\nCekError An error has occurred:  User error:\\nThe budget was overspent. Final negative state: ({ cpu: -6916 | mem: 0 }
+
+plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs
+
+
+https://github.com/input-output-hk/cardano-node/issues/3470
+
