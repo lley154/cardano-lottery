@@ -3055,3 +3055,27 @@ Time spent executing builtins:  0.00%
 Total budget spent:          208511              800
 Predicted execution time: 208.511 ns
 
+
+[nix-shell:~/src/cardano-lottery/scripts/tmp]$ ls -l *.json
+-rw-r--r-- 1 lawrence lawrence   242 Feb  3 20:55 benchmark-test-1.json
+-rw-r--r-- 1 lawrence lawrence   914 Feb  3 20:55 benchmark-test-10.json
+-rw-r--r-- 1 lawrence lawrence   914 Feb  3 20:55 benchmark-test-2.json
+-rw-r--r-- 1 lawrence lawrence   242 Feb  3 20:55 benchmark-test-3.json
+-rw-r--r-- 1 lawrence lawrence   914 Feb  3 20:55 benchmark-test-4.json
+-rw-r--r-- 1 lawrence lawrence   242 Feb  3 20:55 benchmark-test-5.json
+-rw-r--r-- 1 lawrence lawrence   914 Feb  3 20:55 benchmark-test-6.json
+-rw-r--r-- 1 lawrence lawrence   242 Feb  3 20:55 benchmark-test-7.json
+-rw-r--r-- 1 lawrence lawrence   914 Feb  3 20:55 benchmark-test-8.json
+-rw-r--r-- 1 lawrence lawrence   242 Feb  3 20:55 benchmark-test-9.json
+-rw-r--r-- 1 lawrence lawrence   168 Feb  3 20:55 cardano-lottery-test-1.json
+-rw-r--r-- 1 lawrence lawrence 43001 Feb  3 20:55 cardano-lottery-test-10.json
+-rw-r--r-- 1 lawrence lawrence  6837 Feb  3 20:55 cardano-lottery-test-2.json
+-rw-r--r-- 1 lawrence lawrence 43067 Feb  3 20:55 cardano-lottery-test-3.json
+-rw-r--r-- 1 lawrence lawrence 47744 Feb  3 20:55 cardano-lottery-test-4.json
+-rw-r--r-- 1 lawrence lawrence 47760 Feb  3 20:55 cardano-lottery-test-5.json
+-rw-r--r-- 1 lawrence lawrence 42797 Feb  3 20:55 cardano-lottery-test-6.json
+-rw-r--r-- 1 lawrence lawrence 43073 Feb  3 20:55 cardano-lottery-test-7.json
+-rw-r--r-- 1 lawrence lawrence 43013 Feb  3 20:55 cardano-lottery-test-8.json
+-rw-r--r-- 1 lawrence lawrence 43149 Feb  3 20:55 cardano-lottery-test-9.json
+
+

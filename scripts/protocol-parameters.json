@@ -20,7 +20,7 @@
     },
     "maxBlockHeaderSize": 1100,
     "costModels": {
-        "PlutusV1": {
+        "PlutusScriptV1": {
             "sha2_256-memory-arguments": 4,
             "equalsString-cpu-arguments-constant": 1000,
             "cekDelayCost-exBudgetMemory": 100,
