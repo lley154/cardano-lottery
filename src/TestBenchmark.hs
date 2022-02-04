@@ -21,12 +21,8 @@ module TestBenchmark
 
 import           Control.Monad              hiding (fmap)
 import           Control.Monad.Freer.Extras as Extras
---import           Data.Monoid                (Last (..))
---import           Data.Default               (Default (def))
---import           Ledger                     (Slot (..))
 import           Ledger.Value()
 import           Ledger.Ada                 as Ada()
---import qualified Ledger.TimeSlot            as TimeSlot
 import           Benchmark
 import           Plutus.Contract.Test
 import           Plutus.Trace.Emulator      as Emulator

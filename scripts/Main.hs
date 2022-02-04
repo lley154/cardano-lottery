@@ -6,6 +6,7 @@
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies       #-}
+{-# OPTIONS_GHC -fplugin-opt PlutusTx.Plugin:profile-all #-}
 
 module Main(main, ExportTx(..)) where
 
@@ -76,7 +77,7 @@ writeScripts config = do
           --       have a proper implementation.
           --  ("auction_1", Auction.auctionTrace1, Auction.auctionEmulatorCfg)
           --, ("auction_2", Auction.auctionTrace2, Auction.auctionEmulatorCfg)
-          --("cardano-lottery-test", TestLottery.myTrace, def),
+          ("cardano-lottery-test", TestLottery.myTrace, def),
           ("benchmark-test", TestBenchmark.myTrace, def)
 
         ]

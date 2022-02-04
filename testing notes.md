@@ -2900,5 +2900,158 @@ UseLottoContract - start endpoint
 plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs
 
 
+[nix-shell:~/src/plutus/plutus-core]$ cabal run uplc evaluate -- -i /home/lawrence/src/cardano-lottery/scripts/tmp/cardano-lottery-test-2-unapplied.flat --if flat -R 23850000:80018 --trace-mode LogsWithBudgets -o logs
+Up to date
+An error has occurred:  User error:
+The budget was overspent. Final negative state: ({ cpu: -2813 | mem: 1690 })
+
+
 https://github.com/input-output-hk/cardano-node/issues/3470
+
+Writing scripts (unapplied) to: ./tmp
+Writing script: ./tmp/cardano-lottery-test-1-unapplied.flat (Size: 2.5kB, Cost: ExCPU 245405256, ExMemory 585456)
+Writing script: ./tmp/cardano-lottery-test-2-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1210722592, ExMemory 3617426)
+Writing script: ./tmp/cardano-lottery-test-3-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1695580961, ExMemory 5191004)
+Writing script: ./tmp/cardano-lottery-test-4-unapplied.flat (Size: 2.2kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-5-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1695580961, ExMemory 5191004)
+Writing script: ./tmp/cardano-lottery-test-6-unapplied.flat (Size: 2.2kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-7-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1098159101, ExMemory 3263864)
+Writing script: ./tmp/cardano-lottery-test-8-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1777118021, ExMemory 5400028)
+Writing script: ./tmp/cardano-lottery-test-9-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1254850804, ExMemory 3764091)
+Writing script: ./tmp/cardano-lottery-test-10-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1144430837, ExMemory 3460284)
+Writing script: ./tmp/cardano-lottery-test-11-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1127904562, ExMemory 3412392)
+Writing script: ./tmp/benchmark-test-1-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-2-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-3-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-4-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-5-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Total Size: 83.8kB, Cost: ExCPU 11903650343, ExMemory 35404609
+
+
+[nix-shell:~/src/cardano-lottery/scripts]$ cabal run cardano-lottery-scripts -- ./tmp scripts --unapplied-validators
+Up to date
+Writing scripts (unapplied) to: ./tmp
+Writing script: ./tmp/cardano-lottery-test-1-unapplied.flat (Size: 2.5kB, Cost: ExCPU 245405256, ExMemory 585456)
+Writing script: ./tmp/cardano-lottery-test-2-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1210722592, ExMemory 3617426)
+Writing script: ./tmp/cardano-lottery-test-3-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1695580961, ExMemory 5191004)
+Writing script: ./tmp/cardano-lottery-test-4-unapplied.flat (Size: 2.2kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-5-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1695580961, ExMemory 5191004)
+Writing script: ./tmp/cardano-lottery-test-6-unapplied.flat (Size: 2.2kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-7-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1098159101, ExMemory 3263864)
+Writing script: ./tmp/cardano-lottery-test-8-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1777118021, ExMemory 5400028)
+Writing script: ./tmp/cardano-lottery-test-9-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1254850804, ExMemory 3764091)
+Writing script: ./tmp/cardano-lottery-test-10-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1144430837, ExMemory 3460284)
+Writing script: ./tmp/cardano-lottery-test-11-unapplied.flat (Size: 9.6kB, Cost: ExCPU 1127904562, ExMemory 3412392)
+Writing script: ./tmp/benchmark-test-1-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-2-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-3-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-4-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-5-unapplied.flat (Size: 0.0kB, Cost: ExCPU 476468, ExMemory 1700)
+Total Size: 83.8kB, Cost: ExCPU 11903650343, ExMemory 
+
+[nix-shell:~/src/cardano-lottery/scripts]$ cabal run cardano-lottery-scripts -- ./tmp scripts        
+Up to date
+Writing scripts (fully applied) to: ./tmp
+Writing script: ./tmp/cardano-lottery-test-1.flat (Size: 3.3kB, Cost: ExCPU 245405256, ExMemory 585456)
+Writing script: ./tmp/cardano-lottery-test-2.flat (Size: 21.0kB, Cost: ExCPU 1752444707, ExMemory 4693358)
+Writing script: ./tmp/cardano-lottery-test-3.flat (Size: 21.1kB, Cost: ExCPU 2496320549, ExMemory 6781164)
+Writing script: ./tmp/cardano-lottery-test-4.flat (Size: 3.3kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-5.flat (Size: 21.1kB, Cost: ExCPU 2496320549, ExMemory 6781164)
+Writing script: ./tmp/cardano-lottery-test-6.flat (Size: 3.3kB, Cost: ExCPU 325757454, ExMemory 755280)
+Writing script: ./tmp/cardano-lottery-test-7.flat (Size: 21.0kB, Cost: ExCPU 1595223031, ExMemory 4251136)
+Writing script: ./tmp/cardano-lottery-test-8.flat (Size: 21.4kB, Cost: ExCPU 2622515794, ExMemory 7078848)
+Writing script: ./tmp/cardano-lottery-test-9.flat (Size: 21.1kB, Cost: ExCPU 1852910937, ExMemory 4951871)
+Writing script: ./tmp/cardano-lottery-test-10.flat (Size: 21.0kB, Cost: ExCPU 1678595413, ExMemory 4521212)
+Writing script: ./tmp/cardano-lottery-test-11.flat (Size: 20.9kB, Cost: ExCPU 1654511599, ExMemory 4458316)
+Writing script: ./tmp/benchmark-test-1.flat (Size: 0.4kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-2.flat (Size: 0.4kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-3.flat (Size: 0.4kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-4.flat (Size: 0.4kB, Cost: ExCPU 476468, ExMemory 1700)
+Writing script: ./tmp/benchmark-test-5.flat (Size: 0.4kB, Cost: ExCPU 476468, ExMemory 1700)
+Total Size: 180.7kB, Cost: ExCPU 17048145083, ExMemory 45621585
+
+
+
+[nix-shell:~/src/plutus/plutus-core]$ cabal run uplc evaluate -- -i /home/lawrence/src/cardano-lottery/scripts/tmp/cardano-lottery-test-2-unapplied.flat --if flat -t --trace-mode LogsWithBudgets -o logs
+Up to date
+CPU budget:    32585382
+Memory budget: 103884
+
+Const               803871             2700
+Var                1250466             4200
+LamAbs            13576488            45600
+Apply              9914409            33300
+Delay              3840717            12900
+Force              1042055             3500
+Builtin             357276             1200
+
+startup                100              100
+compute           30785282           103400
+AST nodes            13910
+
+BuiltinApp         1800000              384
+Time spent executing builtins:  5.52%
+
+
+Trace                          1800000              384
+
+Total budget spent:        32585382           103884
+Predicted execution time: 32.585 μs
+
+[nix-shell:~/src/plutus/plutus-core]$ cat logs
+entering fUnsafeFromDataMaybe,6104700,20132
+exiting fUnsafeFromDataMaybe,6254700,20164
+entering cunsafeFromBuiltinData,6404700,20196
+exiting cunsafeFromBuiltinData,6554700,20228
+entering mkLottoValidator,24568500,80260
+entering fToDataMaybe,24718500,80292
+exiting fToDataMaybe,24868500,80324
+entering ctoBuiltinData,25018500,80356
+exiting ctoBuiltinData,31123100,100388
+entering lottoStateMachine,31273100,100420
+exiting lottoStateMachine,31423100,100452
+exiting mkLottoValidator,31573100,100484
+[nix-shell:~/src/plutus/plutus-core]$ 
+
+
+entering	fUnsafeFromDataMaybe	6104700	20132
+exiting	fUnsafeFromDataMaybe	6254700	20164
+entering	cunsafeFromBuiltinData	6404700	20196
+exiting	cunsafeFromBuiltinData	6554700	20228
+entering	mkLottoValidator	24568500	80260
+entering	fToDataMaybe	24718500	80292
+exiting	fToDataMaybe	24868500	80324
+entering	ctoBuiltinData	25018500	80356
+exiting	ctoBuiltinData	31123100	100388
+entering	lottoStateMachine	31273100	100420
+exiting	lottoStateMachine	31423100	100452
+exiting	mkLottoValidator	31573100	100484
+			
+		                      249885200	803696
+
+
+[nix-shell:~/src/plutus/plutus-core]$ cabal run uplc evaluate -- -i /home/lawrence/src/cardano-lottery/scripts/tmp/benchmark-test-1-unapplied.flat --if flat -t --trace-mode LogsWithBudgets -o logs
+Up to date
+CPU budget:    208511
+Memory budget: 800
+
+Const                    0                0
+Var                      0                0
+LamAbs              119092              400
+Apply                59546              200
+Delay                29773              100
+Force                    0                0
+Builtin                  0                0
+
+startup                100              100
+compute             208411              700
+AST nodes               13
+
+BuiltinApp               0                0
+Time spent executing builtins:  0.00%
+
+
+
+Total budget spent:          208511              800
+Predicted execution time: 208.511 ns
 

@@ -14,7 +14,6 @@ import           Data.Map            as Map
 import           Data.Text           (Text)
 import           Data.Void           (Void)
 import           Plutus.Contract
---import           PlutusTx            (Data (..))
 import qualified PlutusTx
 import qualified PlutusTx.Builtins   as Builtins
 import           PlutusTx.Prelude    hiding (Semigroup(..), unless)
@@ -22,10 +21,7 @@ import           Ledger              hiding (singleton)
 import           Ledger.Constraints  as Constraints
 import qualified Ledger.Scripts      as Scripts
 import           Ledger.Ada          as Ada
---import           Playground.Contract (printJson, printSchemas, ensureKnownCurrencies, stage)
---import           Playground.TH       (mkKnownCurrencies, mkSchemaDefinitions)
---import           Playground.Types    (KnownCurrency (..))
-import           Prelude             (Semigroup (..), String)
+import           Prelude             (Semigroup (..), String, show)
 import           Text.Printf         (printf)
 
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
@@ -63,6 +59,7 @@ grab = do
         tx :: TxConstraints Void Void
         tx      = mconcat [mustSpendScriptOutput oref $ Redeemer $ Builtins.mkI 17 | oref <- orefs]
     ledgerTx <- submitTxConstraintsWith @Void lookups tx
+    logInfo @String $ "utxos: " ++ show utxos
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
     logInfo @String $ "collected gifts"
 

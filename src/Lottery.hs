@@ -25,6 +25,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE LambdaCase #-}
+ {-# OPTIONS_GHC -fplugin-opt PlutusTx.Plugin:profile-all #-}
 
 module Lottery
     ( Lottery (..)

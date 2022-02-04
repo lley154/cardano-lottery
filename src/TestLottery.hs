@@ -11,6 +11,7 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
+{-# OPTIONS_GHC -fplugin-opt PlutusTx.Plugin:profile-all #-}
 
 
 module TestLottery

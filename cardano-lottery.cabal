@@ -89,7 +89,6 @@ executable cardano-lottery-pab-sim
     text -any,
     bytestring -any
  
- 
 executable cardano-lottery-pab-run
   import: lang
   main-is: Main-run.hs
@@ -168,3 +167,28 @@ executable cardano-lottery-scripts
 
     if !(impl(ghcjs) || os(ghcjs))
         build-depends: plutus-tx-plugin -any
+
+
+executable cardano-benchmark-pab-sim
+  import: lang
+  main-is: Bench-simulator.hs
+  hs-source-dirs: app
+  other-modules: BenchContract
+  ghc-options:
+    -threaded
+  build-depends:
+    base >= 4.9 && < 5,
+    aeson -any,
+    cardano-lottery -any,
+    data-default -any,
+    freer-simple -any,
+    freer-extras -any,
+    openapi3 -any,
+    plutus-contract -any,
+    plutus-ledger-api -any,
+    plutus-pab -any,
+    prettyprinter -any,
+    plutus-ledger -any,
+    req ^>= 3.9.0,
+    text -any,
+    bytestring -any
