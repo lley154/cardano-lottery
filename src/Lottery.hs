@@ -180,10 +180,11 @@ initLotto s@LottoDatum{sequence} = do
     ownPK <- ownPaymentPubKeyHash
     utxo <- utxosAt (Ledger.pubKeyHashAddress ownPK Nothing)
 
-    let red = Redeemer (PlutusTx.toBuiltinData (Scripts.validatorHash lottoValidator, Mint))
+    let mph         = Scripts.forwardingMintingPolicyHash lottoValidator
+        red = Redeemer (PlutusTx.toBuiltinData (Scripts.validatorHash lottoValidator, Mint))
         ttPolicy = TT.curPolicy $ ttOutRef tt
         --lookups     = Constraints.mintingPolicy curVali
-        constraints = Constraints.mustPayToTheScript s (Ada.lovelaceValueOf sequence)
+        constraints = Constraints.mustPayToTheScript s ((Ada.lovelaceValueOf sequence) <> threadTokenValueInner (Just tt) (Scripts.validatorHash lottoValidator))
             <> Constraints.mustMintValueWithRedeemer red (threadTokenValueInner (Just tt) (Scripts.validatorHash lottoValidator))
             <> Constraints.mustSpendPubKeyOutput (ttOutRef tt)
             <> Constraints.mustBeSignedBy ownPK
@@ -198,6 +199,7 @@ initLotto s@LottoDatum{sequence} = do
     --                <> "Found a transaction output value with less than the minimum amount of Ada. Adjusting ..."
     submitTxConfirmed adjustedUtx
     logInfo $ "initLotto: tx submitted successfully " ++ Haskell.show adjustedUtx
+    logInfo $ "initLotto: mph " ++ Haskell.show mph
 
     {-
 
@@ -289,6 +291,8 @@ buyTicket tn = do
     txOutRef <- getUnspentOutput
 
     logInfo $ "BuyTicket: txOutRefs= " ++ Haskell.show txOutRef
+
+    {-
     utxos <- utxosAt (Scripts.validatorAddress lottoValidator)
 
     let mph         = Scripts.forwardingMintingPolicyHash lottoValidator
@@ -300,7 +304,7 @@ buyTicket tn = do
                         <> Constraints.mustMintValue (lottoTicketMphValue mph tn)
     tx <- submitTxConstraintsWith @Scripts.Any lookups mintTx
     _ <- awaitTxConfirmed (getCardanoTxId tx)
-
+    -}
     {-
 
     pkh <- ownPaymentPubKeyHash
@@ -317,7 +321,7 @@ buyTicket tn = do
     _ <- awaitTxConfirmed (getCardanoTxId tx)
     -}
 
-    logInfo $ "buyTicket tx has been completed: " ++ Haskell.show mintTx
+    -- logInfo $ "buyTicket tx has been completed: " ++ Haskell.show mintTx
 
 
     {-
