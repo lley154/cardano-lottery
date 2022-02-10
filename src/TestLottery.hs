@@ -56,18 +56,31 @@ myTrace = do
     logInfo @String "starting lotto"
     
     -- lotto player wallet    
-    h <- Emulator.activateContractWallet (knownWallet 1) endpoints
+    h <- Emulator.activateContractWallet (knownWallet 1) initEndpoint
 
     let sp = StartParams 
                 {
                     spSeq = 5000000
                 }
     
-    Emulator.callEndpoint @"init" h sp    
+    Emulator.callEndpoint @"init" h ()   
     void $ Emulator.waitNSlots 5
 
-    Emulator.callEndpoint @"buy" h $ lottoToken "123"    
-    void $ Emulator.waitNSlots 5
+    Last m <- Emulator.observableState h
+    case m of
+        Nothing -> Extras.logError @String "error finding lottery"
+        Just lot -> do
+            Extras.logInfo $ "found lottery " ++ show lot
+
+            -- lotto player 1 wallet
+            h1 <- Emulator.activateContractWallet (knownWallet 2) useEndpoint
+
+            callEndpoint @"buy" h1 (lot, lottoToken "123")
+            void $ Emulator.waitNSlots 5
+
+
+            
+
                 
 
            
