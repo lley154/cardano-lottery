@@ -8,6 +8,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
 {-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeApplications      #-}
@@ -35,22 +36,22 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteString as BS (ByteString)
 import Data.ByteString.Char8 as C8 (pack)
 import Data.Set qualified as Set
-import Data.Map (elemAt, keys)
+import Data.Map (elemAt, keys, toList)
 import Data.Monoid (Last (..))
 import Data.Text qualified as T (pack, Text)
 import Data.Void (Void)
 import GHC.Generics (Generic)
-import Ledger (Ada, CurrencySymbol, getCardanoTxId, getCardanoTxInputs, getCardanoTxOutRefs, getCardanoTxUnspentOutputsTx, mkMintingPolicyScript, MintingPolicyHash, scriptCurrencySymbol, TokenName, txInRef, PaymentPubKeyHash (unPaymentPubKeyHash), POSIXTime, pubKeyHashAddress, Redeemer(..), ScriptContext (ScriptContext, scriptContextTxInfo),
-               toTxOut, TxOutRef, TxInfo, txInInfoOutRef, txInfoInputs, txInfoMint, txOutDatum, Value, ValidatorHash, valuePaidTo)
+import Ledger (Ada, Address, CurrencySymbol, Datum(..), getCardanoTxId, getCardanoTxInputs, getCardanoTxOutRefs, getCardanoTxUnspentOutputsTx, mkMintingPolicyScript, MintingPolicyHash, scriptCurrencySymbol, TokenName, txInRef, PaymentPubKeyHash (unPaymentPubKeyHash), POSIXTime, pubKeyHashAddress, Redeemer(..), ScriptContext (ScriptContext, scriptContextTxInfo),
+               scriptHashAddress, toTxOut, TxOutRef, TxInfo, txInInfoOutRef, txInfoInputs, txInfoMint, txOutDatum, Value, ValidatorHash(..), valuePaidTo)
 import Ledger.Ada qualified as Ada (fromValue, lovelaceValueOf, getLovelace, toValue)
 import Ledger.Constraints qualified as Constraints (adjustUnbalancedTx, mintingPolicy, mustBeSignedBy, mustSpendScriptOutput, mustMintValue, mustMintValueWithRedeemer, mustPayToPubKey, mustPayToTheScript, mkTx, mustSpendPubKeyOutput, typedValidatorLookups, unspentOutputs)
 import Ledger.Typed.Scripts qualified as Scripts
 import Ledger.Tx (ChainIndexTxOut(..))
-import Ledger.Value qualified as Value (flattenValue, mpsSymbol, singleton, tokenName, Value)
+import Ledger.Value qualified as Value (flattenValue, mpsSymbol, singleton, tokenName, Value, valueOf)
 import Ledger.Contexts as Contexts (ownCurrencySymbol)
 import Playground.Contract as Playground (ToSchema)
 import Plutus.Contract (AsContractError (_ConstraintResolutionError), awaitTxConfirmed, awaitPromise, balanceTx, Contract, Endpoint, handleError, mapError, Promise, endpoint, logInfo, logError, select, selectList,
-                        tell, submitTxConstraints, type (.\/))
+                        tell, submitTxConstraints, throwError, type (.\/))
 import Plutus.Contract.Request (mkTxConstraints, mkTxContract, ownPaymentPubKeyHash, submitUnbalancedTx, submitTxConfirmed, utxosAt, submitTxConstraintsWith, txOutFromRef)
 import Plutus.Contract.StateMachine as SM (getThreadToken, SMContractError, ttOutRef)
 import Plutus.Contract.StateMachine.ThreadToken qualified as TT (curPolicy, threadTokenValue, ThreadToken(..), ttCurrencySymbol)
@@ -58,7 +59,7 @@ import Plutus.Contract.StateMachine.MintingPolarity as MP (MintingPolarity(Mint)
 import Plutus.Contract.Wallet (getUnspentOutput)
 import PlutusTx qualified
 --import PlutusTx.Prelude (any, Bool (True), Integer, Semigroup ((<>)), ($), (&&), (-), (.), (>=), (==), (++), (>>=), traceIfFalse)
-import PlutusTx.Prelude (any, Bool (True), const, foldMap, fst, snd, Integer, Maybe (Just), Maybe (Nothing), maybe, mempty, ($), (&&), (-), (.), (>=), (==), (++), (>>=), traceIfFalse, unless)
+import PlutusTx.Prelude (any, Bool (True), const, foldMap, fromBuiltin, fst, snd, Integer, Maybe (Just), Maybe (Nothing), maybe, mempty, ($), (&&), (-), (.), (>=), (==), (++), (>>=), traceIfFalse, unless)
 import Prelude (Semigroup (..))
 import Prelude qualified as Haskell 
 import Schema (ToSchema)
@@ -104,21 +105,22 @@ instance Scripts.ValidatorTypes LotteryType where
     type instance RedeemerType LotteryType = LottoRedeemer
     type instance DatumType LotteryType = LottoDatum
 
-lottoValidator :: Scripts.TypedValidator LotteryType
-lottoValidator = Scripts.mkTypedValidator @LotteryType
+typedLottoValidator :: Scripts.TypedValidator LotteryType
+typedLottoValidator = Scripts.mkTypedValidator @LotteryType
     $$(PlutusTx.compile [|| mkLottoValidator ||])
     $$(PlutusTx.compile [|| wrap ||])
     where
         wrap = Scripts.wrapValidator @LottoDatum @LottoRedeemer
 
-{-
-lottoValidator :: Lottery -> Validator
-lottoValidator = Scripts.validatorScript . lottoTypedValidator
 
-lottoAddress :: Lottery -> Address
-lottoAddress = scriptAddress . lottoValidator
+lottoValidator :: Scripts.Validator
+lottoValidator = Scripts.validatorScript typedLottoValidator
 
--}
+lottoHash :: Ledger.ValidatorHash
+lottoHash = Scripts.validatorHash typedLottoValidator
+
+lottoAddress :: Ledger.Address
+lottoAddress = scriptHashAddress lottoHash
 
 
 {-# INLINABLE mkPolicy #-}
@@ -161,9 +163,12 @@ lottoTicketMphValue mph' tn' = Value.singleton (Value.mpsSymbol mph') tn' 1
 lottoTicketValue :: CurrencySymbol -> TokenName -> Value.Value
 lottoTicketValue cs' tn' = Value.singleton cs' tn' 1
 
-{-# INLINABLE threadTokenValueInner #-}
+
 threadTokenValueInner :: Maybe TT.ThreadToken -> ValidatorHash -> Value
 threadTokenValueInner = maybe (const mempty) (TT.threadTokenValue . TT.ttCurrencySymbol)
+
+ttTokenName :: ValidatorHash -> TokenName
+ttTokenName (ValidatorHash bsHash) = Value.tokenName $ fromBuiltin bsHash
 
 
 data StartParams = StartParams
@@ -187,12 +192,12 @@ initLotto :: Contract (Last Lottery) s T.Text ()
 initLotto = do
 
     tt <- mapErrorSM SM.getThreadToken
-    --logInfo $ "initLotto: tt= " ++ Haskell.show tt
+    logInfo $ "initLotto: tt= " ++ Haskell.show tt
 
     ownPkh <- ownPaymentPubKeyHash
     utxo <- utxosAt (Ledger.pubKeyHashAddress ownPkh Nothing)
 
-    let mph' = Scripts.forwardingMintingPolicyHash lottoValidator
+    let mph' = Scripts.forwardingMintingPolicyHash typedLottoValidator
         lDatum = LottoDatum 
             {   adminPkh    = ownPkh
             ,   seqNum      = 0 
@@ -201,13 +206,13 @@ initLotto = do
         lottery = Lottery
             {   ttLotery    = tt
             }
-        red = Redeemer (PlutusTx.toBuiltinData (Scripts.validatorHash lottoValidator, Mint))
+        red = Redeemer (PlutusTx.toBuiltinData (lottoHash, Mint))
         ttPolicy = TT.curPolicy $ ttOutRef tt
-        constraints = Constraints.mustPayToTheScript lDatum ((Ada.lovelaceValueOf 5000000) <> threadTokenValueInner (Just tt) (Scripts.validatorHash lottoValidator))
-            <> Constraints.mustMintValueWithRedeemer red (threadTokenValueInner (Just tt) (Scripts.validatorHash lottoValidator))
+        constraints = Constraints.mustPayToTheScript lDatum ((Ada.lovelaceValueOf 5000000) <> threadTokenValueInner (Just tt) lottoHash)
+            <> Constraints.mustMintValueWithRedeemer red (threadTokenValueInner (Just tt) lottoHash)
             <> Constraints.mustSpendPubKeyOutput (ttOutRef tt)
             <> Constraints.mustBeSignedBy ownPkh
-        lookups = Constraints.typedValidatorLookups lottoValidator
+        lookups = Constraints.typedValidatorLookups typedLottoValidator
             <> Constraints.mintingPolicy ttPolicy
             <> Constraints.unspentOutputs utxo
 
@@ -220,10 +225,35 @@ initLotto = do
     logInfo $ "initLotto: LotteryDatum= " ++ Haskell.show lDatum
 
     tell $ Last $ Just lottery
-    
+
+findLottery :: CurrencySymbol
+            -> TokenName
+            -> Contract w s T.Text (TxOutRef, ChainIndexTxOut, LottoDatum)
+findLottery cs tn = do
+    utxos <- utxosAt $ scriptHashAddress lottoHash
+    let xs = [ (oref, o)
+             | (oref, o) <- toList utxos
+             , Value.valueOf (_ciTxOutValue o) cs tn == 1
+             ]
+    case xs of
+        [(oref, o)] -> case _ciTxOutDatum o of
+            Haskell.Left _          -> throwError "datum missing"
+            Haskell.Right (Datum e) -> case PlutusTx.fromBuiltinData e of
+                Nothing -> throwError "datum has wrong type"
+                Just d@LottoDatum{..} -> Haskell.return (oref, o, d)
+        _           -> throwError "lotto utxo not found"
+
+
 
 buyTicket :: Lottery -> TokenName -> Contract w s T.Text ()
 buyTicket lot tn = do
+    let cs = TT.ttCurrencySymbol (ttLotery lot)
+        tn = ttTokenName lottoHash
+    (oref, o, d@LottoDatum{..}) <- findLottery cs tn
+    logInfo $ "found lotto utxo with datum= " ++ Haskell.show d
+    
+    
+    {-
     
     ownPkh <- ownPaymentPubKeyHash
     utxo <- utxosAt (Ledger.pubKeyHashAddress ownPkh Nothing)
@@ -245,37 +275,33 @@ buyTicket lot tn = do
                     --ld <- cito{_ciTxOutDatum}
                     case _ciTxOutDatum cito of
                         Haskell.Left dh' -> logError $ "got lotto datum hash at script address: " ++ Haskell.show dh'
-                        Haskell.Right d' -> logInfo $ "lotto datum at script address: " ++ Haskell.show d'
-
-                    --dh <- txOutDatum $ toTxOut cito
-                    --case dh of
-                    --    Just dh' -> do
-                    --        logInfo $ "datum at script address: " ++ Haskell.show ld
-                    --        ld <- findDatum dh'
-                    --    Nothing -> logError @Haskell.String "no datum found at utxo"
-                                                
+                        Haskell.Right d' -> do
+                                            logInfo $ "lotto datum at script address: " ++ Haskell.show d'
+                                            let mph' = mph d'
+                                                constraints = Constraints.mustPayToTheScript d' (Ada.lovelaceValueOf 2000000)
+                                                    <> Constraints.mustMintValue (lottoTicketMphValue mph' tn)
+                                                    <> Constraints.mustBeSignedBy ownPkh
+                                                lookups = Constraints.unspentOutputs utxo       
+    
+                                            utx <- Haskell.either (throwing _ConstraintResolutionError)
+                                                            Haskell.pure
+                                                            (Constraints.mkTx lookups constraints)
+                                            let adjustedUtx = Constraints.adjustUnbalancedTx utx
+                                            submitTxConfirmed adjustedUtx
+                                            logInfo $ "buyTicket tx has been completed: " ++ Haskell.show adjustedUtx
+                                            
                 Nothing -> logError @Haskell.String "no chain index found at utxo"
 
-{-
-    let mph'             = mph lot
-        lDatum = LottoDatum 
-            {   adminPkh    = adminPkh lot
-            ,   seqNum      = 0 
-            ,   mph         = mph lot
-            }
-        constraints = Constraints.mustPayToTheScript lDatum (Ada.lovelaceValueOf 2000000)
-            <> Constraints.mustMintValue (lottoTicketMphValue mph tn)
-            <> Constraints.mustBeSignedBy ownPkh
-        lookups = Constraints.unspentOutputs utxo
-       
-    utx <- Haskell.either (throwing _ConstraintResolutionError)
-                    Haskell.pure
-                    (Constraints.mkTx lookups constraints)
-    let adjustedUtx = Constraints.adjustUnbalancedTx utx
-    submitTxConfirmed adjustedUtx
-    logInfo $ "buyTicket tx has been completed: " ++ Haskell.show adjustedUtx
+    --let mph'             = mph lot
+      --  lDatum = LottoDatum 
+      --      {   adminPkh    = adminPkh lot
+      --     ,   seqNum      = 0 
+      --      ,   mph         = mph lot
+      --     }
+
 
 -}
+
 {-
 
     pkh <- ownPaymentPubKeyHash
