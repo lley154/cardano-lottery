@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               cardano-lottery
-version:            0.3.0.0
+version:            0.3.5.0
 
 -- A short (one-line) description of the package.
 -- synopsis: A lottery build using plutus for the cardano blockchain
@@ -63,3 +63,27 @@ library
  
     hs-source-dirs: src
 
+executable cardano-lottery-pab-sim
+  import: lang
+  main-is: Main-sim.hs
+  hs-source-dirs: app
+  other-modules: LottoContract
+  ghc-options:
+    -threaded
+  build-depends:
+    base >= 4.9 && < 5,
+    aeson -any,
+    cardano-lottery -any,
+    data-default -any,
+    freer-simple -any,
+    freer-extras -any,
+    openapi3 -any,
+    plutus-contract -any,
+    plutus-ledger-api -any,
+    plutus-pab -any,
+    prettyprinter -any,
+    plutus-ledger -any,
+    req ^>= 3.9.0,
+    text -any,
+    bytestring -any
+ 

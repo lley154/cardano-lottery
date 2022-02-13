@@ -23,7 +23,8 @@ module Lottery
     (   Lottery (..)
     ,   LottoRedeemer (..)
     ,   LottoDatum (..)
-    ,   LottoSchema
+    ,   LottoInitSchema
+    ,   LottoUseSchema
     ,   StartParams (..)
     ,   initEndpoint
     ,   useEndpoint
@@ -31,22 +32,20 @@ module Lottery
 
 import Control.Lens (review)
 import Control.Monad (forever)
---import Control.Monad.Error.Lens (throwing)
 import Data.Aeson (FromJSON, ToJSON)
 --import Data.ByteString as BS (ByteString)
 --import Data.ByteString.Char8 as C8 (pack)
 --import Data.Set qualified as Set
-import Data.Map (keys, toList, singleton)
+import Data.Map (toList, singleton)
 import Data.Monoid (Last (..))
 import Data.Text qualified as T (pack, Text)
---import Data.Void (Void)
 import GHC.Generics (Generic)
 import Ledger (Address, CurrencySymbol, Datum(..), mkMintingPolicyScript, MintingPolicyHash, scriptCurrencySymbol, TokenName, PaymentPubKeyHash (unPaymentPubKeyHash), POSIXTime, pubKeyHashAddress, Redeemer(..), ScriptContext (ScriptContext, scriptContextTxInfo),
                scriptHashAddress, TxOutRef, TxInfo, txInInfoOutRef, txInfoInputs, txInfoMint, txOutDatum, Value, Validator, ValidatorHash(..))
 import Ledger.Ada qualified as Ada (fromValue, lovelaceValueOf, getLovelace)
 import Ledger.Constraints qualified as Constraints (adjustUnbalancedTx, mintingPolicy, mustBeSignedBy, mustSpendScriptOutput, mustMintValue, mustMintValueWithRedeemer,  mustPayToTheScript, mustSpendPubKeyOutput, otherScript, typedValidatorLookups, unspentOutputs)
-import Ledger.Typed.Scripts qualified as Scripts
-import Ledger.Tx (ChainIndexTxOut(..))
+import Ledger.Typed.Scripts qualified as Scripts (DatumType, forwardingMintingPolicyHash, MintingPolicy, mkTypedValidator, RedeemerType , TypedValidator, ValidatorTypes, validatorScript, validatorHash, wrapValidator, wrapMintingPolicy)
+import Ledger.Tx (ChainIndexTxOut(_ciTxOutDatum, _ciTxOutValue))
 import Ledger.Value qualified as Value (flattenValue, mpsSymbol, singleton, tokenName, Value, valueOf)
 import Ledger.Contexts as Contexts (ownCurrencySymbol)
 import Playground.Contract as Playground (ToSchema)
@@ -56,11 +55,11 @@ import Plutus.Contract.Request (mkTxContract, ownPaymentPubKeyHash, submitTxConf
 import Plutus.Contract.StateMachine as SM (getThreadToken, SMContractError, ttOutRef)
 import Plutus.Contract.StateMachine.ThreadToken qualified as TT (curPolicy, threadTokenValue, ThreadToken(..), ttCurrencySymbol)
 import Plutus.Contract.StateMachine.MintingPolarity as MP (MintingPolarity(Mint))
-import PlutusTx qualified
+import PlutusTx qualified (applyCode, compile, fromBuiltinData, liftCode, makeLift, toBuiltinData, unstableMakeIsData)
 import PlutusTx.Prelude (any, Bool (True), const, foldMap, fromBuiltin, fst, snd, Integer, Maybe (Just), Maybe (Nothing), maybe, mempty, ($), (&&), (-), (.), (>=), (==), (++), (>>=), traceIfFalse, unless)
-import Prelude (Semigroup (..))
-import Prelude qualified as Haskell 
-import qualified PlutusTx ()
+import Prelude (Semigroup ((<>)))
+import Prelude qualified as Haskell (Eq, Bool(False), Either(Left, Right), Ord, return, Show, show)
+--import qualified PlutusTx ()
 
 
 newtype Lottery = Lottery
@@ -274,7 +273,7 @@ buyTicket lot tn = do
 type LottoInitSchema =
         Endpoint "init" ()
 
-type LottoSchema =
+type LottoUseSchema =
         Endpoint "buy"  (Lottery, TokenName)
 
 
@@ -285,7 +284,7 @@ initEndpoint = forever
               $ endpoint @"init" $ \() -> initLotto
 
 
-useEndpoint :: Contract () LottoSchema T.Text ()
+useEndpoint :: Contract () LottoUseSchema T.Text ()
 useEndpoint = forever $ handleError logError $ awaitPromise buy
   where
     buy        = endpoint @"buy"       $ \(lot, tn) -> buyTicket lot tn
