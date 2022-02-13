@@ -75,7 +75,13 @@ myTrace = do
             -- lotto player 1 wallet
             h1 <- Emulator.activateContractWallet (knownWallet 2) useEndpoint
 
+            -- lotto player 2 wallet
+            h2 <- Emulator.activateContractWallet (knownWallet 3) useEndpoint
+
             callEndpoint @"buy" h1 (lot, lottoToken "123")
+            void $ Emulator.waitNSlots 5
+
+            callEndpoint @"buy" h2 (lot, lottoToken "789")
             void $ Emulator.waitNSlots 5
 
 
