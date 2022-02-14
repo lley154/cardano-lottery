@@ -17,7 +17,6 @@ import           Ledger.Index                   (ValidatorMode (..))
 import           Options.Applicative
 import           Plutus.Contract.Wallet         (ExportTx (..))
 import qualified TestLottery                    as TestLottery
-import qualified TestBenchmark                  as TestBenchmark
 import           Plutus.Trace                   (Command (..), ScriptsConfig (..), showStats, writeScriptsTo)
 
 
@@ -77,8 +76,7 @@ writeScripts config = do
           --       have a proper implementation.
           --  ("auction_1", Auction.auctionTrace1, Auction.auctionEmulatorCfg)
           --, ("auction_2", Auction.auctionTrace2, Auction.auctionEmulatorCfg)
-          ("cardano-lottery-test", TestLottery.myTrace, def),
-          ("benchmark-test", TestBenchmark.myTrace, def)
+          ("cardano-lottery-test", TestLottery.myTrace, def)
 
         ]
     if size > 0 then

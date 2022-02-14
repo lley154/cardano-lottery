@@ -81,8 +81,6 @@ myTrace = do
             callEndpoint @"buy" h1 (lot, lottoToken "123")
             void $ Emulator.waitNSlots 5
 
-            callEndpoint @"buy" h2 (lot, lottoToken "789")
-            void $ Emulator.waitNSlots 5
 
 
             
