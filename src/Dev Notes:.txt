@@ -2036,3 +2036,29 @@ Ok.
         }
     }
 ]
+
+...
+
+    "observableState": {
+      "ttLotery": {
+        "ttOutRef": {
+          "txOutRefId": {
+            "getTxId": "c50686c977122a691dc22076233daf7afd5486db1f0a1518ed1b56c50d157848"
+          },
+          "txOutRefIdx": 0
+        },
+        "ttCurrencySymbol": {
+          "unCurrencySymbol": "2c10da4b729c455bf37b2c950cd56989bbe65250735f02153c42c075"
+        }
+      }
+    }
+  },
+  "cicContract": {
+    "unContractInstanceId": "9fb88eca-9c89-4bba-9f01-1924f6071f84"
+  },
+  "cicStatus": "Active",
+  "cicYieldedExportTxs": [],
+  "cicDefinition": "InitLottoContract"
+
+
+   
