@@ -8,8 +8,12 @@ module Main
 
 import          LottoContract                                    (StarterContracts(..))
 import          Plutus.PAB.Effects.Contract.Builtin qualified as Builtin
-import          Plutus.PAB.LocalCluster.Run         (runWith)
---import Plutus.PAB.Run (runWith)
+
+-- enable localcluster (devnet) by uncommenting the following line
+--import          Plutus.PAB.LocalCluster.Run         (runWith)
+
+-- enable testnet/mainnet by using the following line, comment out if using local cluster (devnet)
+import Plutus.PAB.Run (runWith)
 
 
 main :: IO ()

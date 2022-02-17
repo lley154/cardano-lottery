@@ -12,12 +12,13 @@ pabWebserverConfig:
   endpointTimeout: 60
 
 walletServerConfig:
+  tag: LocalWalletConfig
   walletSettings:
-    baseUrl: http://cardano-server:8090
+    baseUrl: http://localhost:8090
 
 nodeServerConfig:
-  pscSocketPath: /nfs/ipc/node.socket
-  pscBaseUrl: "cardano-server"
+  pscBaseUrl: http://cardano-server:3003
+  pscSocketPath: /home/lawrence/src/cardano-lottery/node.sock
   pscKeptBlocks: 2160
   pscNetworkId: "1097911063" # Testnet network ID (main net = empty string)
   pscSlotConfig:

@@ -2061,4 +2061,14 @@ Ok.
   "cicDefinition": "InitLottoContract"
 
 
-   
+LOTTERY=$(/usr/bin/curl --silent http://localhost:9080/api/contract/instance/$CONTRACT_ID/status | jq -r '.cicCurrentState.observableState')
+
+
+/usr/bin/curl --silent --header "Content-Type: application/json" \
+--data '['$LOTTERY',{"unTokenName": "123"}]' http://localhost:9080/api/contract/instance/$CONTRACT_ID/endpoint/buy
+
+
+cabal exec -- cardano-lottery-pab-run --config cardano-lottery-pab.yaml migrate
+
+cabal exec -- cardano-lottery-pab-run --config cardano-lottery-pab.yaml webserver --passphrase cardano-wallet
+
