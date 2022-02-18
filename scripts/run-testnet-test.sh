@@ -149,7 +149,7 @@ buy() {
 
     CONTRACT_ID=$(/usr/bin/curl --silent \
                        --header "Content-Type: application/json" \
-                       --data '{"caID": "UseLottoContract", "caWallet":{"getWalletId": "'$WALLET3_ID'"}}' \
+                       --data '{"caID": "UseLottoContract", "caWallet":{"getWalletId": "'$WALLET2_ID'"}}' \
                        http://localhost:9080/api/contract/activate | jq -r '.unContractInstanceId')
 
     echo "Contract ID:"
