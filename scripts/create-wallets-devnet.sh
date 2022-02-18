@@ -29,6 +29,7 @@ ADDR1=$(curl --silent --request GET --url 'http://localhost:46493/v2/wallets/'$W
 ADDR2=$(curl --silent --request GET --url 'http://localhost:46493/v2/wallets/'$WALLET2_ID'/addresses?state=unused' | jq -r '.[0].id')
 
 
+
 curl --request POST \
    --url http://localhost:46493/v2/wallets/$WALLET_DEF_ID/transactions \
    --header 'Content-Type: application/json' \

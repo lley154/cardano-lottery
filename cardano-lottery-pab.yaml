@@ -49,11 +49,11 @@ metadataServerConfig:
 developmentOptions:
   pabRollbackHistory: null
   pabResumeFrom:
-    { "tag" : "PointAtGenesis" }
-    # { "tag" : "Point"
-    # , "pointBlockId" : "613d23b8df670e3692f4e4ab59b179778519de15999ee1a51077fcc02a48abaa"
-    # , "pointSlot" : { "getSlot" : 45656608 }
-    # }
+    #{ "tag" : "PointAtGenesis" }
+     { "tag" : "Point"
+     , "pointBlockId" : "300bfab8e6aa21364e8ef63418ca33290bf1af614b2ba0c748277b5644304bbc"
+     , "pointSlot" : { "getSlot" : 50757506 }
+     }
 
 # Optional EKG Server Config
 # ----

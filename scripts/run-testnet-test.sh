@@ -77,6 +77,25 @@ use_wallets() {
     WALLET1_ID=f6b3948d73f5e317ac130419ada6047262bfbb22
     WALLET2_ID=b6ac58e44f232e1fd863b7da0520b3c99d18bab5
 
+    WALLET3_ID=00d3b1fc7af1236ee7f6226a83ed2ad360b91013
+    ADDR3=$(curl --silent --request GET --url 'http://localhost:8090/v2/wallets/'$WALLET3_ID'/addresses?state=unused' | jq -r '.[0].id')
+
+
+    curl --request POST \
+    --url http://localhost:8090/v2/wallets/$WALLET1_ID/transactions \
+    --header 'Content-Type: application/json' \
+    --data '{
+            "passphrase": "cardano-wallet",
+            "payments": [
+                {
+                "address": "'$ADDR3'",
+                "amount": {
+                    "quantity": 900000000,
+                    "unit": "lovelace"
+                    }
+                }
+            ]
+    }'
 
 sleep 2
 }
@@ -93,7 +112,7 @@ init() {
 
     CONTRACT_ID=$(/usr/bin/curl --silent \
                        --header "Content-Type: application/json" \
-                       --data '{"caID": "InitLottoContract", "caWallet":{"getWalletId": "'$WALLET1_ID'"}}' \
+                       --data '{"caID": "InitLottoContract", "caWallet":{"getWalletId": "'$WALLET2_ID'"}}' \
                        http://localhost:9080/api/contract/activate | jq -r '.unContractInstanceId')
 
     log_count=0
@@ -130,7 +149,7 @@ buy() {
 
     CONTRACT_ID=$(/usr/bin/curl --silent \
                        --header "Content-Type: application/json" \
-                       --data '{"caID": "UseLottoContract", "caWallet":{"getWalletId": "'$WALLET2_ID'"}}' \
+                       --data '{"caID": "UseLottoContract", "caWallet":{"getWalletId": "'$WALLET3_ID'"}}' \
                        http://localhost:9080/api/contract/activate | jq -r '.unContractInstanceId')
 
     echo "Contract ID:"

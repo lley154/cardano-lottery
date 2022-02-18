@@ -2072,3 +2072,417 @@ cabal exec -- cardano-lottery-pab-run --config cardano-lottery-pab.yaml migrate
 
 cabal exec -- cardano-lottery-pab-run --config cardano-lottery-pab.yaml webserver --passphrase cardano-wallet
 
+[nix-shell:~/src/cardano-lottery]$ cardano-wallet wallet list
+Ok.
+[
+    {
+        "balance": {
+            "total": {
+                "quantity": 994641517,
+                "unit": "lovelace"
+            },
+            "available": {
+                "quantity": 994641517,
+                "unit": "lovelace"
+            },
+            "reward": {
+                "quantity": 0,
+                "unit": "lovelace"
+            }
+        },
+        "name": "test_wallet_1",
+        "id": "f6b3948d73f5e317ac130419ada6047262bfbb22",
+        "tip": {
+            "height": {
+                "quantity": 3328866,
+                "unit": "block"
+            },
+            "epoch_number": 187,
+            "time": "2022-02-17T21:57:41Z",
+            "absolute_slot_number": 50765845,
+            "slot_number": 351445
+        },
+        "passphrase": {
+            "last_updated_at": "2022-02-17T16:41:04.861947372Z"
+        },
+        "address_pool_gap": 20,
+        "state": {
+            "status": "ready"
+        },
+        "delegation": {
+            "next": [],
+            "active": {
+                "status": "not_delegating"
+            }
+        },
+        "assets": {
+            "total": [],
+            "available": []
+        }
+    },
+    {
+        "balance": {
+            "total": {
+                "quantity": 1000000000,
+                "unit": "lovelace"
+            },
+            "available": {
+                "quantity": 1000000000,
+                "unit": "lovelace"
+            },
+            "reward": {
+                "quantity": 0,
+                "unit": "lovelace"
+            }
+        },
+        "name": "test_wallet_2",
+        "id": "b6ac58e44f232e1fd863b7da0520b3c99d18bab5",
+        "tip": {
+            "height": {
+                "quantity": 3328866,
+                "unit": "block"
+            },
+            "epoch_number": 187,
+            "time": "2022-02-17T21:57:41Z",
+            "absolute_slot_number": 50765845,
+            "slot_number": 351445
+        },
+        "passphrase": {
+            "last_updated_at": "2022-02-17T16:41:58.131383628Z"
+        },
+        "address_pool_gap": 20,
+        "state": {
+            "status": "ready"
+        },
+        "delegation": {
+            "next": [],
+            "active": {
+                "status": "not_delegating"
+            }
+        },
+        "assets": {
+            "total": [],
+            "available": []
+        }
+    },
+
+
+Received Time
+> 5 hours ago (2022-02-17 19:39:44 UTC)
+Included In
+Epoch 187, Block 3328607
+Confirmations
+536
+Transaction ID
+a6acc8a6ed557a039eb23e165da0133c9ae5b8420a5e94629a29c1e9a3f6bca5
+Minted tokens
+1 asset10kc...g7fh
+From addresses
+addr_test1qr3p25...50e9s52shsajmpcd
+1000 ADA
+To addresses
+addr_test1wzmk2g...gdxnuslxsgtzxks7
+5 ADA
+1 asset10kc...g7fh
+addr_test1qzwuc5...50e9s52shsct98wj
+994.641517 ADA
+Total Output
+999.641517 ADA
+Transaction Fee
+0.358483 ADA
+
+[nix-shell:~/src/cardano-lottery]$ cardano-cli query utxo --address addr_test1wzmk2gyzpztpugye338k4ek8y557u5a0h7zgtgdxnuslxsgtzxks7 --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+a6acc8a6ed557a039eb23e165da0133c9ae5b8420a5e94629a29c1e9a3f6bca5     0        5000000 lovelace + 1 b997a6060f3bb4cbc4061e2761f724935814736f6f5279758d50ae08.b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341 + TxOutDatumHash ScriptDataInAlonzoEra "fa05e135d1c69b81306c9087f4bc8129557d45345b8e089b2a5a9b0fbf58ddb0"
+
+
+[pab:Info:33] [2022-02-18 00:43:10.80 UTC] Initialising contract InitLottoContract with ID 2f175c33-3d69-4c59-8856-3308accd44c8
+[pab:Info:33] [2022-02-18 00:43:10.85 UTC] Activated instance 2f175c33-3d69-4c59-8856-3308accd44c8 on Wf6b3948
+Current block: 343. Current slot: 50775820
+[pab:Info:35] [2022-02-18 00:44:13.24 UTC] 2f175c33-3d69-4c59-8856-3308accd44c8: "initLotto: tt= ThreadToken {ttOutRef = TxOutRef {txOutRefId = a6acc8a6ed557a039eb23e165da0133c9ae5b8420a5e94629a29c1e9a3f6bca5, txOutRefIdx = 1}, ttCurrencySymbol = 02f9f3a7c7abc26d41087b679bb7e59cf781e32dfd7354ff75c99d2f}"
+[pab:Error:35] [2022-02-18 00:44:13.50 UTC] 2f175c33-3d69-4c59-8856-3308accd44c8: "ConstraintResolutionError (TxOutRefNotFound (TxOutRef {txOutRefId = a6acc8a6ed557a039eb23e165da0133c9ae5b8420a5e94629a29c1e9a3f6bca5, txOutRefIdx = 1}))"
+Current block: 344. Current slot: 50775839
+
+
+Received Time
+> 8 minutes ago (2022-02-18 01:48:32 UTC)
+Included In
+Epoch 187, Block 3329278
+Confirmations
+17
+Transaction ID
+ac68e08581f4571467f402e255a0e916394dd1a39becfcb92dbc42e01680a408
+From addresses
+addr_test1qzwuc5...50e9s52shsct98wj
+994.641517 ADA
+To addresses
+addr_test1qp9zck...e6l0tdf6us9dnurc
+900 ADA
+addr_test1qqjx64...50e9s52shsk285uu
+94.472496 ADA
+Total Output
+994.472496 ADA
+Transaction Fee
+0.169021 ADA
+
+
+[nix-shell:~/src/cardano-lottery]$ echo $WALLET2_ID
+b6ac58e44f232e1fd863b7da0520b3c99d18bab5
+
+[nix-shell:~/src/cardano-lottery]$    CONTRACT_ID=$(/usr/bin/curl --silent \
+                       --header "Content-Type: application/json" \
+                       --data '{"caID": "InitLottoContract", "caWallet":{"getWalletId": "'$WALLET2_ID'"}}' \
+                       http://localhost:9080/api/contract/activate | jq -r '.unContractInstanceId')
+
+[nix-shell:~/src/cardano-lottery]$ echo $CONTRACT_ID
+e0ab1012-785d-4d1f-95f6-ba83df194a18
+
+[nix-shell:~/src/cardano-lottery]$ /usr/bin/curl --silent --header "Content-Type: application/json" --data '[]' http://localhost:9080/api/contract/instance/$CONTRACT_ID/endpoint/init
+[]
+
+
+[pab:Info:33] [2022-02-18 01:59:12.54 UTC] Initialising contract InitLottoContract with ID e0ab1012-785d-4d1f-95f6-ba83df194a18
+[pab:Info:33] [2022-02-18 01:59:12.59 UTC] Activated instance e0ab1012-785d-4d1f-95f6-ba83df194a18 on Wb6ac58e
+Current block: 402. Current slot: 50780338
+Current block: 402. Current slot: 50780344
+Current block: 402. Current slot: 50780366
+Current block: 403. Current slot: 50780378
+Current block: 403. Current slot: 50780390
+[pab:Info:35] [2022-02-18 02:00:47.60 UTC] e0ab1012-785d-4d1f-95f6-ba83df194a18: "initLotto: tt= ThreadToken {ttOutRef = TxOutRef {txOutRefId = 91e9f46049c95cddb0adf2c2638d16b1be1009eef10cadf83d4ae4e163ca893b, txOutRefIdx = 0}, ttCurrencySymbol = d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27}"
+Current block: 404. Current slot: 50780435
+Current block: 404. Current slot: 50780447
+Current block: 405. Current slot: 50780475
+[pab:Info:35] [2022-02-18 02:01:33.16 UTC] e0ab1012-785d-4d1f-95f6-ba83df194a18: "initLotto: tx submitted successfully= UnbalancedTx {unBalancedTxTx = Tx {txInputs = fromList [TxIn {txInRef = TxOutRef {txOutRefId = 91e9f46049c95cddb0adf2c2638d16b1be1009eef10cadf83d4ae4e163ca893b, txOutRefIdx = 0}, txInType = Just ConsumePublicKeyAddress}], txCollateral = fromList [], txOutputs = [TxOut {txOutAddress = Address {addressCredential = ScriptCredential b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341, addressStakingCredential = Nothing}, txOutValue = Value (Map [(,Map [(\"\",5000000)]),(d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27,Map [(0xb765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341,1)])]), txOutDatumHash = Just fdfe8b1fd89a8e2f520dd215faab47263bc0a91890e3e662ac2d3091213e0047}], txMint = Value (Map [(d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27,Map [(0xb765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341,1)])]), txFee = Value (Map []), txValidRange = Interval {ivFrom = LowerBound NegInf True, ivTo = UpperBound PosInf True}, txMintScripts = fromList [MintingPolicy { <script> }], txSignatures = fromList [], txRedeemers = fromList [(RedeemerPtr Mint 0,Redeemer {getRedeemer = Constr 0 [B \"\\183e \\130\\b\\150\\RS \\153\\140Oj\\230\\199%)\\238S\\175\\191\\132\\133\\161\\166\\159!\\243A\",Constr 0 []]})], txData = fromList [(fdfe8b1fd89a8e2f520dd215faab47263bc0a91890e3e662ac2d3091213e0047,Datum {getDatum = Constr 0 [B \"\\142/ \\157\\140\\172\\130\\238e\\254\\&7\\141\\FS\\221\\176\\176\\247&@fj\\FS\\156\\184\\\\\\210\\162\\143\",I 0,B \"]\\160\\170\\201\\228\\167\\162\\165\\214Y\\f_\\205\\&6\\139\\&8#\\v\\SYN\\133\\245\\159\\237\\200\\201\\153\\173<\"]})]}, unBalancedTxRequiredSignatories = fromList [(8e2f209d8cac82ee65fe378d1cddb0b0f72640666a1c9cb85cd2a28f,Nothing)], unBalancedTxUtxoIndex = fromList [(TxOutRef {txOutRefId = 91e9f46049c95cddb0adf2c2638d16b1be1009eef10cadf83d4ae4e163ca893b, txOutRefIdx = 0},TxOut {txOutAddress = Address {addressCredential = PubKeyCredential 8e2f209d8cac82ee65fe378d1cddb0b0f72640666a1c9cb85cd2a28f, addressStakingCredential = Just (StakingHash (PubKeyCredential 0570132368246ec2410c5a1a15be3c9e82997a473b98440bea1dba0b))}, txOutValue = Value (Map [(,Map [(\"\",1000000000)])]), txOutDatumHash = Nothing})], unBalancedTxValidityTimeRange = Interval {ivFrom = LowerBound NegInf True, ivTo = UpperBound PosInf True}}"
+[pab:Info:35] [2022-02-18 02:01:33.16 UTC] e0ab1012-785d-4d1f-95f6-ba83df194a18: "initLotto: Lottery= Lottery {ttLotery = ThreadToken {ttOutRef = TxOutRef {txOutRefId = 91e9f46049c95cddb0adf2c2638d16b1be1009eef10cadf83d4ae4e163ca893b, txOutRefIdx = 0}, ttCurrencySymbol = d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27}}"
+[pab:Info:35] [2022-02-18 02:01:33.16 UTC] e0ab1012-785d-4d1f-95f6-ba83df194a18: "initLotto: LotteryDatum= LottoDatum {adminPkh = 8e2f209d8cac82ee65fe378d1cddb0b0f72640666a1c9cb85cd2a28f, seqNum = 0, mph = 5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c}"
+[pab:Info:35] [2022-02-18 02:01:33.16 UTC] e0ab1012-785d-4d1f-95f6-ba83df194a18: "init: lotto validator hash= b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341"
+Current block: 405. Current slot: 50780499
+
+
+
+
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.56 UTC] [RequestId 38] [GET] /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/keys/utxo_external/0?hash=true
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.56 UTC] [RequestId 38] GET /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/keys/utxo_external/0 200 OK in 0.001041923s
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.59 UTC] [RequestId 39] [POST] /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance
+[cardano-wallet.wallet-engine:Info:20635] [2022-02-18 02:00:47.59 UTC] b6ac58e4: Selection report (summarized):
+SelectionReportSummarized:
+  computedFee: 0.169329
+  adaBalanceOfSelectedInputs: 1000.000000
+  adaBalanceOfExtraCoinSource: 0.000000
+  adaBalanceOfExtraCoinSink: 0.000000
+  adaBalanceOfRequestedOutputs: 2.000000
+  adaBalanceOfGeneratedChangeOutputs: 997.830671
+  numberOfSelectedInputs: 1
+  numberOfSelectedCollateralInputs: 0
+  numberOfRequestedOutputs: 1
+  numberOfGeneratedChangeOutputs: 1
+  numberOfUniqueNonAdaAssetsInSelectedInputs: 0
+  numberOfUniqueNonAdaAssetsInRequestedOutputs: 0
+  numberOfUniqueNonAdaAssetsInGeneratedChangeOutputs: 0
+
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.59 UTC] [RequestId 39] POST /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance 202 Accepted in 0.003449249s
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.64 UTC] [RequestId 40] [GET] /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/keys/utxo_external/0?hash=true
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:00:47.64 UTC] [RequestId 40] GET /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/keys/utxo_external/0 200 OK in 0.000886114s
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.13 UTC] [RequestId 41] [POST] /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance
+[cardano-wallet.wallet-engine:Info:20635] [2022-02-18 02:01:05.13 UTC] b6ac58e4: Selection report (summarized):
+SelectionReportSummarized:
+  computedFee: 1.840765
+  adaBalanceOfSelectedInputs: 1000.000000
+  adaBalanceOfExtraCoinSource: 0.000000
+  adaBalanceOfExtraCoinSink: 0.000000
+  adaBalanceOfRequestedOutputs: 5.000000
+  adaBalanceOfGeneratedChangeOutputs: 993.159235
+  numberOfSelectedInputs: 1
+  numberOfSelectedCollateralInputs: 1
+  numberOfRequestedOutputs: 1
+  numberOfGeneratedChangeOutputs: 1
+  numberOfUniqueNonAdaAssetsInSelectedInputs: 0
+  numberOfUniqueNonAdaAssetsInRequestedOutputs: 1
+  numberOfUniqueNonAdaAssetsInGeneratedChangeOutputs: 0
+
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.15 UTC] [RequestId 41] POST /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-balance 202 Accepted in 0.013875573s
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.21 UTC] [RequestId 42] [POST] /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-sign
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.62 UTC] [RequestId 42] POST /v2/wallets/b6ac58e44f232e1fd863b7da0520b3c99d18bab5/transactions-sign 202 Accepted in 0.417386186s
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.63 UTC] [RequestId 43] [POST] /v2/proxy/transactions
+[cardano-wallet.wallet-engine:Info:20635] [2022-02-18 02:01:05.63 UTC] Submitting external transaction 03f9f47b to local node...
+[cardano-wallet.wallet-engine:Info:20635] [2022-02-18 02:01:05.64 UTC] Transaction 03f9f47b accepted by local node
+tx:
+  03f9f47b
+  collateral 1st 91e9f460
+  inputs 1st 91e9f460
+  outputs address: 70b76520...9f21f341
+          coin: 5.000000
+          tokens:
+            - policy: d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27
+              tokens:
+                - token: b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341
+                  quantity: 1
+  outputs address: 0003e809...ea1dba0b
+          coin: 994.641517
+          tokens: []
+  []
+  metadata:
+  scriptValidity: valid
+
+[cardano-wallet.api-server:Info:20635] [2022-02-18 02:01:05.64 UTC] [RequestId 43] POST /v2/proxy/transactions 202 Accepted in 0.008658495s
+
+
+[lawrence:cardano.node.Mempool:Info:386] [2022-02-18 02:01:05.64 UTC] fromList [("tx",Object (fromList [("txid",String "03f9f47b")])),("kind",String "TraceMempoolAddedTx"),("mempoolSize",Object (fromList [("bytes",Number 3260.0),("numTxs",Number 1.0)]))]
+[lawrence:cardano.node.ChainDB:Notice:292] [2022-02-18 02:01:33.15 UTC] Chain extended, new tip: 5c47a86b17ae9491535fefb03ff0f101b9271b77ab8ee7202b06aa647059124b at slot 50780475
+[lawrence:cardano.node.Mempool:Info:300] [2022-02-18 02:01:33.16 UTC] fromList [("kind",String "TraceMempoolRemoveTxs"),("txs",Array [Object (fromList [("txid",String "03f9f47b")])]),("mempoolSize",Object (fromList [("bytes",Number 0.0),("numTxs",Number 0.0)]))]
+[lawrence:cardano.node.ChainDB:Notice:292] [2022-02-18 02:01:55.44 UTC] Chain extended, new tip: f54c7aac4986a7fa0a161e2a7e73c3dcc75a63e10c2168f2cb9b3ac5b174aa98 at slot 50780499
+
+
+[nix-shell:~/src/cardano-lottery]$     LOTTERY=$(/usr/bin/curl --silent http://localhost:9080/api/contract/instance/$CONTRACT_ID/status | jq -r '.cicCurrentState.observableState')
+
+[nix-shell:~/src/cardano-lottery]$ echo $LOTTERY
+{ "ttLotery": { "ttOutRef": { "txOutRefId": { "getTxId": "91e9f46049c95cddb0adf2c2638d16b1be1009eef10cadf83d4ae4e163ca893b" }, "txOutRefIdx": 0 }, "ttCurrencySymbol": { "unCurrencySymbol": "d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27" } } }
+
+[nix-shell:~/src/cardano-lottery]$ 
+
+
+[pab:Info:47] [2022-02-18 02:06:14.53 UTC] Initialising contract UseLottoContract with ID 5b457776-92f1-4b69-b904-2eedbf18ce92
+[pab:Info:47] [2022-02-18 02:06:14.60 UTC] Activated instance 5b457776-92f1-4b69-b904-2eedbf18ce92 on W00d3b1f
+Current block: 413. Current slot: 50780800
+[pab:Info:48] [2022-02-18 02:07:10.46 UTC] 5b457776-92f1-4b69-b904-2eedbf18ce92: "buyTicket: found lotto utxo with datum= LottoDatum {adminPkh = 8e2f209d8cac82ee65fe378d1cddb0b0f72640666a1c9cb85cd2a28f, seqNum = 0, mph = 5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c}"
+[pab:Info:48] [2022-02-18 02:07:10.46 UTC] 5b457776-92f1-4b69-b904-2eedbf18ce92: "buyTicket: found lotto utxo oref= TxOutRef {txOutRefId = 03f9f47b425054ee64166c33fd5d2c0e2af1dee96043978f9af378d0f598c992, txOutRefIdx = 0}"
+[pab:Info:48] [2022-02-18 02:07:10.46 UTC] 5b457776-92f1-4b69-b904-2eedbf18ce92: "buyTicket: lotto validator hash= b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341"
+Current block: 414. Current slot: 50780835
+[pab:Info:48] [2022-02-18 02:07:31.56 UTC] 5b457776-92f1-4b69-b904-2eedbf18ce92: "buy: tx submitted= UnbalancedTx {unBalancedTxTx = Tx {txInputs = fromList [TxIn {txInRef = TxOutRef {txOutRefId = 03f9f47b425054ee64166c33fd5d2c0e2af1dee96043978f9af378d0f598c992, txOutRefIdx = 0}, txInType = Just (ConsumeScriptAddress Validator { <script> } (Redeemer {getRedeemer = Constr 1 [B \"123\"]}) (Datum {getDatum = Constr 0 [B \"\\142/ \\157\\140\\172\\130\\238e\\254\\&7\\141\\FS\\221\\176\\176\\247&@fj\\FS\\156\\184\\\\\\210\\162\\143\",I 0,B \"]\\160\\170\\201\\228\\167\\162\\165\\214Y\\f_\\205\\&6\\139\\&8#\\v\\SYN\\133\\245\\159\\237\\200\\201\\153\\173<\"]}))}], txCollateral = fromList [], txOutputs = [TxOut {txOutAddress = Address {addressCredential = ScriptCredential b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341, addressStakingCredential = Nothing}, txOutValue = Value (Map [(,Map [(\"\",7000000)]),(d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27,Map [(0xb765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341,1)])]), txOutDatumHash = Just fdfe8b1fd89a8e2f520dd215faab47263bc0a91890e3e662ac2d3091213e0047}], txMint = Value (Map [(5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c,Map [(\"123\",1)])]), txFee = Value (Map []), txValidRange = Interval {ivFrom = LowerBound NegInf True, ivTo = UpperBound PosInf True}, txMintScripts = fromList [MintingPolicy { <script> }], txSignatures = fromList [], txRedeemers = fromList [(RedeemerPtr Mint 0,Redeemer {getRedeemer = Constr 0 []})], txData = fromList [(fdfe8b1fd89a8e2f520dd215faab47263bc0a91890e3e662ac2d3091213e0047,Datum {getDatum = Constr 0 [B \"\\142/ \\157\\140\\172\\130\\238e\\254\\&7\\141\\FS\\221\\176\\176\\247&@fj\\FS\\156\\184\\\\\\210\\162\\143\",I 0,B \"]\\160\\170\\201\\228\\167\\162\\165\\214Y\\f_\\205\\&6\\139\\&8#\\v\\SYN\\133\\245\\159\\237\\200\\201\\153\\173<\"]})]}, unBalancedTxRequiredSignatories = fromList [], unBalancedTxUtxoIndex = fromList [(TxOutRef {txOutRefId = 03f9f47b425054ee64166c33fd5d2c0e2af1dee96043978f9af378d0f598c992, txOutRefIdx = 0},TxOut {txOutAddress = Address {addressCredential = ScriptCredential b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341, addressStakingCredential = Nothing}, txOutValue = Value (Map [(,Map [(\"\",5000000)]),(d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27,Map [(0xb765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341,1)])]), txOutDatumHash = Just fdfe8b1fd89a8e2f520dd215faab47263bc0a91890e3e662ac2d3091213e0047})], unBalancedTxValidityTimeRange = Interval {ivFrom = LowerBound NegInf True, ivTo = UpperBound PosInf True}}"
+
+
+cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.53 UTC] [RequestId 44] [POST] /v2/wallets/00d3b1fc7af1236ee7f6226a83ed2ad360b91013/transactions-balance
+[cardano-wallet.wallet-engine:Info:20661] [2022-02-18 02:07:10.53 UTC] 00d3b1fc: Selection report (summarized):
+SelectionReportSummarized:
+  computedFee: 1.847497
+  adaBalanceOfSelectedInputs: 905.000000
+  adaBalanceOfExtraCoinSource: 0.000000
+  adaBalanceOfExtraCoinSink: 0.000000
+  adaBalanceOfRequestedOutputs: 7.000000
+  adaBalanceOfGeneratedChangeOutputs: 896.152503
+  numberOfSelectedInputs: 2
+  numberOfSelectedCollateralInputs: 1
+  numberOfRequestedOutputs: 1
+  numberOfGeneratedChangeOutputs: 1
+  numberOfUniqueNonAdaAssetsInSelectedInputs: 1
+  numberOfUniqueNonAdaAssetsInRequestedOutputs: 1
+  numberOfUniqueNonAdaAssetsInGeneratedChangeOutputs: 1
+
+[cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.60 UTC] [RequestId 44] POST /v2/wallets/00d3b1fc7af1236ee7f6226a83ed2ad360b91013/transactions-balance 202 Accepted in 0.069455843s
+[cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.66 UTC] [RequestId 45] [POST] /v2/wallets/00d3b1fc7af1236ee7f6226a83ed2ad360b91013/transactions-sign
+[cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.92 UTC] [RequestId 45] POST /v2/wallets/00d3b1fc7af1236ee7f6226a83ed2ad360b91013/transactions-sign 202 Accepted in 0.265330594s
+[cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.93 UTC] [RequestId 46] [POST] /v2/proxy/transactions
+[cardano-wallet.wallet-engine:Info:20661] [2022-02-18 02:07:10.93 UTC] Submitting external transaction 7990a975 to local node...
+[cardano-wallet.wallet-engine:Info:20661] [2022-02-18 02:07:10.95 UTC] Transaction 7990a975 accepted by local node
+tx:
+  7990a975
+  collateral 1st ac68e085
+  inputs 1st 03f9f47b
+  inputs 1st ac68e085
+  outputs address: 70b76520...9f21f341
+          coin: 7.000000
+          tokens:
+            - policy: d14457259bef6b6d1c209fd74b971d7786c9a9fe50b40dbbc73f0d27
+              tokens:
+                - token: b765208208961e20998c4f6ae6c72529ee53afbf8485a1a69f21f341
+                  quantity: 1
+  outputs address: 00cd59d8...bd6d4eb9
+          coin: 897.342222
+          tokens:
+            - policy: 5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c
+              tokens:
+                - token: 313233
+                  quantity: 1
+  []
+  metadata:
+  scriptValidity: valid
+
+[cardano-wallet.api-server:Info:20661] [2022-02-18 02:07:10.95 UTC] [RequestId 46] POST /v2/proxy/transactions 202 Accepted in 0.017316437s
+[cardano-wallet.wallet-engine:Info:19485] [2022-02-18 02:07:25.71 UTC] 00d3b1fc: Still in sync. Applied 9 blocks, 0 rollbacks in the last 300.012031196s. Current tip is [point 49aeef31 at slot 50780800].
+[cardano-wallet.wallet-engine:Info:19494] [2022-02-18 02:07:31.57 UTC] 00d3b1fc: discovered 1 new transaction(s)
+
+[lawrence:cardano.node.ChainDB:Notice:292] [2022-02-18 02:06:56.37 UTC] Chain extended, new tip: 49aeef31a6c60743130a26d7f28074ab1da9c46a9bc71e39202bb8898e2f6757 at slot 50780800
+[lawrence:cardano.node.Mempool:Info:386] [2022-02-18 02:07:10.95 UTC] fromList [("tx",Object (fromList [("txid",String "7990a975")])),("kind",String "TraceMempoolAddedTx"),("mempoolSize",Object (fromList [("bytes",Number 8171.0),("numTxs",Number 1.0)]))]
+[lawrence:cardano.node.ChainDB:Notice:292] [2022-02-18 02:07:31.56 UTC] Chain extended, new tip: f37595032a0b7e6e491dfd3092f836cb22896d0c4e31f76242661f8565147091 at slot 50780835
+[lawrence:cardano.node.Mempool:Info:300] [2022-02-18 02:07:31.58 UTC] fromList [("kind",String "TraceMempoolRemoveTxs"),("txs",Array [Object (fromList [("txid",String "7990a975")])]),("mempoolSize",Object (fromList [("bytes",Number 0.0),("numTxs",Number 0.0)]))]
+
+
+
+Received Time
+> 11 minutes ago (2022-02-18 02:01:31 UTC)
+Included In
+Epoch 187, Block 3329305
+Confirmations
+22
+Transaction ID
+03f9f47b425054ee64166c33fd5d2c0e2af1dee96043978f9af378d0f598c992
+Minted tokens
+1 asset1d4k...ryf3
+From addresses
+addr_test1qz8z7g...zqh6sahg9snuhvgy
+1000 ADA
+To addresses
+addr_test1wzmk2g...gdxnuslxsgtzxks7
+5 ADA
+1 asset1d4k...ryf3
+addr_test1qqp7sz...zqh6sahg9sfkrmux
+994.641517 ADA
+Total Output
+999.641517 ADA
+Transaction Fee
+0.358483 ADA
+
+
+Testnet Script Address:
+############################################################
+Address
+addr_test1wzmk2gyzpztpugye338k4ek8y557u5a0h7zgtgdxnuslxsgtzxks7
+Transactions
+3
+Ada Balance
+12 ADA
+Tokens balance
+1 asset1d4k...ryf3
+1 asset10kc...g7fh
+Transactions
+Received Time
+> 15 minutes ago (2022-02-18 02:07:31 UTC)
+Transaction ID
+7990a975cb738b09e7976edd8c1b33f75ce1cb8dc9d9a5a74c25711f18eef452
+Minted tokens
+1 asset1ums...mvwv
+From addresses
+addr_test1wzmk2g...gdxnuslxsgtzxks7
+5 ADA
+1 asset1d4k...ryf3
+addr_test1qp9zck...e6l0tdf6us9dnurc
+900 ADA
+To addresses
+addr_test1wzmk2g...gdxnuslxsgtzxks7
+7 ADA
+1 asset1d4k...ryf3
+addr_test1qrx4nk...e6l0tdf6usz48f9u
+897.342222 ADA
+1 asset1ums...mvwv
+
+asset1umsvpjmp9a66mzk5plknqd7ew78j4rwxfmmvwv
+Ticker:
+Name:
+Description:
+Policy ID: 5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c
+Asset Name: 313233
+
+
+https://testnet.cardanoscan.io/token/asset1umsvpjmp9a66mzk5plknqd7ew78j4rwxfmmvwv
+
+Policy Id
+5da0aac9e4a7a2a5d6590c5fcd368b38230b1685f59fedc8c999ad3c
+Fingerprint
+asset1umsvpjmp9a66mzk5plknqd7ew78j4rwxfmmvwv
+Asset Name
+123 (313233)
+Transaction Count
+2
+Created On
+02/17/2022 9:07:31 PM
