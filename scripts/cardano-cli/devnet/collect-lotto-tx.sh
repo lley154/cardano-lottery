@@ -1,0 +1,1 @@
+../collect-lotto-tx.sh

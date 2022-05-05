@@ -1,11 +1,9 @@
 cabal-version:      2.4
 name:               cardano-lottery
-version:            0.2.1.0
+version:            0.1.0.0
 
--- A short (one-line) description of the package.
 -- synopsis: A lottery build using plutus for the cardano blockchain
 
--- A longer description of the package.
 -- description:A lottery build using plutus for the cardano blockchain
 -- using a state machine design pattern with configurable lottery parameters
 
@@ -33,7 +31,6 @@ common lang
       -Wall -Wnoncanonical-monad-instances
       -Wincomplete-uni-patterns -Wincomplete-record-updates
       -Wredundant-constraints -Widentities -rtsopts
-      -- See Plutus Tx readme
       -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
     if flag(defer-plugin-errors)
         ghc-options: -fplugin-opt PlutusTx.Plugin:defer-errors
@@ -41,30 +38,65 @@ common lang
 library
     import: lang
     exposed-modules:
-      Lottery 
+      Types 
+      Utils
+      OnChain
+      OffChain
       TestLottery
+      Deploy
     build-depends:
       base >= 4.9 && < 5,
       aeson,
       bytestring,
+      base16-bytestring,
+      cardano-api,
       containers,
       freer-extras,
+      ghc-prim,
       playground-common,
       plutus-contract,
       plutus-tx-plugin,
       plutus-tx,
       plutus-ledger,
       plutus-ledger-api,
+      plutus-ledger-constraints,
       openapi3,
+      serialise,
       text,
       lens,
       data-default,
  
     hs-source-dirs: src
 
-executable cardano-lottery-pab
+executable cardano-lottery-pab-sim
   import: lang
-  main-is: Main.hs
+  main-is: Main-sim.hs
+  hs-source-dirs: app
+  other-modules: LottoContract
+  ghc-options:
+    -threaded
+  build-depends:
+    base >= 4.9 && < 5,
+    aeson -any,
+    cardano-lottery -any,
+    cardano-api,
+    data-default -any,
+    freer-simple -any,
+    freer-extras -any,
+    openapi3 -any,
+    plutus-contract -any,
+    plutus-ledger-api -any,
+    plutus-pab -any,
+    plutus-tx -any,
+    prettyprinter -any,
+    plutus-ledger -any,
+    req ^>= 3.9.0,
+    text -any,
+    bytestring -any
+ 
+executable cardano-lottery-pab-run
+  import: lang
+  main-is: Main-run.hs
   hs-source-dirs: app
   other-modules: LottoContract
   ghc-options:
@@ -80,9 +112,63 @@ executable cardano-lottery-pab
     plutus-contract -any,
     plutus-ledger-api -any,
     plutus-pab -any,
+    plutus-tx -any,
     prettyprinter -any,
     plutus-ledger -any,
     req ^>= 3.9.0,
-    text -any
+    text -any 
  
 
+executable cardano-lottery-scripts
+    main-is: Main-scripts.hs
+    hs-source-dirs:
+        scripts
+        test
+    default-language: Haskell2010
+    other-modules:
+    ghc-options: -Wall -Wnoncanonical-monad-instances
+                 -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints -Widentities -rtsopts
+                 -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+    build-depends:
+        base >= 4.9 && <5,
+        aeson -any,
+        bytestring -any,
+        cardano-crypto-class -any,
+        containers -any,
+        data-default -any,
+        flat -any,
+        freer-extras -any,
+        hedgehog -any,
+        prettyprinter -any,
+        QuickCheck -any,
+        tasty -any,
+        tasty-hunit -any,
+        tasty-golden -any,
+        tasty-quickcheck -any,
+        text -any,
+        lens -any,
+        mtl -any,
+        row-types -any,
+        freer-simple -any,
+        foldl -any,
+        streaming -any,
+        directory -any,
+        filepath -any,
+        serialise -any,
+        plutus-core -any,
+        plutus-ledger-api -any,
+        plutus-tx -any,
+        plutus-contract -any,
+        plutus-chain-index -any,
+        plutus-ledger -any,
+        optparse-applicative -any,
+        aeson-pretty -any,
+        cardano-api -any,
+        cardano-binary -any,
+        cardano-lottery -any,
+        cborg -any,
+        memory -any
+
+    if !(impl(ghcjs) || os(ghcjs))
+        build-depends: plutus-tx-plugin -any

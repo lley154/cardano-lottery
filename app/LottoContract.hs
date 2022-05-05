@@ -18,31 +18,29 @@ module LottoContract(
 import           Data.Aeson                             (FromJSON (..), ToJSON (..))                                                      
 import qualified Data.OpenApi                           as OpenApi
 import           GHC.Generics                           (Generic)
-import           Data.Text.Prettyprint.Doc              (Pretty (..), viaShow)
-import           Lottery                                as Lottery
+import           Prettyprinter                          (Pretty (..), viaShow)
+import           OffChain
 import qualified Plutus.PAB.Effects.Contract.Builtin    as Builtin
 import           Prelude                                hiding (init)
 
 
-data StarterContracts = 
-                        InitLottoContract
-                      | UseLottoContract Lottery.Lottery
+data StarterContracts = InitLottoContract
+                      | UseLottoContract
                       deriving (Eq, Ord, Show, Generic)
                       deriving anyclass OpenApi.ToSchema
                       deriving anyclass (FromJSON, ToJSON)
 
 instance Pretty StarterContracts where
     pretty = viaShow
+ 
 
-   
 instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [InitLottoContract]
+    getDefinitions = [ InitLottoContract, UseLottoContract ]
     getSchema =  \case
-        UseLottoContract _   -> Builtin.endpointsToSchemas @Lottery.LottoUseSchema   
-        InitLottoContract    -> Builtin.endpointsToSchemas @Lottery.LottoInitSchema
+        InitLottoContract    -> Builtin.endpointsToSchemas @LottoInitSchema
+        UseLottoContract     -> Builtin.endpointsToSchemas @LottoUseSchema   
    
     getContract = \case
-        UseLottoContract lt  -> Builtin.SomeBuiltin $ Lottery.useEndpoints lt
-        InitLottoContract    -> Builtin.SomeBuiltin Lottery.initEndpoint
-
-
+        InitLottoContract    -> Builtin.SomeBuiltin initEndpoint
+        UseLottoContract     -> Builtin.SomeBuiltin useEndpoint
+     

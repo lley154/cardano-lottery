@@ -1,0 +1,1 @@
+../end-lotto-tx.sh

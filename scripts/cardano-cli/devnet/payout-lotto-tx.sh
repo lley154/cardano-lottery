@@ -1,0 +1,1 @@
+../payout-lotto-tx.sh
