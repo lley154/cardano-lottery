@@ -93,9 +93,9 @@ lottoId' = decodeHex txIdBS -- use the txBS as the unique lotto id
 
 lvParams :: LottoValidatorParams
 lvParams = LottoValidatorParams
-    {   lvpLottoId              = lottoId'
-    ,   lvpDifficulty           = difficultyInt
-    ,   lvpPotSplit             = jackpotSplitInt
+    { lvpLottoId = lottoId'
+    , lvpDifficulty = difficultyInt
+    , lvpPotSplit = jackpotSplitInt
     }
 
 lotValAddr' :: Ledger.Address
@@ -103,11 +103,11 @@ lotValAddr' = Ledger.scriptAddress$ untypedLottoValidator $ PlutusTx.toBuiltinDa
 
 bvParams :: BuyValidatorParams
 bvParams = BuyValidatorParams
-    {   bvpAdminPkh             = lottoAdminPaymentPkh 
-    ,   bvpBuyTokenValue        = buyTokVal'
-    ,   bvpLottoTokenValue      = lotTokVal'
-    ,   bvpLottoValAddr         = lotValAddr'
-    ,   bvpTicketCost           = ticketCostInt
+    { bvpAdminPkh = lottoAdminPaymentPkh 
+    , bvpBuyTokenValue = buyTokVal'
+    , bvpLottoTokenValue = lotTokVal'
+    , bvpLottoValAddr = lotValAddr'
+    , bvpTicketCost = ticketCostInt
     }
 
 buyValAddr' :: Ledger.Address
@@ -116,8 +116,8 @@ buyValAddr' = Ledger.scriptAddress $ untypedBuyValidator $ PlutusTx.toBuiltinDat
 
 tmpParams :: TicketMintParams
 tmpParams = TicketMintParams
-    {   tmpBuyTokenValue        = buyTokVal'
-    ,   tmpBuyValAddr           = buyValAddr'
+    { tmpBuyTokenValue = buyTokVal'
+    , tmpBuyValAddr = buyValAddr'
     }
 
 mph :: MintingPolicyHash
@@ -199,28 +199,28 @@ writeRedeemerInit =
             }
         red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ ThreadTokenRedeemer txOutRef'
     in
-        writeJSON "plutus-scripts/redeemer-thread-token-mint.json" red
+        writeJSON "deploy/redeemer-thread-token-mint.json" red
 
 
 writeRedeemerOpen :: IO ()
 writeRedeemerOpen = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Open
     in
-        writeJSON "plutus-scripts/redeemer-lotto-open.json" red
+        writeJSON "deploy/redeemer-lotto-open.json" red
 
 
 writeRedeemerStartBuy :: IO ()
 writeRedeemerStartBuy = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ StartBuy
     in
-        writeJSON "plutus-scripts/redeemer-lotto-startbuy.json" red
+        writeJSON "deploy/redeemer-lotto-startbuy.json" red
 
 
 writeRedeemerBuyTicket :: IO ()
 writeRedeemerBuyTicket = 
     let red  = Scripts.Redeemer $ PlutusTx.toBuiltinData BuyTicket
     in
-        writeJSON "plutus-scripts/redeemer-buy-ticket.json" red
+        writeJSON "deploy/redeemer-buy-ticket.json" red
   
         
 writeRedeemerTicketMint :: IO ()
@@ -233,42 +233,42 @@ writeRedeemerTicketMint =
             }
         red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ bMintRed
     in
-        writeJSON "plutus-scripts/redeemer-ticket-mint.json" red
+        writeJSON "deploy/redeemer-ticket-mint.json" red
 
 
 writeRedeemerStopBuy :: IO ()
 writeRedeemerStopBuy = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ StopBuy
     in
-        writeJSON "plutus-scripts/redeemer-lotto-stopbuy.json" red
+        writeJSON "deploy/redeemer-lotto-stopbuy.json" red
 
 
 writeRedeemerTransferToken :: IO ()
 writeRedeemerTransferToken = 
     let red  = Scripts.Redeemer $ PlutusTx.toBuiltinData TransferToken
     in
-        writeJSON "plutus-scripts/redeemer-buy-transfertoken.json" red
+        writeJSON "deploy/redeemer-buy-transfertoken.json" red
   
      
 writeRedeemerClose :: IO ()
 writeRedeemerClose = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Close
     in
-        writeJSON "plutus-scripts/redeemer-lotto-close.json" red
+        writeJSON "deploy/redeemer-lotto-close.json" red
 
 
 writeRedeemerDraw :: IO ()
 writeRedeemerDraw = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Draw $ decodeHex txIdBS
     in
-        writeJSON "plutus-scripts/redeemer-lotto-draw.json" red
+        writeJSON "deploy/redeemer-lotto-draw.json" red
 
 
 writeRedeemerLottoRedeem :: IO ()
 writeRedeemerLottoRedeem = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Redeem $ Value.TokenName buyTokenBS
     in
-        writeJSON "plutus-scripts/redeemer-lotto-redeem.json" red
+        writeJSON "deploy/redeemer-lotto-redeem.json" red
 
 
 writeRedeemerTicketBurn :: IO ()
@@ -280,133 +280,133 @@ writeRedeemerTicketBurn =
             }
         red = Scripts.Redeemer $ PlutusTx.toBuiltinData buyMintRed
     in
-        writeJSON "plutus-scripts/redeemer-ticket-burn.json" red
+        writeJSON "deploy/redeemer-ticket-burn.json" red
 
 
 writeRedeemerCalc :: IO ()
 writeRedeemerCalc = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Calc
     in
-        writeJSON "plutus-scripts/redeemer-lotto-calc.json" red
+        writeJSON "deploy/redeemer-lotto-calc.json" red
 
 
 writeRedeemerPayout :: IO ()
 writeRedeemerPayout = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Payout
     in
-        writeJSON "plutus-scripts/redeemer-lotto-payout.json" red
+        writeJSON "deploy/redeemer-lotto-payout.json" red
 
 
 writeRedeemerEnd :: IO ()
 writeRedeemerEnd = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ End
     in
-        writeJSON "plutus-scripts/redeemer-lotto-end.json" red
+        writeJSON "deploy/redeemer-lotto-end.json" red
 
 
 writeRedeemerCollect :: IO ()
 writeRedeemerCollect = 
     let red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Collect
     in
-        writeJSON "plutus-scripts/redeemer-lotto-collect.json" red
+        writeJSON "deploy/redeemer-lotto-collect.json" red
 
 
 writeDatumInit :: IO ()
 writeDatumInit = 
     let lAdmin = LottoAdmin
-            {   adminPkh                  = lottoAdminPaymentPkh  
-            ,   sponsorPkh                    = sponsorPaymentPkh
-            ,   lottoValAddr              = lotValAddr'
-            ,   lottoTokenValue           = lotTokVal'
-            ,   buyValAddr                = buyValAddr'
-            ,   buyTokenValue             = buyTokVal'
-            ,   ticketMph                = mph
-            ,   percentFees               = percentFeesInt
-            ,   ticketCost                = ticketCostInt
-            ,   difficulty                = difficultyInt
-            --,   deadline                = spDeadline sp
+            { adminPkh = lottoAdminPaymentPkh  
+            , sponsorPkh = sponsorPaymentPkh
+            , lottoValAddr = lotValAddr'
+            , lottoTokenValue = lotTokVal'
+            , buyValAddr = buyValAddr'
+            , buyTokenValue = buyTokVal'
+            , ticketMph = mph
+            , percentFees = percentFeesInt
+            , ticketCost = ticketCostInt
+            , difficulty = difficultyInt
+            --, deadline = spDeadline sp
             }
 
-        lDatum = LottoDat { 
-                   a  = lAdmin
-                ,  w  = [(sponsorPaymentPkh,[])] -- the sponsor pkh is always the 1st element in list
-                ,  j  = 10000000
-                ,  s  = 0 
-                ,  t  = 0
-                ,  f  = 0
-                ,  b  = AssocMap.singleton sponsorPaymentPkh 0
-                ,  l  = 0
-                ,  h  = []
-                }
+        lDatum = LottoDat 
+            { lottoAdmin  = lAdmin
+            , winner = [(sponsorPaymentPkh,[])] -- the sponsor pkh is always the 1st element in list
+            , jackpot = 10000000
+            , seqNum = 0 
+            , treasury = 0
+            , fees = 0
+            , beneficiaries = AssocMap.singleton sponsorPaymentPkh 0
+            , lottoState = 0
+            , winNums = []
+            }
 
         dat = PlutusTx.toBuiltinData lDatum
 
     in 
-        writeJSON "plutus-scripts/lotto-datum-init.datum" dat
+        writeJSON "deploy/lotto-datum-init.datum" dat
 
 
 writeDatumStartBuy :: IO ()
 writeDatumStartBuy = 
 
     let bDat = BuyDat 
-              {  bdTicketTotal       = 0
-              ,  bdTotalBuyValue     = 2000000  -- min ada required to lock token at script address
+              { bdTicketTotal = 0
+              , bdTotalBuyValue = 2000000  -- min ada required to lock token at script address
               }
 
         dat = PlutusTx.toBuiltinData bDat
 
     in 
-        writeJSON "plutus-scripts/buy-datum-startbuy.datum" dat
+        writeJSON "deploy/buy-datum-startbuy.datum" dat
 
 
 writeLottoTokenName :: IO ()
-writeLottoTokenName = writeJSON "plutus-scripts/lotto-token-name.json" lottoTokenName
+writeLottoTokenName = writeJSON "deploy/lotto-token-name.json" lottoTokenName
 
 writeBuyTokenName :: IO ()
-writeBuyTokenName = writeJSON "plutus-scripts/buy-token-name.json" buyTokenName
+writeBuyTokenName = writeJSON "deploy/buy-token-name.json" buyTokenName
 
 writeLottoTokenValue :: IO ()
-writeLottoTokenValue = writeJSON "plutus-scripts/lotto-token-value.json" lotTokVal'
+writeLottoTokenValue = writeJSON "deploy/lotto-token-value.json" lotTokVal'
 
 writeBuyTokenValue :: IO ()
-writeBuyTokenValue = writeJSON "plutus-scripts/buy-token-value.json" buyTokVal'
+writeBuyTokenValue = writeJSON "deploy/buy-token-value.json" buyTokVal'
 
 writeLottoValAddr :: IO ()
-writeLottoValAddr = writeJSON "plutus-scripts/lotto-val-addr.json" lotValAddr'
+writeLottoValAddr = writeJSON "deploy/lotto-val-addr.json" lotValAddr'
 
 writeBuyValAddr :: IO ()
-writeBuyValAddr = writeJSON "plutus-scripts/buy-val-addr.json" buyValAddr'
+writeBuyValAddr = writeJSON "deploy/buy-val-addr.json" buyValAddr'
 
 writeJackpotSplit :: IO ()
-writeJackpotSplit  = writeJSON "plutus-scripts/jackpot-split.json" jackpotSplitInt
+writeJackpotSplit  = writeJSON "deploy/jackpot-split.json" jackpotSplitInt
 
 writeLottoValidator :: IO (Either (FileError ()) ())
-writeLottoValidator = writeValidator "plutus-scripts/lotto-validator.plutus" $ untypedLottoValidator $ PlutusTx.toBuiltinData lvParams
+writeLottoValidator = writeValidator "deploy/lotto-validator.plutus" $ untypedLottoValidator $ PlutusTx.toBuiltinData lvParams
 
 writeLottoValidatorHash :: IO ()
-writeLottoValidatorHash = writeJSON "plutus-scripts/lotto-validator.hash" $ PlutusTx.toBuiltinData $ untypedLottoHash $ PlutusTx.toBuiltinData lvParams
+writeLottoValidatorHash = writeJSON "deploy/lotto-validator.hash" $ PlutusTx.toBuiltinData $ untypedLottoHash $ PlutusTx.toBuiltinData lvParams
 
 writeBuyValidator :: IO (Either (FileError ()) ())
-writeBuyValidator = writeValidator "plutus-scripts/buy-validator.plutus" $ untypedBuyValidator $ PlutusTx.toBuiltinData bvParams
+writeBuyValidator = writeValidator "deploy/buy-validator.plutus" $ untypedBuyValidator $ PlutusTx.toBuiltinData bvParams
 
 writeBuyValidatorHash :: IO ()
-writeBuyValidatorHash = writeJSON "plutus-scripts/buy-validator.hash" $ PlutusTx.toBuiltinData $ untypedBuyHash $ PlutusTx.toBuiltinData bvParams
+writeBuyValidatorHash = writeJSON "deploy/buy-validator.hash" $ PlutusTx.toBuiltinData $ untypedBuyHash $ PlutusTx.toBuiltinData bvParams
 
 writeThreadTokenPolicyHash :: IO ()
-writeThreadTokenPolicyHash = writeJSON "plutus-scripts/lotto-thread-token-policy.hash" $ PlutusTx.toBuiltinData $ Scripts.mintingPolicyHash threadTokenPolicy
+writeThreadTokenPolicyHash = writeJSON "deploy/lotto-thread-token-policy.hash" $ PlutusTx.toBuiltinData $ Scripts.mintingPolicyHash threadTokenPolicy
 
 writeTicketPolicyHash :: IO ()
-writeTicketPolicyHash = writeJSON "plutus-scripts/ticket-policy.hash" $ PlutusTx.toBuiltinData $ Scripts.mintingPolicyHash $ ticketMintPolicy $ PlutusTx.toBuiltinData tmpParams
+writeTicketPolicyHash = writeJSON "deploy/ticket-policy.hash" $ PlutusTx.toBuiltinData $ Scripts.mintingPolicyHash $ ticketMintPolicy $ PlutusTx.toBuiltinData tmpParams
 
 -- pull out the validator from a minting policy
 mintValidator :: Ledger.MintingPolicy -> Ledger.Validator
 mintValidator pol = Ledger.Validator $ unMintingPolicyScript pol
 
 writeThreadTokenPolicy :: IO (Either (FileError ()) ())
-writeThreadTokenPolicy = writeValidator "plutus-scripts/lotto-thread-token-policy.plutus" $ mintValidator $ threadTokenPolicy
+writeThreadTokenPolicy = writeValidator "deploy/lotto-thread-token-policy.plutus" $ mintValidator $ threadTokenPolicy
 
 writeTicketPolicy :: IO (Either (FileError ()) ())
-writeTicketPolicy = writeValidator "plutus-scripts/ticket-policy.plutus" $ mintValidator $ ticketMintPolicy $ PlutusTx.toBuiltinData tmpParams
+writeTicketPolicy = writeValidator "deploy/ticket-policy.plutus" $ mintValidator $ ticketMintPolicy $ PlutusTx.toBuiltinData tmpParams
 
 
 -- | Decode from hex base 16 to a base 10 bytestring is needed because

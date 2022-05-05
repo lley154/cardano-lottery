@@ -81,25 +81,25 @@ import Utils
 --      - ticketCost = ticket cost
 --      - difficulty = difficult of the lotto (ie. the number of digits in the winning number)
 --      - deadline = buy lotto tickets *before the deadline and close (and draw) the lotto *after* the deadline
--- w = the (w)inners
--- j = (j)ackpot
--- s = lotto (s)equence number (it increments with every new lotto cycle)
--- t = lotto (t)reasury
--- f = lotto admin (f)ees
--- b = (b)eneficiaries
--- l = (l)otto state (0 = init, 1 = open, 2 = closed, 3 = redeem, 4 = payout, 5 = end)
--- h = array of winning integer digits representing the base10 digits of the (h)ash from the close output tx
+-- winner = the winner + sponsor
+-- jackpot = the size of the jackpot
+-- seqNum = the lotto sequence number (it increments with every new lotto cycle)
+-- treasury = the lotto treasury
+-- fees = the lotto admin fees
+-- beneficiaries = the beneficiaries which include the winner and the sponsor
+-- lottoState = state is (0 = init, 1 = open, 2 = closed, 3 = redeem, 4 = payout, 5 = end)
+-- winNums = an array of winning integer digits representing the base10 digits of the (h)ash from the close output tx
 
 data LottoDat = LottoDat
-    { a :: !LottoAdmin                                      -- 0
-    , w :: ![(Address.PaymentPubKeyHash, [Integer])]        -- 1
-    , j :: !Integer                                         -- 2
-    , s :: !Integer                                         -- 3
-    , t :: !Integer                                         -- 4
-    , f :: !Integer                                         -- 5
-    , b :: AssocMap.Map Address.PaymentPubKeyHash Integer   -- 6
-    , l :: !Integer                                         -- 7
-    , h :: ![Integer]                                       -- 8
+    { lottoAdmin        :: !LottoAdmin                                      -- 0
+    , winner            :: ![(Address.PaymentPubKeyHash, [Integer])]        -- 1
+    , jackpot           :: !Integer                                         -- 2
+    , seqNum            :: !Integer                                         -- 3
+    , treasury          :: !Integer                                         -- 4
+    , fees              :: !Integer                                         -- 5
+    , beneficiaries     :: AssocMap.Map Address.PaymentPubKeyHash Integer   -- 6
+    , lottoState        :: !Integer                                         -- 7
+    , winNums           :: ![Integer]                                       -- 8
     } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
 
 PlutusTx.makeIsDataIndexed ''LottoDat [('LottoDat, 0)]
@@ -302,27 +302,27 @@ validInputs scriptAddr txVal (x:xs)
 {-# INLINABLE verifyOpenDat #-}
 verifyOpenDat :: LottoDat -> LottoDat -> Bool
 verifyOpenDat new old =                 
-    sponsorPkh (a old) == sponsorPkh (a new) --can't change sponsor until governance is implemented
-    && (lottoTokenValue (a old) == lottoTokenValue (a new))
-    && (buyTokenValue (a old) == buyTokenValue (a new))
-    && (ticketMph   (a old) == ticketMph   (a new))
-    && (difficulty (a old) == difficulty (a new))
-    && (length (w new) == 1)
+    sponsorPkh (lottoAdmin old) == sponsorPkh (lottoAdmin new) --can't change sponsor until governance is implemented
+    && (lottoTokenValue (lottoAdmin old) == lottoTokenValue (lottoAdmin new))
+    && (buyTokenValue (lottoAdmin old) == buyTokenValue (lottoAdmin new))
+    && (ticketMph   (lottoAdmin old) == ticketMph   (lottoAdmin new))
+    && (difficulty (lottoAdmin old) == difficulty (lottoAdmin new))
+    && (length (winner new) == 1)
     && checkJackpot 
-    && (modulo (s old + 1) 255 == s new) 
+    && (modulo (seqNum old + 1) 255 == seqNum new) 
     && checkTreasury 
-    && (f old == f new)
-    && (l new == 1)
+    && (fees old == fees new)
+    && (lottoState new == 1)
   where
     checkJackpot :: Bool
     checkJackpot = 
-        if j old > t old then j old <= j new   
-        else j old + divide (t old) 2 <= j new
+        if jackpot old > treasury old then jackpot old <= jackpot new   
+        else jackpot old + divide (treasury old) 2 <= jackpot new
 
     checkTreasury :: Bool
     checkTreasury = 
-        if j old > t old then t old == t new
-        else divide (t old) 2 == t new
+        if jackpot old > treasury old then treasury old == treasury new
+        else divide (treasury old) 2 == treasury new
 
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -330,13 +330,13 @@ verifyOpenDat new old =
 {-# INLINABLE verifyStartBuyDat #-}
 verifyStartBuyDat :: LottoDat -> LottoDat -> Bool
 verifyStartBuyDat new old =
-    (a old == a new) 
-    && (w old == w new) 
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f new == f new)
-    && (l old == l new)
+    (lottoAdmin old == lottoAdmin new) 
+    && (winner old == winner new) 
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees new == fees new)
+    && (lottoState old == lottoState new)
 
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -344,25 +344,25 @@ verifyStartBuyDat new old =
 {-# INLINABLE verifyStopBuyDat #-}
 verifyStopBuyDat :: LottoDat -> LottoDat -> Value.Value -> Address.Address ->  [Contexts.TxInInfo] -> Bool
 verifyStopBuyDat new old buyTokVal' addr txIns =              
-    a old == a new 
-    && (w old == w new) 
-    && (s old == s new) 
-    && (l old == l new)
+    lottoAdmin old == lottoAdmin new 
+    && (winner old == winner new) 
+    && (seqNum old == seqNum new) 
+    && (lottoState old == lottoState new)
     && checkDistribution
     && checkTotalBuyValue
   where     
     -- The total $$$ value of tickets bought during this lotto cycle
-    totalBuyValue = (j new - j old) + (t new - t old) + (f new - f old)
+    totalBuyValue = (jackpot new - jackpot old) + (treasury new - treasury old) + (fees new - fees old)
 
     -- The percentage of ticket costs that goes to treasury and lotto admin fees
     perctFee :: Integer
-    perctFee = percentFees (a old)
+    perctFee = percentFees (lottoAdmin old)
 
     checkDistribution :: Bool
     checkDistribution =    
-        (j new == j old + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100)
-        && (t new == t old + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100)
-        && (f new == f old + divide (totalBuyValue * perctFee) 100)
+        (jackpot new == jackpot old + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100)
+        && (treasury new == treasury old + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100)
+        && (fees new == fees old + divide (totalBuyValue * perctFee) 100)
 
     -- Get the current total value of the buy contract
     getTotalBuyValue = Ada.lovelaceValueOf (abs(totalBuyValue)) <> buyTokVal'
@@ -376,13 +376,13 @@ verifyStopBuyDat new old buyTokVal' addr txIns =
 {-# INLINABLE verifyCloseDat #-}
 verifyCloseDat :: LottoDat -> LottoDat -> Bool
 verifyCloseDat new old =
-    a old == a new
-    && (w old == w new)
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new)  
-    && (l new == 2)
+    lottoAdmin old == lottoAdmin new
+    && (winner old == winner new)
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new)  
+    && (lottoState new == 2)
               
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -390,20 +390,19 @@ verifyCloseDat new old =
 {-# INLINABLE verifyDrawDat #-}
 verifyDrawDat :: LottoDat -> LottoDat -> [Contexts.TxInInfo] -> BuiltinByteString -> Bool
 verifyDrawDat new old txInList txId'' =
-    a old == a new 
+    lottoAdmin old == lottoAdmin new 
     && validTxIn txInList -- verify that the tx is part of our inputs
-    && (w old == w new)
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new)   
-    && (l new == 3) 
-    && (getHexInt txId'' == h new) -- verify the winning numbers derived by the close tx hash
-    
+    && (winner old == winner new)
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new)   
+    && (lottoState new == 3) 
+    && (getHexInt txId'' == winNums new) -- verify the winning numbers derived by the close tx hash
   where
-    lotValAddr' = lottoValAddr (a old)
-    lotTokVal' = lottoTokenValue (a old)
-    buyTokVal' = buyTokenValue (a old)
+    lotValAddr' = lottoValAddr (lottoAdmin old)
+    lotTokVal' = lottoTokenValue (lottoAdmin old)
+    buyTokVal' = buyTokenValue (lottoAdmin old)
 
     getTxIdBS :: Contexts.TxInInfo -> BuiltinByteString
     getTxIdBS tx' = getTxId(Tx.txOutRefId (Contexts.txInInfoOutRef tx'))
@@ -411,7 +410,7 @@ verifyDrawDat new old txInList txId'' =
     -- The tx input value needs to include the datum value + lotto token value + buy token value
     getTxValue :: Value.Value
     getTxValue = Ada.lovelaceValueOf amount <> lotTokVal' <> buyTokVal'
-      where amount = j old + t old + f old
+      where amount = jackpot old + treasury old + fees old
 
     -- Confirm that the txId maticketCosthes the input utxo and that the input utxo
     -- was locked at the script address
@@ -427,25 +426,25 @@ verifyDrawDat new old txInList txId'' =
 {-# INLINABLE verifyRedeemDat #-}  
 verifyRedeemDat :: LottoDat -> LottoDat -> Value.TokenName -> Integer -> Bool
 verifyRedeemDat new old tn difficulty =  
-    a old == a new    
-    && (head (w old) == head (w new)) -- make sure the sponsor is still in the list
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new) 
-    && (l old == l new) 
-    && (h old == h new)
+    lottoAdmin old == lottoAdmin new    
+    && (head (winner old) == head (winner new)) -- make sure the sponsor is still in the list
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new) 
+    && (lottoState old == lottoState new) 
+    && (winNums old == winNums new)
     && maxWinNum
     && validWinNum -- verify that the token maticketCosthes the winning numbers
   where
     (seq, num) = getIntsFromToken (Value.unTokenName tn) difficulty
 
     validWinNum :: Bool
-    validWinNum =    seq == s old
-                    && num == take difficulty (h old)
+    validWinNum =    seq == seqNum old
+                    && num == take difficulty (winNums old)
 
     maxWinNum :: Bool
-    maxWinNum = length (w new) <= 2 -- the winner + the beneficiary
+    maxWinNum = length (winner new) <= 2 -- the winner + the beneficiary
             
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -453,15 +452,15 @@ verifyRedeemDat new old tn difficulty =
 {-# INLINABLE verifyCalcDat #-}
 verifyCalcDat :: LottoDat -> LottoDat -> Integer -> Bool
 verifyCalcDat new old potSplit' =
-    a old == a new   
-    && (length (w new) > 1)  -- has to be at least one winner
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new) 
-    && (calcPayouts (j old) (w old) potSplit' == b new)
-    && (l new == 4)
-    && (h old == h new)
+    lottoAdmin old == lottoAdmin new   
+    && (length (winner new) > 1)  -- has to be at least one winner
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new) 
+    && (calcPayouts (jackpot old) (winner old) potSplit' == beneficiaries new)
+    && (lottoState new == 4)
+    && (winNums old == winNums new)
 
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -469,17 +468,17 @@ verifyCalcDat new old potSplit' =
 {-# INLINABLE verifyPayoutDat #-}
 verifyPayoutDat :: LottoDat -> LottoDat -> Address.PaymentPubKeyHash -> Bool
 verifyPayoutDat new old pkh =
-    AssocMap.member pkh (b old) -- check to see if the pkh is in the beneficiary list
-    && (a old == a new)
-    && ((j old - potPay) == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new) 
-    && (AssocMap.delete pkh (b old) == b new) 
-    && (l old == l new)
-    && (h old == h new) 
+    AssocMap.member pkh (beneficiaries old) -- check to see if the pkh is in the beneficiary list
+    && (lottoAdmin old == lottoAdmin new)
+    && ((jackpot old - potPay) == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new) 
+    && (AssocMap.delete pkh (beneficiaries old) == beneficiaries new) 
+    && (lottoState old == lottoState new)
+    && (winNums old == winNums new) 
   where
-    potPay = case AssocMap.lookup pkh (b old) of
+    potPay = case AssocMap.lookup pkh (beneficiaries old) of
                 Just amount -> amount
                 Nothing     -> 0
 
@@ -489,12 +488,12 @@ verifyPayoutDat new old pkh =
 {-# INLINABLE verifyEndDat #-}
 verifyEndDat :: LottoDat -> LottoDat -> Bool
 verifyEndDat new old =
-    a old == a new
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f old == f new)  
-    && (l new == 5)
+    lottoAdmin old == lottoAdmin new
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees old == fees new)  
+    && (lottoState new == 5)
 
 
 -- | Validate the lotto datum changes between the input datum vs the output datum
@@ -502,15 +501,15 @@ verifyEndDat new old =
 {-# INLINABLE verifyCollectDat #-}
 verifyCollectDat :: LottoDat -> LottoDat -> Bool
 verifyCollectDat new old =
-    a old == a new 
-    && (w old == w new) 
-    && (j old == j new)  
-    && (s old == s new) 
-    && (t old == t new) 
-    && (f new == 0)
-    && (b old == b new) 
-    && (l old == l new)
-    && (h old == h new)
+    lottoAdmin old == lottoAdmin new 
+    && (winner old == winner new) 
+    && (jackpot old == jackpot new)  
+    && (seqNum old == seqNum new) 
+    && (treasury old == treasury new) 
+    && (fees new == 0)
+    && (beneficiaries old == beneficiaries new) 
+    && (lottoState old == lottoState new)
+    && (winNums old == winNums new)
             
 
 -- | Calculate the payout to the winner and the sponsor based on the 
@@ -519,7 +518,6 @@ verifyCollectDat new old =
 {-# INLINABLE calcPayouts #-}
 calcPayouts :: Integer -> [(Address.PaymentPubKeyHash, [Integer])] -> Integer -> AssocMap.Map Address.PaymentPubKeyHash Integer
 calcPayouts j' w' potSplit' = finalPayout
-    
   where     
     potSplit = divide (j' * potSplit') 100
 
@@ -531,7 +529,6 @@ calcPayouts j' w' potSplit' = finalPayout
     finalPayout :: AssocMap.Map Address.PaymentPubKeyHash Integer
     finalPayout = AssocMap.insert (fst(w'!!0)) potSplit totalPayout
     
-
        
 -- | Veriy the payout that is sent to the winner and the sponsor
 --   We need to look at the list of pkh that were provided with the
@@ -543,7 +540,7 @@ verifyPayout :: LottoDat -> LottoDat -> [Crypto.PubKeyHash] -> Bool
 verifyPayout new old pkh' = verifyPayoutDat new old getPaymentPubKey
   where
     getKeys :: [Address.PaymentPubKeyHash]
-    getKeys = AssocMap.keys (b old)
+    getKeys = AssocMap.keys (beneficiaries old)
 
     getPubKeyHash :: [Crypto.PubKeyHash]
     getPubKeyHash = fmap Address.unPaymentPubKeyHash getKeys
@@ -577,10 +574,10 @@ mkLottoValidator params dat red ctx =
     info :: ATxInfo
     info = aScriptContextTxInfo ctx
 
-    adminPkh' = adminPkh (a dat)
-    lotTokVal' = lottoTokenValue (a dat)
-    lotValAddr' = lottoValAddr (a dat)
-    buyTokVal' = buyTokenValue (a dat)
+    adminPkh' = adminPkh (lottoAdmin dat)
+    lotTokVal' = lottoTokenValue (lottoAdmin dat)
+    lotValAddr' = lottoValAddr (lottoAdmin dat)
+    buyTokVal' = buyTokenValue (lottoAdmin dat)
 
     sigByLotAdmin :: Bool
     sigByLotAdmin =  txSignedBy' info $ Address.unPaymentPubKeyHash adminPkh'
@@ -596,8 +593,8 @@ mkLottoValidator params dat red ctx =
                     Nothing  -> traceError "LV13"       -- error decoding data
         _   -> traceError "LV14"                        -- expected exactly one continuing output
 
-    jackpotOld = j dat + t dat + f dat
-    jackpotNew = j outputDat + t outputDat + f outputDat
+    jackpotOld = jackpot dat + treasury dat + fees dat
+    jackpotNew = jackpot outputDat + treasury outputDat + fees outputDat
 
     getOldDatVal :: Value.Value
     getOldDatVal = Ada.lovelaceValueOf jackpotOld <> lotTokVal' <> buyTokVal' 
@@ -616,9 +613,9 @@ mkLottoValidator params dat red ctx =
 
     validOpen :: Bool
     validOpen = 
-        ( l dat == 0 || l dat == 5) -- check for valid lotto state
+        ( lottoState dat == 0 || lottoState dat == 5) -- check for valid lotto state
         && sigByLotAdmin
-        && (percentFees (a outputDat) >= 0 && percentFees (a outputDat) <= 100) -- ensure valid percent fees
+        && (percentFees (lottoAdmin outputDat) >= 0 && percentFees (lottoAdmin outputDat) <= 100) -- ensure valid percent fees
         && (lvpPotSplit params >= 0 && lvpPotSplit params <= 100) -- ensure valid pot split percent
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info))     
         && (verifyOpenDat outputDat dat)
@@ -626,28 +623,28 @@ mkLottoValidator params dat red ctx =
 
     validStartBuy :: Bool
     validStartBuy = 
-        ( l dat == 1) -- check for valid lotto state
+        ( lottoState dat == 1) -- check for valid lotto state
         && sigByLotAdmin
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info))     
         && (verifyStartBuyDat outputDat dat)
         && (validOutputs lotValAddr' getNewBuyDatVal (txInfoOutputs info))
 
                 -- commenting out deadline check for now for beta testing
-                -- && (contains (to $ deadline (a dat)) $ txInfoValidRange info)
+                -- && (contains (to $ deadline (lottoAdmin dat)) $ txInfoValidRange info)
     
     validStopBuy :: Bool
     validStopBuy = 
-        ( l dat == 1) -- check for valid lotto state
+        ( lottoState dat == 1) -- check for valid lotto state
         && sigByLotAdmin
         && (validInputs lotValAddr' getOldBuyDatVal (txInfoInputs info))     
         && (verifyStopBuyDat outputDat dat buyTokVal' lotValAddr' (txInfoInputs info))
         && (validOutputs lotValAddr' getNewDatVal (txInfoOutputs info))
         -- commenting out deadline check for now for beta testing
-        -- && (contains (from $ deadline (a dat)) $ txInfoValidRange info)
+        -- && (contains (from $ deadline (lottoAdmin dat)) $ txInfoValidRange info)
 
     validClose :: Bool
     validClose = 
-        (l dat == 1)  -- check for valid lotto state
+        (lottoState dat == 1)  -- check for valid lotto state
         && sigByLotAdmin
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info)) 
         && (verifyCloseDat outputDat dat)
@@ -655,29 +652,29 @@ mkLottoValidator params dat red ctx =
 
     validDraw :: BuiltinByteString -> Bool
     validDraw txId' = 
-        (l dat == 2)  -- check for valid lotto state
+        (lottoState dat == 2)  -- check for valid lotto state
         && sigByLotAdmin
         && (verifyDrawDat outputDat dat (txInfoInputs info) txId')
         && (validOutputs lotValAddr' getNewDatVal (txInfoOutputs info))
 
     validRedeem :: Value.TokenName -> Bool
     validRedeem tn' = 
-        (l dat == 3) -- check for valid lotto state
+        (lottoState dat == 3) -- check for valid lotto state
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info)) 
         && (verifyRedeemDat outputDat dat tn' (lvpDifficulty params))
         && (validOutputs lotValAddr' getNewDatVal (txInfoOutputs info))
         --only needed if not burning the ticket
-        && (validWinOut (minAda <> (ticketMphValue (ticketMph (a dat)) tn' 1))  (txInfoOutputs info))
+        && (validWinOut (minAda <> (ticketMphValue (ticketMph (lottoAdmin dat)) tn' 1))  (txInfoOutputs info))
 
         -- Commenting out for now due to going over max tx size limits
         -- once vasil hard fork arrives, we should be able to re-enable.
         -- this is nice to have when there is only one winner, but is required
         -- for multiple winner scenarios                
-        -- && (txInfoMint info == ticketMphValue (ticketMph (a dat)) tn' (-1))
+        -- && (txInfoMint info == ticketMphValue (ticketMph (lottoAdmin dat)) tn' (-1))
 
     validCalc :: Bool
     validCalc = 
-        (l dat == 3) -- check for valid lotto state
+        (lottoState dat == 3) -- check for valid lotto state
         && sigByLotAdmin
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info)) 
         && (verifyCalcDat outputDat dat (lvpPotSplit params))
@@ -685,7 +682,7 @@ mkLottoValidator params dat red ctx =
     
     validPayout :: Bool
     validPayout = 
-        (l dat == 4) -- check for valid lotto state
+        (lottoState dat == 4) -- check for valid lotto state
         && (validInputs lotValAddr' getOldDatVal (txInfoInputs info))
         && (verifyPayout outputDat dat (txInfoSignatories info))
         && (validOutputs lotValAddr' getNewDatVal (txInfoOutputs info))

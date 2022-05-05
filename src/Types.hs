@@ -91,8 +91,8 @@ PlutusTx.makeIsDataIndexed ''ThreadTokenRedeemer [('ThreadTokenRedeemer,0)]
 
 -- | The mint ticket reeemder passes the ticket to be minted or burned
 data MintTicketRedeemer = MintTicketRedeemer
-    {   polarity                  :: !Bool  -- True = Mint, False = Burn
-    ,   bTicketNum                :: !Value.TokenName
+    { polarity                  :: !Bool  -- True = Mint, False = Burn
+    , bTicketNum                :: !Value.TokenName
     } deriving Haskell.Show
 
 PlutusTx.makeIsDataIndexed ''MintTicketRedeemer [('MintTicketRedeemer,0)] 
@@ -121,9 +121,9 @@ PlutusTx.makeLift ''BuyRedeemer
 --   recommended to use the lotto admin utxo that is provided to the threadtoken when the 
 --   the lotto is initialized.
 data LottoValidatorParams = LottoValidatorParams
-    {   lvpLottoId                :: !BuiltinByteString
-    ,   lvpDifficulty             :: !Integer
-    ,   lvpPotSplit               :: !Integer -- the % of the jackpot goes to the sponsor
+    { lvpLottoId                :: !BuiltinByteString
+    , lvpDifficulty             :: !Integer
+    , lvpPotSplit               :: !Integer -- the % of the jackpot goes to the sponsor
     } deriving Haskell.Show
 
 PlutusTx.makeIsDataIndexed ''LottoValidatorParams [('LottoValidatorParams,0)] 
@@ -134,12 +134,12 @@ PlutusTx.makeLift ''LottoValidatorParams
 --   that a new buy validator is needed.  The same is true for the other parameters within
 --   the buy validator params.
 data BuyValidatorParams = BuyValidatorParams
-    {   bvpAdminPkh               :: !Address.PaymentPubKeyHash
-    ,   bvpBuyTokenValue          :: !Value.Value
-    ,   bvpLottoTokenValue        :: !Value.Value
-    ,   bvpLottoValAddr           :: !Address.Address
-    ,   bvpTicketCost             :: !Integer
-    --,   bvpDeadline             :: !Time.POSIXTime 
+    { bvpAdminPkh               :: !Address.PaymentPubKeyHash
+    , bvpBuyTokenValue          :: !Value.Value
+    , bvpLottoTokenValue        :: !Value.Value
+    , bvpLottoValAddr           :: !Address.Address
+    , bvpTicketCost             :: !Integer
+    --, bvpDeadline             :: !Time.POSIXTime 
     } deriving Haskell.Show
 
 PlutusTx.makeIsDataIndexed ''BuyValidatorParams [('BuyValidatorParams,0)] 
@@ -151,8 +151,8 @@ PlutusTx.makeLift ''BuyValidatorParams
 --   This is the only way the ticket minting policy knows that it is ok to mint a
 --   a buy ticket.
 data TicketMintParams = TicketMintParams
-    {   tmpBuyTokenValue          :: !Value.Value
-    ,   tmpBuyValAddr             :: !Address.Address
+    { tmpBuyTokenValue          :: !Value.Value
+    , tmpBuyValAddr             :: !Address.Address
     } deriving Haskell.Show
 
 PlutusTx.makeIsDataIndexed ''TicketMintParams [('TicketMintParams,0)] 
@@ -161,9 +161,8 @@ PlutusTx.makeLift ''TicketMintParams
 -- | The Buy datum keeps count of the number of ticket purchased during
 --   a lottery cycle and the amount of ada locked at the buy script address
 data BuyDat = BuyDat
-    { 
-        bdTicketTotal             :: !Integer
-    ,   bdTotalBuyValue           :: !Integer
+    { bdTicketTotal             :: !Integer
+    , bdTotalBuyValue           :: !Integer
     } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
 
 PlutusTx.makeIsDataIndexed ''BuyDat [('BuyDat, 0)]

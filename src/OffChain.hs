@@ -87,7 +87,6 @@ data StartParams = StartParams
 -- | Init contract
 initLotto :: StartParams -> Contract (Last Lottery) s T.Text ()
 initLotto sp = do
-
     txOutRef <- Wallet.getUnspentOutput
     let txBS = TxId.getTxId(Tx.txOutRefId txOutRef) <> intToBBS(Tx.txOutRefIdx txOutRef) 
         lottoTokenName  = Value.TokenName $ sha2_256 txBS
@@ -106,52 +105,52 @@ initLotto sp = do
         difficulty' = spDifficulty sp
         potSplit' = spSponWeight sp  
         lvParams = LottoValidatorParams
-            {   lvpLottoId              = lottoId'
-            ,   lvpDifficulty           = difficulty'
-            ,   lvpPotSplit             = potSplit' 
+            { lvpLottoId = lottoId'
+            , lvpDifficulty = difficulty'
+            , lvpPotSplit = potSplit' 
             }
         lotValAddr' = Address.scriptAddress $ lottoValidator $ PlutusTx.toBuiltinData lvParams
         bvParams = BuyValidatorParams
-            {   bvpAdminPkh             = adminPkh'
-            ,   bvpBuyTokenValue        = buyTokVal'
-            ,   bvpLottoTokenValue      = lotTokVal'
-            ,   bvpLottoValAddr         = lotValAddr'
-            ,   bvpTicketCost           = abs(spTicket sp)
+            { bvpAdminPkh = adminPkh'
+            , bvpBuyTokenValue = buyTokVal'
+            , bvpLottoTokenValue = lotTokVal'
+            , bvpLottoValAddr = lotValAddr'
+            , bvpTicketCost = abs(spTicket sp)
             }
         tmpParams = TicketMintParams
-            {   tmpBuyTokenValue        = buyTokVal'
-            ,   tmpBuyValAddr           = buyValAddr'
+            { tmpBuyTokenValue = buyTokVal'
+            , tmpBuyValAddr = buyValAddr'
             }
         buyValAddr' = Address.scriptAddress $ buyValidator $ PlutusTx.toBuiltinData bvParams
         mph = Scripts.mintingPolicyHash $ ticketMintPolicy $ PlutusTx.toBuiltinData tmpParams
         lAdmin = LottoAdmin
-            {   adminPkh                = adminPkh' 
-            ,   sponsorPkh              = spSpon sp
-            ,   lottoValAddr            = lotValAddr'
-            ,   lottoTokenValue         = lotTokVal'
-            ,   buyValAddr              = buyValAddr'
-            ,   buyTokenValue           = buyTokVal'
-            ,   ticketMph               = mph
-            ,   percentFees             = spFees sp
-            ,   ticketCost              = abs(spTicket sp)
-            ,   difficulty              = difficulty'
+            { adminPkh = adminPkh' 
+            , sponsorPkh = spSpon sp
+            , lottoValAddr = lotValAddr'
+            , lottoTokenValue = lotTokVal'
+            , buyValAddr = buyValAddr'
+            , buyTokenValue = buyTokVal'
+            , ticketMph = mph
+            , percentFees = spFees sp
+            , ticketCost = abs(spTicket sp)
+            , difficulty = difficulty'
             }
         lDat = LottoDat 
-            {  a                        = lAdmin
-            ,  w                        = [(spSpon sp, [])] -- the sponsor pkh is always the 1st element in list
-            ,  j                        = abs(spJackpot sp)
-            ,  s                        = 0 
-            ,  t                        = 0
-            ,  f                        = 0
-            ,  b                        = AssocMap.singleton (spSpon sp) 0
-            ,  l                        = 0
-            ,  h                        = []
+            { lottoAdmin = lAdmin
+            , winner = [(spSpon sp, [])] -- the sponsor pkh is always the 1st element in list
+            , jackpot = abs(spJackpot sp)
+            , seqNum = 0 
+            , treasury = 0
+            , fees = 0
+            , beneficiaries = AssocMap.singleton (spSpon sp) 0
+            , lottoState = 0
+            , winNums = []
             }
         lottery = Lottery
-            {   lotId                   = lottoId'
-            ,   lotDifficulty           = difficulty'
-            ,   lotTokenName            = lottoTokenName
-            ,   lotPotSplit             = potSplit'
+            { lotId = lottoId'
+            , lotDifficulty = difficulty'
+            , lotTokenName = lottoTokenName
+            , lotPotSplit = potSplit'
             }
         red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ ThreadTokenRedeemer txOutRef
         dat = PlutusTx.toBuiltinData lDat
@@ -178,7 +177,6 @@ initLotto sp = do
 -- | Find the lotto validator onchain using the lotto params and the threadtoken
 findLottery :: LottoValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, LottoDat)
 findLottery params cs tn = do
-    
     utxos <- utxosAt $ Address.scriptHashAddress $ lottoHash $ PlutusTx.toBuiltinData params
     let xs = [ (oref, o)
              | (oref, o) <- toList utxos
@@ -196,13 +194,12 @@ findLottery params cs tn = do
 -- | Open contract
 openLotto :: Lottery -> StartParams -> Contract w s T.Text ()
 openLotto lot sp = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "openLotto: found lotto utxo with datum= " ++ Haskell.show ld
@@ -213,46 +210,46 @@ openLotto lot sp = do
     -- recalc the buy validator because the adminPkh is a parameter to 
     -- the buy validator
     let adminPkh' = spAdmin sp
-        sponsorPkh'   = sponsorPkh (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        lotValAddr' = lottoValAddr (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
+        sponsorPkh'   = sponsorPkh (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        lotValAddr' = lottoValAddr (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
         buyValAddr' = Address.scriptAddress $ buyValidator $ PlutusTx.toBuiltinData bvParams
         bvParams = BuyValidatorParams
-            {   bvpAdminPkh             = adminPkh'
-            ,   bvpBuyTokenValue        = buyTokVal'
-            ,   bvpLottoTokenValue      = lotTokVal'
-            ,   bvpLottoValAddr         = lotValAddr'
-            ,   bvpTicketCost           = abs(spTicket sp)
+            { bvpAdminPkh = adminPkh'
+            , bvpBuyTokenValue = buyTokVal'
+            , bvpLottoTokenValue = lotTokVal'
+            , bvpLottoValAddr = lotValAddr'
+            , bvpTicketCost = abs(spTicket sp)
             } 
         lAdmin = LottoAdmin
-            {   adminPkh                = adminPkh' 
-            ,   sponsorPkh              = sponsorPkh (a ld) -- can't change benificiary until governance is implemented
-            ,   lottoValAddr            = lottoValAddr (a ld)
-            ,   lottoTokenValue         = lottoTokenValue (a ld)
-            ,   buyValAddr              = buyValAddr'
-            ,   buyTokenValue           = buyTokenValue (a ld)
-            ,   ticketMph               = ticketMph   (a ld)
-            ,   percentFees             = spFees sp
-            ,   ticketCost              = abs(spTicket sp)
-            ,   difficulty              = difficulty (a ld)
+            { adminPkh = adminPkh' 
+            , sponsorPkh = sponsorPkh (lottoAdmin ld) -- can't change benificiary until governance is implemented
+            , lottoValAddr = lottoValAddr (lottoAdmin ld)
+            , lottoTokenValue = lottoTokenValue (lottoAdmin ld)
+            , buyValAddr = buyValAddr'
+            , buyTokenValue = buyTokenValue (lottoAdmin ld)
+            , ticketMph = ticketMph   (lottoAdmin ld)
+            , percentFees = spFees sp
+            , ticketCost = abs(spTicket sp)
+            , difficulty = difficulty (lottoAdmin ld)
             }
-        fromTreasury = if j ld > t ld then 0
-                        else divide (t ld) 2
-        newTreasury = if j ld > t ld then t ld
-                        else divide (t ld) 2
+        fromTreasury = if jackpot ld > treasury ld then 0
+                        else divide (treasury ld) 2
+        newTreasury = if jackpot ld > treasury ld then treasury ld
+                        else divide (treasury ld) 2
         lDat = LottoDat 
-              {  a                      = lAdmin
-              ,  w                      = [(sponsorPkh', [])] -- the sponsor pkh is always the 1st element in list
-              ,  j                      = j ld + abs(spJackpot sp) + fromTreasury
-              ,  s                      = Haskell.mod (s ld + 1) 255
-              ,  t                      = newTreasury
-              ,  f                      = f ld
-              ,  b                      = AssocMap.singleton sponsorPkh' 0  -- initialize the benificary map
-              ,  l                      = 1
-              ,  h                      = []
-              }
-        totalValue = j lDat + t lDat + f lDat
+            { lottoAdmin = lAdmin
+            , winner = [(sponsorPkh', [])] -- the sponsor pkh is always the 1st element in list
+            , jackpot = jackpot ld + abs(spJackpot sp) + fromTreasury
+            , seqNum = Haskell.mod (seqNum ld + 1) 255
+            , treasury = newTreasury
+            , fees = fees ld
+            , beneficiaries = AssocMap.singleton sponsorPkh' 0  -- initialize the benificary map
+            , lottoState = 1
+            , winNums = []
+            }
+        totalValue =jackpot lDat +treasury lDat + fees lDat
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Open
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -272,13 +269,12 @@ openLotto lot sp = do
 -- | StartBuy contract
 startBuy :: Lottery -> Contract w s T.Text ()
 startBuy lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "startBuy: found lotto utxo with datum= " ++ Haskell.show ld
@@ -286,32 +282,32 @@ startBuy lot = do
     logInfo $ "startBuy: lotto validator hash= " ++ (Haskell.show $ lottoHash $ PlutusTx.toBuiltinData lvParams)
   
     let lDat = LottoDat 
-              {  a                      = a ld
-              ,  w                      = w ld
-              ,  j                      = j ld
-              ,  s                      = s ld
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = b ld
-              ,  l                      = l ld
-              ,  h                      = h ld
-              }
-        totalValue = j lDat + t lDat + f lDat
+            { lottoAdmin = lottoAdmin ld
+            , winner = winner ld
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = beneficiaries ld
+            , lottoState = lottoState ld
+            , winNums = winNums ld
+            }
+        totalValue =jackpot lDat +treasury lDat + fees lDat
         bDat = BuyDat 
-              {  bdTicketTotal          = 0
-              ,  bdTotalBuyValue        = 2000000 -- min Ada to lock buy token at the script address
+              { bdTicketTotal = 0
+              , bdTotalBuyValue = 2000000 -- min Ada to lock buy token at the script address
               }
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        lotValAddr' = lottoValAddr (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        ticketCost' = ticketCost (a ld)
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        lotValAddr' = lottoValAddr (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        ticketCost' = ticketCost (lottoAdmin ld)
         bvParams = BuyValidatorParams
-            {   bvpAdminPkh             = adminPkh'
-            ,   bvpBuyTokenValue        = buyTokVal'
-            ,   bvpLottoTokenValue      = lotTokVal'
-            ,   bvpLottoValAddr         = lotValAddr'
-            ,   bvpTicketCost           = ticketCost'
+            { bvpAdminPkh = adminPkh'
+            , bvpBuyTokenValue = buyTokVal'
+            , bvpLottoTokenValue = lotTokVal'
+            , bvpLottoValAddr = lotValAddr'
+            , bvpTicketCost = ticketCost'
             }
         red = Scripts.Redeemer $ PlutusTx.toBuiltinData $ StartBuy
         datBuy = Scripts.Datum $ PlutusTx.toBuiltinData bDat
@@ -332,7 +328,6 @@ startBuy lot = do
 -- | Find the buy validator onchain using the buy params and buy token
 findBuyValidator :: BuyValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, BuyDat)
 findBuyValidator params cs tn = do
-    
     utxos <- utxosAt $ Address.scriptHashAddress $ buyHash $ PlutusTx.toBuiltinData params
     let xs = [ (oref, o)
              | (oref, o) <- toList utxos
@@ -350,12 +345,11 @@ findBuyValidator params cs tn = do
 -- | Buy contract
 buyLotto :: Lottery -> Integer -> Contract w s T.Text ()
 buyLotto lot ticketNum = do
- 
     let tt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot 
+             { lvpLottoId = lotId lot
+             , lvpDifficulty = lotDifficulty lot
+             , lvpPotSplit = lotPotSplit lot 
              }
        
     (oref, _, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol tt
@@ -364,23 +358,23 @@ buyLotto lot ticketNum = do
     logInfo $ "buyTicket: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
     logInfo $ "buyTicket: ticket number= " ++ Haskell.show ticketNum
     
-    let adminPkh' = adminPkh (a ld)
-        lotValAddr' = lottoValAddr (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyValAddr' = buyValAddr (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        ticketCost' = ticketCost (a ld)
+    let adminPkh' = adminPkh (lottoAdmin ld)
+        lotValAddr' = lottoValAddr (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyValAddr' = buyValAddr (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        ticketCost' = ticketCost (lottoAdmin ld)
         bvParams = BuyValidatorParams
-            {   bvpAdminPkh             = adminPkh'
-            ,   bvpBuyTokenValue        = buyTokVal'
-            ,   bvpLottoTokenValue      = lotTokVal'
-            ,   bvpLottoValAddr         = lotValAddr'
-            ,   bvpTicketCost           = ticketCost'
+            { bvpAdminPkh = adminPkh'
+            , bvpBuyTokenValue = buyTokVal'
+            , bvpLottoTokenValue = lotTokVal'
+            , bvpLottoValAddr = lotValAddr'
+            , bvpTicketCost = ticketCost'
             }
         tmpParams = TicketMintParams
             {   
-                tmpBuyTokenValue        = buyTokVal'
-            ,   tmpBuyValAddr           = buyValAddr'
+              tmpBuyTokenValue = buyTokVal'
+            , tmpBuyValAddr = buyValAddr'
             }
         (buyCs, buyTn, _) = (Value.flattenValue buyTokVal')!!0
 
@@ -389,16 +383,16 @@ buyLotto lot ticketNum = do
     logInfo $ "buyTicket: buy validator buyHash= " ++ Haskell.show (buyHash $ PlutusTx.toBuiltinData bvParams)
 
     let bDat = BuyDat 
-            {  bdTicketTotal            = bdTicketTotal bd + 1
-            ,  bdTotalBuyValue          = bdTotalBuyValue bd + (ticketCost' * 100)
+            { bdTicketTotal            = bdTicketTotal bd + 1
+            , bdTotalBuyValue          = bdTotalBuyValue bd + (ticketCost' * 100)
             }
         ticketNumBS  = strToBS(Haskell.show ticketNum)
-        s' = fromBuiltin(intToBBS(s ld))
+        s' = fromBuiltin(intToBBS(seqNum ld))
         tn = Value.tokenName(BS.append s' ticketNumBS)
         buyMintRed = MintTicketRedeemer
             {
-                polarity                = True
-            ,   bTicketNum              = tn
+              polarity = True
+            , bTicketNum  = tn
             }
         totalValue = bdTotalBuyValue bDat
         redBuy = Scripts.Redeemer $ PlutusTx.toBuiltinData BuyTicket
@@ -423,30 +417,29 @@ buyLotto lot ticketNum = do
 -- | TransferToken contract
 transferToken :: Lottery -> Contract w s T.Text ()
 transferToken lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot 
+            }
        
     (oref, _, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "transferToken: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "transferToken: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "transferToken: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let adminPkh' = adminPkh (a ld)
-        lotValAddr' = lottoValAddr (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        ticketCost' = ticketCost (a ld)
+    let adminPkh' = adminPkh (lottoAdmin ld)
+        lotValAddr' = lottoValAddr (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        ticketCost' = ticketCost (lottoAdmin ld)
         bvParams = BuyValidatorParams
-            {   bvpAdminPkh             = adminPkh'
-            ,   bvpBuyTokenValue        = buyTokVal'
-            ,   bvpLottoTokenValue      = lotTokVal'
-            ,   bvpLottoValAddr         = lotValAddr'
-            ,   bvpTicketCost           = ticketCost'
+            { bvpAdminPkh = adminPkh'
+            , bvpBuyTokenValue = buyTokVal'
+            , bvpLottoTokenValue = lotTokVal'
+            , bvpLottoValAddr = lotValAddr'
+            , bvpTicketCost = ticketCost'
             }
         (buyCs, buyTn, _) = (Value.flattenValue buyTokVal')!!0
 
@@ -495,40 +488,40 @@ findLottoBuy params cs tn = do
 -- | StopBuy contract
 stopBuy :: Lottery -> Contract w s T.Text ()
 stopBuy lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId           = lotId lot
-             ,   lvpDifficulty        = lotDifficulty lot
-             ,   lvpPotSplit          = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot 
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "stopBuy: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "stopBuy: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "stopBuy: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let perctFee = percentFees (a ld)   
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
+    let perctFee = percentFees (lottoAdmin ld)   
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
         (buyCs, buyTn, _) = (Value.flattenValue buyTokVal')!!0
 
     (buyOref, buyOutput, _) <- findLottoBuy lvParams buyCs buyTn
     logInfo $ "stopBuy: found buy datum utxo buyOref= " ++ Haskell.show buyOref
 
-    let totalBuyValue = Value.valueOf (Tx._ciTxOutValue buyOutput) Ada.adaSymbol Ada.adaToken -- get buy total value from chain index query
+    -- get buy total value from chain index query
+    let totalBuyValue = Value.valueOf (Tx._ciTxOutValue buyOutput) Ada.adaSymbol Ada.adaToken 
         lDat = LottoDat 
-              {  a                      = a ld
-              ,  w                      = w ld
-              ,  j                      = j ld + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100
-              ,  s                      = s ld
-              ,  t                      = t ld + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100
-              ,  f                      = f ld + divide (totalBuyValue * perctFee) 100
-              ,  b                      = b ld
-              ,  l                      = l ld
-              ,  h                      = h ld
-              }
-        totalValue = j lDat + t lDat + f lDat
+            { lottoAdmin = lottoAdmin ld
+            , winner = winner ld
+            , jackpot = jackpot ld + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100
+            , seqNum = seqNum ld
+            , treasury = treasury ld + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100
+            , fees = fees ld + divide (totalBuyValue * perctFee) 100
+            , beneficiaries = beneficiaries ld
+            , lottoState = lottoState ld
+            , winNums = winNums ld
+            }
+        totalValue =jackpot lDat +treasury lDat + fees lDat
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData StopBuy
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -549,13 +542,12 @@ stopBuy lot = do
 -- | Close contract
 closeLotto :: Lottery -> Contract w s T.Text ()
 closeLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId           = lotId lot
-             ,   lvpDifficulty        = lotDifficulty lot
-             ,   lvpPotSplit          = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit  = lotPotSplit lot 
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "closeLotto: found lotto utxo with datum= " ++ Haskell.show ld
@@ -563,20 +555,20 @@ closeLotto lot = do
     logInfo $ "closeLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
     let lDat = LottoDat 
-              {  a                      = a ld
-              ,  w                      = w ld 
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = b ld
-              ,  l                      = 2
-              ,  h                      = h ld
-              }
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)             
-        totalValue = j ld + t ld + f ld
+            { lottoAdmin = lottoAdmin ld
+            , winner = winner ld 
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = beneficiaries ld
+            , lottoState = 2
+            , winNums = winNums ld
+            }
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)             
+        totalValue = jackpot ld + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Close
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -596,13 +588,12 @@ closeLotto lot = do
 -- | Draw contract
 drawLotto :: Lottery -> Contract w s T.Text ()
 drawLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot 
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "drawLotto: found lotto utxo with datum= " ++ Haskell.show ld
@@ -614,20 +605,20 @@ drawLotto lot = do
         txId    = getTxId $ Tx.txOutRefId oref
         txIdInt = getHexInt txId
         lDat = LottoDat 
-              {  a                      = a ld
-              ,  w                      = w ld 
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = b ld
-              ,  l                      = 3
-              ,  h                      = txIdInt
-              }            
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        totalValue = j ld + t ld + f ld
+            { lottoAdmin = lottoAdmin ld
+            , winner = winner ld 
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = beneficiaries ld
+            , lottoState  = 3
+            , winNums = txIdInt
+            }            
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        totalValue = jackpot ld + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Draw txId
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -650,7 +641,6 @@ drawLotto lot = do
 -- | Redeem contract
 redeemLotto :: Lottery -> Contract w s T.Text ()
 redeemLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
              {   lvpLottoId             = lotId lot
@@ -666,24 +656,24 @@ redeemLotto lot = do
     ownPkh <- ownPaymentPubKeyHash
 
     let diff = lotDifficulty lot
-        winNums = take diff (h ld)
-        winNum = intsToBS winNums
-        seq = intToBBS(s ld)
+        winNums' = take diff (winNums ld)
+        winNum = intsToBS winNums'
+        seq = intToBBS(seqNum ld)
         tn = Value.TokenName (appendByteString seq winNum)
         lDat = LottoDat 
-              {  a                      = a ld 
-              ,  w                      = w ld ++ [(ownPkh, winNums)]
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = b ld
-              ,  l                      = l ld 
-              ,  h                      = h ld
-              }
-        lotTokVal' = lottoTokenValue (a ld)
-        --buyValAddr' = buyValAddr (a ld)
-        buyTokVal' = buyTokenValue (a ld)
+            { lottoAdmin = lottoAdmin ld 
+            , winner = winner ld ++ [(ownPkh, winNums')]
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = beneficiaries ld
+            , lottoState = lottoState ld 
+            , winNums = winNums ld
+            }
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        --buyValAddr' = buyValAddr (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
         --buyMintRed = MintTicketRedeemer
         --    {
         --        polarity = False  -- burn the lotto token if the player has one
@@ -694,7 +684,7 @@ redeemLotto lot = do
         --        tmpBuyTokenValue        = buyTokVal'
         --    ,   tmpBuyValAddr           = buyValAddr'
         --    }
-        totalValue = j ld + t ld + f ld
+        totalValue = jackpot ld + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Redeem tn
         --redMint = Scripts.Redeemer $ PlutusTx.toBuiltinData buyMintRed
         datLotto = PlutusTx.toBuiltinData lDat
@@ -704,7 +694,7 @@ redeemLotto lot = do
         -- this is nice to have when there is only one winner, but is required
         -- for multiple winner scenarios  
         --valMint = Value.singleton (ticketCurSymbol $ PlutusTx.toBuiltinData tmpParams) tn (-1)
-        ticketValue = minAda <> ticketMphValue (ticketMph (a ld)) tn 1
+        ticketValue = minAda <> ticketMphValue (ticketMph (lottoAdmin ld)) tn 1
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
                                                               Haskell.<> lotTokVal' Haskell.<> buyTokVal')
             --Haskell.<> Constraints.mustMintValueWithRedeemer redMint valMint
@@ -725,13 +715,12 @@ redeemLotto lot = do
 -- | CalcPayout contract
 calcPayoutLotto :: Lottery -> Contract w s T.Text ()
 calcPayoutLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "calcPayoutLotto: found lotto utxo with datum= " ++ Haskell.show ld
@@ -739,20 +728,20 @@ calcPayoutLotto lot = do
     logInfo $ "calcPayoutLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
     let lDat = LottoDat 
-              {  a                      = a ld 
-              ,  w                      = w ld
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = calcPayouts (j ld) (w ld) (lotPotSplit lot)
-              ,  l                      = 4
-              ,  h                      = h ld
-              }
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        totalValue = j ld + t ld + f ld
+            { lottoAdmin = lottoAdmin ld 
+            , winner = winner ld
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = calcPayouts (jackpot ld) (winner ld) (lotPotSplit lot)
+            , lottoState = 4
+            , winNums = winNums ld
+            }
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        totalValue = jackpot ld + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Calc
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -772,13 +761,12 @@ calcPayoutLotto lot = do
 -- | Payout contract
 payoutLotto :: Lottery -> Contract w s T.Text ()
 payoutLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId           = lotId lot
-             ,   lvpDifficulty        = lotDifficulty lot
-             ,   lvpPotSplit          = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit  = lotPotSplit lot 
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     ownPkh <- ownPaymentPubKeyHash
@@ -787,21 +775,21 @@ payoutLotto lot = do
     logInfo $ "payoutLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
     logInfo $ "payoutLotto: ownPkh= " ++ Haskell.show ownPkh
 
-    let payout = getInteger(AssocMap.lookup ownPkh (b ld))
+    let payout = getInteger(AssocMap.lookup ownPkh (beneficiaries ld))
         lDat = LottoDat 
-              {  a                      = a ld 
-              ,  w                      = w ld 
-              ,  j                      = j ld - payout
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = AssocMap.delete ownPkh (b ld)
-              ,  l                      = l ld
-              ,  h                      = h ld
-              }
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        totalValue = j lDat + t ld + f ld
+            {  lottoAdmin = lottoAdmin ld 
+            ,  winner = winner ld 
+            ,  jackpot = jackpot ld - payout
+            ,  seqNum = seqNum ld 
+            ,  treasury = treasury ld
+            ,  fees = fees ld
+            ,  beneficiaries = AssocMap.delete ownPkh (beneficiaries ld)
+            ,  lottoState = lottoState ld
+            ,  winNums = winNums ld
+            }
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        totalValue =jackpot lDat + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Payout
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -821,13 +809,12 @@ payoutLotto lot = do
 -- | End contract
 endLotto :: Lottery -> Contract w s T.Text ()
 endLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "endLotto: found lotto utxo with datum= " ++ Haskell.show ld
@@ -835,20 +822,20 @@ endLotto lot = do
     logInfo $ "endLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
     let lDat = LottoDat 
-              {  a                      = a ld
-              ,  w                      = [] 
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = f ld
-              ,  b                      = AssocMap.empty
-              ,  l                      = 5
-              ,  h                      = []
-              }
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        totalValue = j ld + t ld + f ld
+            { lottoAdmin = lottoAdmin ld
+            , winner = [] 
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = fees ld
+            , beneficiaries = AssocMap.empty
+            , lottoState = 5
+            , winNums = []
+            }
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        totalValue = jackpot ld + treasury ld + fees ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ End
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
@@ -868,34 +855,33 @@ endLotto lot = do
 -- | Collect contract
 collectLotto :: Lottery -> Contract w s T.Text ()
 collectLotto lot = do
- 
     let lt = lotTokenName lot
         lvParams = LottoValidatorParams
-             {   lvpLottoId             = lotId lot
-             ,   lvpDifficulty          = lotDifficulty lot
-             ,   lvpPotSplit            = lotPotSplit lot 
-             }
+            { lvpLottoId = lotId lot
+            , lvpDifficulty = lotDifficulty lot
+            , lvpPotSplit = lotPotSplit lot 
+            }
        
     (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "collectLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "collectLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "collectLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let lDat = LottoDat 
-              {  a                      = a ld 
-              ,  w                      = w ld
-              ,  j                      = j ld
-              ,  s                      = s ld 
-              ,  t                      = t ld
-              ,  f                      = 0
-              ,  b                      = b ld
-              ,  l                      = l ld
-              ,  h                      = h ld
-              }
-        adminPkh' = adminPkh (a ld)
-        lotTokVal' = lottoTokenValue (a ld)
-        buyTokVal' = buyTokenValue (a ld)
-        totalValue = j ld + t ld
+    let lDat = LottoDat
+            { lottoAdmin = lottoAdmin ld 
+            , winner = winner ld
+            , jackpot = jackpot ld
+            , seqNum = seqNum ld 
+            , treasury = treasury ld
+            , fees = 0
+            , beneficiaries = beneficiaries ld
+            , lottoState = lottoState ld
+            , winNums = winNums ld
+            }
+        adminPkh' = adminPkh (lottoAdmin ld)
+        lotTokVal' = lottoTokenValue (lottoAdmin ld)
+        buyTokVal' = buyTokenValue (lottoAdmin ld)
+        totalValue = jackpot ld + treasury ld
         redLotto = Scripts.Redeemer $ PlutusTx.toBuiltinData $ Collect
         datLotto = PlutusTx.toBuiltinData lDat
         constraints = Constraints.mustPayToTheScript datLotto (Ada.lovelaceValueOf totalValue 
