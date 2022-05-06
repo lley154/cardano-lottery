@@ -1947,15 +1947,24 @@ Submit the tx with plutus script and wait 5 seconds...
 + /home/lawrence/.local/bin/cardano-cli transaction submit --tx-file /home/lawrence/src/cardano-lottery/work/end-tx-alonzo.tx --testnet-magic 42
 Transaction successfully submitted.
 
-### May 6, 2022
-###################################### TESTNET ################################
 
+
+### May 6, 2022
+##################################################################################################
+########################################## TESTNET ###############################################
+##################################################################################################
+
+LOTTO ADMIN
+############
 lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5 --cardano-mode --testnet-magic 1097911063
                            TxHash                                 TxIx        Amount
 --------------------------------------------------------------------------------------
 4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a     0        10000000 lovelace + TxOutDatumNone
 9bf48a110b5f5620f90bf484dfadba3ccabe4ae2bc760d9f01a19dc447c27b8f     0        900000000 lovelace + TxOutDatumNone
 
+
+PLAYER 
+######
 lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1vzhh5k62vdheacdylpzr5xy6kldylhrenqsm743hulngn5c34khju --cardano-mode --testnet-magic 1097911063
                            TxHash                                 TxIx        Amount
 --------------------------------------------------------------------------------------
@@ -1963,6 +1972,9 @@ lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1vzhh5
 d110d081ab71c282a96bd3b6051e606a9d54bb9a9cc56c9cafa87193cd76fd2a     0        100000000 lovelace + TxOutDatumNone
 lawrence@lawrence-MacBookAir:~$ 
 
+
+SPONSOR 
+#######
 lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1vzzrzjrckm7udfjm8jvfsw3t4w8zw989my85az49460sy6qmfy687 --cardano-mode --testnet-magic 1097911063
                            TxHash                                 TxIx        Amount
 --------------------------------------------------------------------------------------
@@ -4228,9 +4240,6 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 
 
 
-
-### MAINNET
-### May 6 ###
 
 
 
