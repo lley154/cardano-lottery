@@ -331,10 +331,10 @@ The sponsor will get a % of the jackpot rewards if there is a winner during the 
  
  
 ## Roadmap Items
-- Browser wallet integration
-- Plutus V2 updates/integration
-- Staking rewards of Ada locked in Lotto contract will go to the sponsor
 - Mobile app integration
+- Plutus V2 updates/integration
+- Browser wallet integration
+- Staking rewards of Ada locked in Lotto contract will go to the sponsor
 - Governance model/contract that allows for changing of the lotto parameters
 - Multi-player winners
 - Jackpot sweeteners (eg adding NFT and/or custom currencies)
