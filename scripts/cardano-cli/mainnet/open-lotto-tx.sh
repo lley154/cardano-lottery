@@ -1,0 +1,1 @@
+../open-lotto-tx.sh

@@ -1,0 +1,1 @@
+../draw-lotto-tx.sh

@@ -1,0 +1,1 @@
+../transfertoken-lotto-tx.sh
