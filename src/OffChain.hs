@@ -135,7 +135,7 @@ initLotto sp = do
             , ticketCost = abs(spTicket sp)
             , difficulty = difficulty'
             }
-        lDat = LottoDat 
+        lDat = LottoDatum 
             { lottoAdmin = lAdmin
             , winner = [(spSpon sp, [])] -- the sponsor pkh is always the 1st element in list
             , jackpot = abs(spJackpot sp)
@@ -175,7 +175,7 @@ initLotto sp = do
 
 
 -- | Find the lotto validator onchain using the lotto params and the threadtoken
-findLottery :: LottoValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, LottoDat)
+findLottery :: LottoValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, LottoDatum)
 findLottery params cs tn = do
     utxos <- utxosAt $ Address.scriptHashAddress $ lottoHash $ PlutusTx.toBuiltinData params
     let xs = [ (oref, o)
@@ -187,7 +187,7 @@ findLottery params cs tn = do
             Haskell.Left _          -> throwError "findLottery: datum missing"
             Haskell.Right (Scripts.Datum e) -> case PlutusTx.fromBuiltinData e of
                 Nothing -> throwError "findLottery: datum has wrong type"
-                Just d@LottoDat{} -> Haskell.return (oref, o, d)
+                Just d@LottoDatum{} -> Haskell.return (oref, o, d)
         _           -> throwError "findLottery: lotto utxo not found"
 
 
@@ -201,7 +201,7 @@ openLotto lot sp = do
             , lvpPotSplit = lotPotSplit lot
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "openLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "openLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "openLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -238,7 +238,7 @@ openLotto lot sp = do
                         else divide (treasury ld) 2
         newTreasury = if jackpot ld > treasury ld then treasury ld
                         else divide (treasury ld) 2
-        lDat = LottoDat 
+        lDat = LottoDatum 
             { lottoAdmin = lAdmin
             , winner = [(sponsorPkh', [])] -- the sponsor pkh is always the 1st element in list
             , jackpot = jackpot ld + abs(spJackpot sp) + fromTreasury
@@ -276,12 +276,12 @@ startBuy lot = do
             , lvpPotSplit = lotPotSplit lot
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "startBuy: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "startBuy: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "startBuy: lotto validator hash= " ++ (Haskell.show $ lottoHash $ PlutusTx.toBuiltinData lvParams)
   
-    let lDat = LottoDat 
+    let lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld
             , winner = winner ld
             , jackpot = jackpot ld
@@ -352,7 +352,7 @@ buyLotto lot ticketNum = do
              , lvpPotSplit = lotPotSplit lot 
              }
        
-    (oref, _, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol tt
+    (oref, _, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol tt
     logInfo $ "buyTicket: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "buyTicket: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "buyTicket: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -424,7 +424,7 @@ transferToken lot = do
             , lvpPotSplit = lotPotSplit lot 
             }
        
-    (oref, _, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, _, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "transferToken: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "transferToken: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "transferToken: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -468,7 +468,7 @@ transferToken lot = do
 --   We need to find that utxo to so we can spend it, as well as the Ada value too.   This utxo
 --   represents the amount of Ada that was collected during the minting of tickets during the buy
 --   phase.
-findLottoBuy :: LottoValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, LottoDat)
+findLottoBuy :: LottoValidatorParams -> Value.CurrencySymbol -> Value.TokenName -> Contract w s T.Text (Tx.TxOutRef, Tx.ChainIndexTxOut, LottoDatum)
 findLottoBuy params cs tn = do
     
     utxos <- utxosAt $ Address.scriptHashAddress $ lottoHash $ PlutusTx.toBuiltinData params
@@ -481,7 +481,7 @@ findLottoBuy params cs tn = do
             Haskell.Left _          -> throwError "findLottoBuy: datum missing"
             Haskell.Right (Scripts.Datum e) -> case PlutusTx.fromBuiltinData e of
                 Nothing -> throwError "findLottoBuy: datum has wrong type"
-                Just d@LottoDat{} -> Haskell.return (oref, o, d)
+                Just d@LottoDatum{} -> Haskell.return (oref, o, d)
         _           -> throwError "findLottoBuy: lotto utxo not found"
 
 
@@ -495,7 +495,7 @@ stopBuy lot = do
             , lvpPotSplit = lotPotSplit lot 
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "stopBuy: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "stopBuy: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "stopBuy: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -510,7 +510,7 @@ stopBuy lot = do
 
     -- get buy total value from chain index query
     let totalBuyValue = Value.valueOf (Tx._ciTxOutValue buyOutput) Ada.adaSymbol Ada.adaToken 
-        lDat = LottoDat 
+        lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld
             , winner = winner ld
             , jackpot = jackpot ld + divide (totalBuyValue * abs(divide (100 - perctFee) 2)) 100
@@ -549,12 +549,12 @@ closeLotto lot = do
             , lvpPotSplit  = lotPotSplit lot 
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "closeLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "closeLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "closeLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let lDat = LottoDat 
+    let lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld
             , winner = winner ld 
             , jackpot = jackpot ld
@@ -595,7 +595,7 @@ drawLotto lot = do
             , lvpPotSplit = lotPotSplit lot 
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "drawLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "clostTxCheckLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "clostTxCheckLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -604,7 +604,7 @@ drawLotto lot = do
     let txIdRef = Tx.txOutRefId oref
         txId    = getTxId $ Tx.txOutRefId oref
         txIdInt = getHexInt txId
-        lDat = LottoDat 
+        lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld
             , winner = winner ld 
             , jackpot = jackpot ld
@@ -648,7 +648,7 @@ redeemLotto lot = do
              ,   lvpPotSplit            = lotPotSplit lot 
              }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "redeemLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "redeemLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "redeemLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
@@ -660,7 +660,7 @@ redeemLotto lot = do
         winNum = intsToBS winNums'
         seq = intToBBS(seqNum ld)
         tn = Value.TokenName (appendByteString seq winNum)
-        lDat = LottoDat 
+        lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld 
             , winner = winner ld ++ [(ownPkh, winNums')]
             , jackpot = jackpot ld
@@ -722,12 +722,12 @@ calcPayoutLotto lot = do
             , lvpPotSplit = lotPotSplit lot
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "calcPayoutLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "calcPayoutLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "calcPayoutLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let lDat = LottoDat 
+    let lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld 
             , winner = winner ld
             , jackpot = jackpot ld
@@ -768,7 +768,7 @@ payoutLotto lot = do
             , lvpPotSplit  = lotPotSplit lot 
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     ownPkh <- ownPaymentPubKeyHash
     logInfo $ "payoutLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "payoutLotto: found lotto utxo oref= " ++ Haskell.show oref
@@ -776,7 +776,7 @@ payoutLotto lot = do
     logInfo $ "payoutLotto: ownPkh= " ++ Haskell.show ownPkh
 
     let payout = getInteger(AssocMap.lookup ownPkh (beneficiaries ld))
-        lDat = LottoDat 
+        lDat = LottoDatum 
             {  lottoAdmin = lottoAdmin ld 
             ,  winner = winner ld 
             ,  jackpot = jackpot ld - payout
@@ -816,12 +816,12 @@ endLotto lot = do
             , lvpPotSplit = lotPotSplit lot
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "endLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "endLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "endLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let lDat = LottoDat 
+    let lDat = LottoDatum 
             { lottoAdmin = lottoAdmin ld
             , winner = [] 
             , jackpot = jackpot ld
@@ -862,12 +862,12 @@ collectLotto lot = do
             , lvpPotSplit = lotPotSplit lot 
             }
        
-    (oref, o, ld@LottoDat{}) <- findLottery lvParams threadTokenCurSymbol lt
+    (oref, o, ld@LottoDatum{}) <- findLottery lvParams threadTokenCurSymbol lt
     logInfo $ "collectLotto: found lotto utxo with datum= " ++ Haskell.show ld
     logInfo $ "collectLotto: found lotto utxo oref= " ++ Haskell.show oref
     logInfo $ "collectLotto: lotto validator hash= " ++ Haskell.show (lottoHash $ PlutusTx.toBuiltinData lvParams)
 
-    let lDat = LottoDat
+    let lDat = LottoDatum
             { lottoAdmin = lottoAdmin ld 
             , winner = winner ld
             , jackpot = jackpot ld

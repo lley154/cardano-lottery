@@ -17,7 +17,7 @@ module OnChain
     (   buyHash
     ,   buyValidator
     ,   calcPayouts
-    ,   LottoDat(..)
+    ,   LottoDatum(..)
     ,   lottoHash
     ,   lottoValidator
     ,   minAda
@@ -90,7 +90,7 @@ import Utils
 -- lottoState = state is (0 = init, 1 = open, 2 = closed, 3 = redeem, 4 = payout, 5 = end)
 -- winNums = an array of winning integer digits representing the base10 digits of the (h)ash from the close output tx
 
-data LottoDat = LottoDat
+data LottoDatum = LottoDatum
     { lottoAdmin        :: !LottoAdmin                                      -- 0
     , winner            :: ![(Address.PaymentPubKeyHash, [Integer])]        -- 1
     , jackpot           :: !Integer                                         -- 2
@@ -102,8 +102,8 @@ data LottoDat = LottoDat
     , winNums           :: ![Integer]                                       -- 8
     } deriving (Haskell.Show, Generic, FromJSON, ToJSON)
 
-PlutusTx.makeIsDataIndexed ''LottoDat [('LottoDat, 0)]
-PlutusTx.makeLift ''LottoDat
+PlutusTx.makeIsDataIndexed ''LottoDatum [('LottoDatum, 0)]
+PlutusTx.makeLift ''LottoDatum
 
 -------------------------------------------------------------------------------
 -- The following wrappers have only been created for performance optimizations
@@ -300,7 +300,7 @@ validInputs scriptAddr txVal (x:xs)
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Open redeemer
 {-# INLINABLE verifyOpenDat #-}
-verifyOpenDat :: LottoDat -> LottoDat -> Bool
+verifyOpenDat :: LottoDatum -> LottoDatum -> Bool
 verifyOpenDat new old =                 
     sponsorPkh (lottoAdmin old) == sponsorPkh (lottoAdmin new) --can't change sponsor until governance is implemented
     && (lottoTokenValue (lottoAdmin old) == lottoTokenValue (lottoAdmin new))
@@ -328,7 +328,7 @@ verifyOpenDat new old =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the StartBuy redeemer
 {-# INLINABLE verifyStartBuyDat #-}
-verifyStartBuyDat :: LottoDat -> LottoDat -> Bool
+verifyStartBuyDat :: LottoDatum -> LottoDatum -> Bool
 verifyStartBuyDat new old =
     (lottoAdmin old == lottoAdmin new) 
     && (winner old == winner new) 
@@ -342,7 +342,7 @@ verifyStartBuyDat new old =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the StopBuy redeemer
 {-# INLINABLE verifyStopBuyDat #-}
-verifyStopBuyDat :: LottoDat -> LottoDat -> Value.Value -> Address.Address ->  [Contexts.TxInInfo] -> Bool
+verifyStopBuyDat :: LottoDatum -> LottoDatum -> Value.Value -> Address.Address ->  [Contexts.TxInInfo] -> Bool
 verifyStopBuyDat new old buyTokVal' addr txIns =              
     lottoAdmin old == lottoAdmin new 
     && (winner old == winner new) 
@@ -374,7 +374,7 @@ verifyStopBuyDat new old buyTokVal' addr txIns =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Close redeemer                            
 {-# INLINABLE verifyCloseDat #-}
-verifyCloseDat :: LottoDat -> LottoDat -> Bool
+verifyCloseDat :: LottoDatum -> LottoDatum -> Bool
 verifyCloseDat new old =
     lottoAdmin old == lottoAdmin new
     && (winner old == winner new)
@@ -388,7 +388,7 @@ verifyCloseDat new old =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Draw redeemer
 {-# INLINABLE verifyDrawDat #-}
-verifyDrawDat :: LottoDat -> LottoDat -> [Contexts.TxInInfo] -> BuiltinByteString -> Bool
+verifyDrawDat :: LottoDatum -> LottoDatum -> [Contexts.TxInInfo] -> BuiltinByteString -> Bool
 verifyDrawDat new old txInList txId'' =
     lottoAdmin old == lottoAdmin new 
     && validTxIn txInList -- verify that the tx is part of our inputs
@@ -424,7 +424,7 @@ verifyDrawDat new old txInList txId'' =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Redeem redeemer     
 {-# INLINABLE verifyRedeemDat #-}  
-verifyRedeemDat :: LottoDat -> LottoDat -> Value.TokenName -> Integer -> Bool
+verifyRedeemDat :: LottoDatum -> LottoDatum -> Value.TokenName -> Integer -> Bool
 verifyRedeemDat new old tn difficulty =  
     lottoAdmin old == lottoAdmin new    
     && (head (winner old) == head (winner new)) -- make sure the sponsor is still in the list
@@ -450,7 +450,7 @@ verifyRedeemDat new old tn difficulty =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Calc redeemer
 {-# INLINABLE verifyCalcDat #-}
-verifyCalcDat :: LottoDat -> LottoDat -> Integer -> Bool
+verifyCalcDat :: LottoDatum -> LottoDatum -> Integer -> Bool
 verifyCalcDat new old potSplit' =
     lottoAdmin old == lottoAdmin new   
     && (length (winner new) > 1)  -- has to be at least one winner
@@ -466,7 +466,7 @@ verifyCalcDat new old potSplit' =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Payout redeemer
 {-# INLINABLE verifyPayoutDat #-}
-verifyPayoutDat :: LottoDat -> LottoDat -> Address.PaymentPubKeyHash -> Bool
+verifyPayoutDat :: LottoDatum -> LottoDatum -> Address.PaymentPubKeyHash -> Bool
 verifyPayoutDat new old pkh =
     AssocMap.member pkh (beneficiaries old) -- check to see if the pkh is in the beneficiary list
     && (lottoAdmin old == lottoAdmin new)
@@ -486,7 +486,7 @@ verifyPayoutDat new old pkh =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the End redeemer
 {-# INLINABLE verifyEndDat #-}
-verifyEndDat :: LottoDat -> LottoDat -> Bool
+verifyEndDat :: LottoDatum -> LottoDatum -> Bool
 verifyEndDat new old =
     lottoAdmin old == lottoAdmin new
     && (jackpot old == jackpot new)  
@@ -499,7 +499,7 @@ verifyEndDat new old =
 -- | Validate the lotto datum changes between the input datum vs the output datum
 --   for the Collect redeemer
 {-# INLINABLE verifyCollectDat #-}
-verifyCollectDat :: LottoDat -> LottoDat -> Bool
+verifyCollectDat :: LottoDatum -> LottoDatum -> Bool
 verifyCollectDat new old =
     lottoAdmin old == lottoAdmin new 
     && (winner old == winner new) 
@@ -536,7 +536,7 @@ calcPayouts j' w' potSplit' = finalPayout
 --   beneficiary list.  Only that pkh is the one we should validate
 --   the datum with.
 {-# INLINABLE verifyPayout #-}
-verifyPayout :: LottoDat -> LottoDat -> [Crypto.PubKeyHash] -> Bool
+verifyPayout :: LottoDatum -> LottoDatum -> [Crypto.PubKeyHash] -> Bool
 verifyPayout new old pkh' = verifyPayoutDat new old getPaymentPubKey
   where
     getKeys :: [Address.PaymentPubKeyHash]
@@ -556,7 +556,7 @@ verifyPayout new old pkh' = verifyPayoutDat new old getPaymentPubKey
 -- | The main lotto validator which controls the lotto state machine
 --   and validates the datum transistions and each state accordingly
 {-# INLINABLE mkLottoValidator #-}
-mkLottoValidator :: LottoValidatorParams -> LottoDat -> LottoRedeemer -> AScriptContext -> Bool
+mkLottoValidator :: LottoValidatorParams -> LottoDatum -> LottoRedeemer -> AScriptContext -> Bool
 mkLottoValidator params dat red ctx =    
     case red of
         Open        ->  validOpen 
@@ -582,7 +582,7 @@ mkLottoValidator params dat red ctx =
     sigByLotAdmin :: Bool
     sigByLotAdmin =  txSignedBy' info $ Address.unPaymentPubKeyHash adminPkh'
 
-    outputDat :: LottoDat
+    outputDat :: LottoDatum
     (_, outputDat) = case getContinuingOutputs' ctx of
         [o] -> case Tx.txOutDatumHash o of
             Nothing   -> traceError "LV11"              -- wrong output type

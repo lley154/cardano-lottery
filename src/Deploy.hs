@@ -35,19 +35,19 @@ import           OnChain
 -- the appropriate enviornment (eg devnet, testnet or mainnet)
 
 lottoAdminPubKeyHashBS :: B.ByteString
-lottoAdminPubKeyHashBS = "a766096168c31739f1b52ee287d5b27ad0f68ba76462301565406419"
+lottoAdminPubKeyHashBS = "4ccdbf08ac0bd876fc9cf1ac03ed86ceef4052cde7a4989c59e87819"
 
 sponsorPubKeyHashBS :: B.ByteString
-sponsorPubKeyHashBS = "560aef2c56509e68279d9e4ba9fcba8888e7b678a3a0e0049de83b02"
+sponsorPubKeyHashBS = "84314878b6fdc6a65b3c98983a2bab8e2714e5d90f4e8aa5ae9f0268"
 
 txIdBS :: B.ByteString
-txIdBS = "0f9618aea322f2bfeaaefe3db28730384a61a4a59788734eaae37545fdfa7b13"
+txIdBS = "08fd4e5e62df3d9a2439b5095e15d83a81b9ad8f8d55d4f4fe483c86756eec4d"
 
 txIdIdxInt :: Integer
-txIdIdxInt = 0
+txIdIdxInt = 1
 
 difficultyInt :: Integer
-difficultyInt = 2
+difficultyInt = 1
 
 jackpotSplitInt :: Integer
 jackpotSplitInt = 50  -- sponsor split needs to be between 0 and 100
@@ -83,7 +83,7 @@ buyTokVal' :: Value.Value
 (_, buyTokVal') = Value.split(threadTokenValue threadTokenCurSymbol buyTokenName)
 
 lottoAdminPaymentPkh :: Ledger.PaymentPubKeyHash
-lottoAdminPaymentPkh       = Ledger.PaymentPubKeyHash (Ledger.PubKeyHash $ decodeHex lottoAdminPubKeyHashBS)
+lottoAdminPaymentPkh = Ledger.PaymentPubKeyHash (Ledger.PubKeyHash $ decodeHex lottoAdminPubKeyHashBS)
 
 sponsorPaymentPkh :: Ledger.PaymentPubKeyHash
 sponsorPaymentPkh = Ledger.PaymentPubKeyHash (Ledger.PubKeyHash $ decodeHex sponsorPubKeyHashBS)
@@ -327,7 +327,7 @@ writeDatumInit =
             --, deadline = spDeadline sp
             }
 
-        lDatum = LottoDat 
+        lDatum = LottoDatum 
             { lottoAdmin  = lAdmin
             , winner = [(sponsorPaymentPkh,[])] -- the sponsor pkh is always the 1st element in list
             , jackpot = 10000000
@@ -410,7 +410,7 @@ writeTicketPolicy = writeValidator "deploy/ticket-policy.plutus" $ mintValidator
 
 
 -- | Decode from hex base 16 to a base 10 bytestring is needed because
---   that is how it is stored in plutus
+--   that is how it is stored in the ledger onchain
 decodeHex :: B.ByteString -> PlutusPrelude.BuiltinByteString
 decodeHex hexBS =    
          case getTx of
