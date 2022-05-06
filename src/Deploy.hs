@@ -41,10 +41,10 @@ sponsorPubKeyHashBS :: B.ByteString
 sponsorPubKeyHashBS = "84314878b6fdc6a65b3c98983a2bab8e2714e5d90f4e8aa5ae9f0268"
 
 txIdBS :: B.ByteString
-txIdBS = "6ac3b15cd5b82fabbb5bbaa3bc25933f43ba50422cf2268ea522e563050529f4"
+txIdBS = "9bf48a110b5f5620f90bf484dfadba3ccabe4ae2bc760d9f01a19dc447c27b8f"
 
 txIdIdxInt :: Integer
-txIdIdxInt = 1
+txIdIdxInt = 0
 
 difficultyInt :: Integer
 difficultyInt = 1

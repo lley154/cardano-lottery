@@ -5,10 +5,10 @@
 set -e
 set -o pipefail
 
-# enabled debug flag for bash shell
+# Enabled debug flag for bash shell
 set -x
 
-# check if command line argument is empty or not present
+# Check if command line argument is empty or not present
 if [ -z $1 ]; then
     echo "buy-lotto-tx-.sh:  Invalid script arguments"
     echo "Usage: buy-lotto-tx.sh [devnet|testnet|mainnet] [n]    where n = ticket number "
@@ -28,7 +28,7 @@ mkdir -p $WORK-backup
 cp -f $WORK/* $WORK-backup
 
 
-# generate values from cardano-cli tool
+# Generate values from cardano-cli tool
 $CARDANO_CLI query protocol-parameters --testnet-magic $TESTNET_MAGIC --out-file $WORK/pparms.json
 lotto_validator_script="$BASE/scripts/cardano-cli/$ENV/data/lotto-validator.plutus"
 buy_validator_script="$BASE/scripts/cardano-cli/$ENV/data/buy-validator.plutus"
@@ -56,7 +56,7 @@ player_utxo_in=$(echo $player_utxo_valid_array | tr -d '\n')
 # Step 2: Get the UTXOs from the script address
 $CARDANO_CLI query utxo --address $buy_validator_script_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/buy-validator-utxo.json
 
-# pull the utxo with the buy token in it
+# Pull the utxo with the buy token in it
 buy_validator_utxo_tx_in=$(jq -r 'to_entries[] 
 | select(.value.value."'$thread_token_mph'"."'$buy_token_name'") 
 | .key' $WORK/buy-validator-utxo.json)
@@ -68,7 +68,7 @@ if [ "$ENV" == "devnet" ];
 then
     cp $WORK/lotto-datum-out.json $WORK/lotto-datum-in.json
     cp $WORK/buy-datum-out.json $WORK/buy-datum-in.json
-elif [ "$ENV" == "testnet"]; 
+elif [ "$ENV" == "testnet" ]; 
 then
     curl -H "project_id: $PROJECT_ID" "https://cardano-testnet.blockfrost.io/api/v0/addresses/$lotto_validator_script_addr/utxos" > $WORK/lotto-utxo-in.json
     datum_hash=$(jq -r '.[0].data_hash' $WORK/lotto-utxo-in.json)
@@ -79,8 +79,15 @@ then
     buy_datum_hash=$(jq -r '.[0].data_hash' $WORK/buy-utxo-in.json)
     curl -H "project_id: $PROJECT_ID" \
     "https://cardano-testnet.blockfrost.io/api/v0/scripts/datum/$buy_datum_hash" | jq -c .json_value > $WORK/buy-datum-in.json
-
-elif [ "$ENV" == "mainnet"];
+    
+    # Check if this is the first buy, if so, then need to copy buy datum from prior output
+    # This is needed because the startbuy only sends a datum hash and not the actual datum
+    buy_datum_test=$(cat $WORK/buy-datum-in.json)
+    if [ "$buy_datum_test" == "null" ];
+    then 
+        cp $WORK/buy-datum-out.json $WORK/buy-datum-in.json
+    fi
+elif [ "$ENV" == "mainnet" ];
 then
     curl -H "project_id: $PROJECT_ID" "https://cardano-mainnet.blockfrost.io/api/v0/addresses/$lotto_validator_script_addr/utxos" > $WORK/lotto-utxo-in.json
     datum_hash=$(jq -r '.[0].data_hash' $WORK/lotto-utxo-in.json)
@@ -91,6 +98,14 @@ then
     buy_datum_hash=$(jq -r '.[0].data_hash' $WORK/buy-utxo-in.json)
     curl -H "project_id: $PROJECT_ID" \
     "https://cardano-mainnet.blockfrost.io/api/v0/scripts/datum/$buy_datum_hash" | jq -c .json_value > $WORK/buy-datum-in.json
+    
+    # Check if this is the first buy, if so, then need to copy buy datum from prior output
+    # This is needed because the startbuy only sends a datum hash and not the actual datum
+    buy_datum_test=$(cat $WORK/buy-datum-in.json)
+    if [ "$buy_datum_test" == "null" ];
+    then 
+        cp $WORK/buy-datum-out.json $WORK/buy-datum-in.json
+    fi
 else
     echo "No environment selected"
     exit 1
@@ -107,13 +122,13 @@ new_ticket_total=$(($ticket_total + 1))
 new_total_value=$(($total_value + ($ticket_cost * 100)))
 
 
-# upate the buy datum accordingly
+# Upate the buy datum accordingly
 cat $WORK/buy-datum-in.json | \
 jq -c '
   .fields[0].int   |= '$new_ticket_total'
 | .fields[1].int   |= '$new_total_value'' > $WORK/buy-datum-out.json
  
-# upate the redeemer mint with the ticket number to be purchased
+# Upate the redeemer mint with the ticket number to be purchased
 cat $redeemer_mint_file_path | \
 jq -c '
   .fields[0].constructor    |= '1'

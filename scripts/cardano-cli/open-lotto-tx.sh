@@ -89,13 +89,13 @@ lotto_validator_utxo_tx_in=$(jq -r 'to_entries[]
 if [ "$ENV" == "devnet" ];
 then
     cp $WORK/lotto-datum-out.json $WORK/lotto-datum-in.json
-elif [ "$ENV" == "testnet"]; 
+elif [ "$ENV" == "testnet" ]; 
 then
     curl -H "project_id: $PROJECT_ID" "https://cardano-testnet.blockfrost.io/api/v0/addresses/$lotto_validator_script_addr/utxos" > $WORK/lotto-utxo-in.json
     datum_hash=$(jq -r '.[0].data_hash' $WORK/lotto-utxo-in.json)
     curl -H "project_id: $PROJECT_ID" \
     "https://cardano-testnet.blockfrost.io/api/v0/scripts/datum/$datum_hash" | jq -c .json_value > $WORK/lotto-datum-in.json
-elif [ "$ENV" == "mainnet"];
+elif [ "$ENV" == "mainnet" ];
 then
     curl -H "project_id: $PROJECT_ID" "https://cardano-mainnet.blockfrost.io/api/v0/addresses/$lotto_validator_script_addr/utxos" > $WORK/lotto-utxo-in.json
     datum_hash=$(jq -r '.[0].data_hash' $WORK/lotto-utxo-in.json)
