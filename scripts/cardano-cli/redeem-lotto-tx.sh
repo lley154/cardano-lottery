@@ -21,6 +21,13 @@ ENV=$1
 MY_DIR=$(dirname $(readlink -f $0))
 source $MY_DIR/$ENV/global-export-variables.sh
 
+if [ "$ENV" == "mainnet" ];
+then
+    network="--mainnet"
+else
+    network="--testnet-magic $TESTNET_MAGIC"
+fi
+
 echo "Socket path: $CARDANO_NODE_SOCKET_PATH"
 
 ls -al "$CARDANO_NODE_SOCKET_PATH"
@@ -30,14 +37,14 @@ cp -f $WORK/* $WORK-backup
 
 
 # generate values from cardano-cli tool
-$CARDANO_CLI query protocol-parameters --testnet-magic $TESTNET_MAGIC --out-file $WORK/pparms.json
+$CARDANO_CLI query protocol-parameters $network --out-file $WORK/pparms.json
 
 # load in local variable values
 # You will need to re-run Deploy.hs if adminPkh has changed   This is because both the lotto 
 # and buy validator scripts are parameterized which include adminPkh.  When adminPKH changes
 # so does the validator hashs and addresses.
 lotto_validator_script="$BASE/scripts/cardano-cli/$ENV/data/lotto-validator.plutus"
-lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script"  --testnet-magic "$TESTNET_MAGIC")
+lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script" $network)
 minting_script="$BASE/scripts/cardano-cli/$ENV/data/ticket-policy.plutus"
 redeemer_file_path="$BASE/scripts/cardano-cli/$ENV/data/redeemer-lotto-redeem.json"
 redeemer_mint_file_path="$BASE/scripts/cardano-cli/$ENV/data/redeemer-ticket-burn.json"
@@ -51,7 +58,7 @@ player_pkh=$(cat $PLAYER_PKH)
 echo "starting lotto redeem"
 
 # Step 1: Get the UTXOs from the script address
-$CARDANO_CLI query utxo --address $lotto_validator_script_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/lotto-validator-utxo.json
+$CARDANO_CLI query utxo --address $lotto_validator_script_addr $network --out-file $WORK/lotto-validator-utxo.json
 
 # pull out the utxo that has the lotto thread token in it
 lotto_validator_utxo_tx_in=$(jq -r 'to_entries[] 
@@ -115,8 +122,8 @@ jq -c '
 
 
 # Step 4: Now, get UTXO from player with matching ticket number 
-player_addr=$($CARDANO_CLI address build --testnet-magic $TESTNET_MAGIC --payment-verification-key-file $PLAYER_VKEY)
-$CARDANO_CLI query utxo --address $player_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/player-utxo.json
+player_addr=$($CARDANO_CLI address build $network --payment-verification-key-file $PLAYER_VKEY)
+$CARDANO_CLI query utxo --address $player_addr $network --out-file $WORK/player-utxo.json
 cat $WORK/player-utxo.json | jq -r 'to_entries[] | {"txid":'.key',"mph":'.value.value'} ' > $WORK/player-utxo-valid.out
 tx_in_win_num=$(cat $WORK/player-utxo-valid.out | jq -r 'select(.mph."'$ticket_mph'"."'$ticket_num_hex'") | .txid')
 
@@ -131,7 +138,7 @@ player_utxo_in=$(echo $player_utxo_valid_array | tr -d '\n')
 $CARDANO_CLI transaction build \
   --alonzo-era \
   --cardano-mode \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --tx-in "$player_utxo_in" \
   --tx-in "$tx_in_win_num" \
   --tx-in "$lotto_validator_utxo_tx_in" \
@@ -163,14 +170,14 @@ echo "tx has been built"
 
 $CARDANO_CLI transaction sign \
   --tx-body-file $WORK/redeem-tx-alonzo.body \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --signing-key-file "${PLAYER_SKEY}" \
   --out-file $WORK/redeem-tx-alonzo.tx
 
 echo "tx has been signed"
 
 echo "Submit the tx with plutus script and wait 5 seconds..."
-$CARDANO_CLI transaction submit --tx-file $WORK/redeem-tx-alonzo.tx --testnet-magic "$TESTNET_MAGIC"
+$CARDANO_CLI transaction submit --tx-file $WORK/redeem-tx-alonzo.tx $network
 
 
 

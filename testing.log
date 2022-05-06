@@ -4079,4 +4079,160 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 
 
 
+lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58     1        27000000 lovelace + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.086eb10b693d3663558d2fa2a91fbf5c12ad93c94cd362fefce0cb8e00499ddf + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d + TxOutDatumHash ScriptDataInAlonzoEra "8c01f24add1230e2f5664f8a06de4d41c245efeb0207876c1c67f24bf463ae48"
+lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5 --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a     0        10000000 lovelace + TxOutDatumNone
+52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58     0        796784742 lovelace + TxOutDatumNone
+
+
+
++ '[' -z testnet ']'
++ ENV=testnet
++++ readlink -f ./collect-lotto-tx.sh
+++ dirname /home/lawrence/src/cardano-lottery/scripts/cardano-cli/collect-lotto-tx.sh
++ MY_DIR=/home/lawrence/src/cardano-lottery/scripts/cardano-cli
++ source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
+++ set -e
+++ set -o pipefail
+++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export BASE=/home/lawrence/src/cardano-lottery
+++ BASE=/home/lawrence/src/cardano-lottery
+++ export WORK=/home/lawrence/src/cardano-lottery/work
+++ WORK=/home/lawrence/src/cardano-lottery/work
+++ export CARDANO_CLI=/home/lawrence/.local/bin/cardano-cli
+++ CARDANO_CLI=/home/lawrence/.local/bin/cardano-cli
+++ export CARDANO_NODE_SOCKET_PATH=/home/lawrence/src/cardano-lottery/node.socket
+++ CARDANO_NODE_SOCKET_PATH=/home/lawrence/src/cardano-lottery/node.socket
+++ export TESTNET_MAGIC=1097911063
+++ TESTNET_MAGIC=1097911063
+++ export ADMIN_VKEY=/home/lawrence/.local/keys/01.vkey
+++ ADMIN_VKEY=/home/lawrence/.local/keys/01.vkey
+++ export ADMIN_SKEY=/home/lawrence/.local/keys/01.skey
+++ ADMIN_SKEY=/home/lawrence/.local/keys/01.skey
+++ export ADMIN_PKH=/home/lawrence/.local/keys/01.pkh
+++ ADMIN_PKH=/home/lawrence/.local/keys/01.pkh
+++ export PLAYER_VKEY=/home/lawrence/.local/keys/02.vkey
+++ PLAYER_VKEY=/home/lawrence/.local/keys/02.vkey
+++ export PLAYER_SKEY=/home/lawrence/.local/keys/02.skey
+++ PLAYER_SKEY=/home/lawrence/.local/keys/02.skey
+++ export PLAYER_PKH=/home/lawrence/.local/keys/02.pkh
+++ PLAYER_PKH=/home/lawrence/.local/keys/02.pkh
+++ export SPONSOR_VKEY=/home/lawrence/.local/keys/03.vkey
+++ SPONSOR_VKEY=/home/lawrence/.local/keys/03.vkey
+++ export SPONSOR_SKEY=/home/lawrence/.local/keys/03.skey
+++ SPONSOR_SKEY=/home/lawrence/.local/keys/03.skey
+++ export SPONSOR_PKH=/home/lawrence/.local/keys/03.pkh
+++ SPONSOR_PKH=/home/lawrence/.local/keys/03.pkh
+++ export MIN_ADA_OUTPUT_TX=2000000
+++ MIN_ADA_OUTPUT_TX=2000000
+++ export COLLATERAL_ADA=10000000
+++ COLLATERAL_ADA=10000000
+++ export ADMIN_COLLATERAL=4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a#0
+++ ADMIN_COLLATERAL=4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a#0
+++ export PLAYER_COLLATERAL=53f53c2c6cd6b17db4c6b9c359bfc49e70a9b661d247d2988347fd2aa227ad67#0
+++ PLAYER_COLLATERAL=53f53c2c6cd6b17db4c6b9c359bfc49e70a9b661d247d2988347fd2aa227ad67#0
+++ export SPONSOR_COLLATERAL=c248d582e29c03aa80d2288c0bad795f24abc5c027c078edef3a34890e5b3054#0
+++ SPONSOR_COLLATERAL=c248d582e29c03aa80d2288c0bad795f24abc5c027c078edef3a34890e5b3054#0
++ '[' testnet == mainnet ']'
++ network='--testnet-magic 1097911063'
++ echo 'Socket path: /home/lawrence/src/cardano-lottery/node.socket'
+Socket path: /home/lawrence/src/cardano-lottery/node.socket
++ ls -al /home/lawrence/src/cardano-lottery/node.socket
+srw------- 1 lawrence lawrence 0 May  6 08:15 /home/lawrence/src/cardano-lottery/node.socket
++ mkdir -p /home/lawrence/src/cardano-lottery/work
++ mkdir -p /home/lawrence/src/cardano-lottery/work-backup
++ cp -f /home/lawrence/src/cardano-lottery/work/admin-utxo-valid.json /home/lawrence/src/cardano-lottery/work/admin-utxo.json /home/lawrence/src/cardano-lottery/work/buy-datum-in.json /home/lawrence/src/cardano-lottery/work/buy-datum-out.json /home/lawrence/src/cardano-lottery/work/buy-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/buy-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/buy-utxo-in.json /home/lawrence/src/cardano-lottery/work/buy-validator-utxo.json /home/lawrence/src/cardano-lottery/work/close-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/close-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/init-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/init-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/lotto-datum-in.json /home/lawrence/src/cardano-lottery/work/lotto-datum-out.json /home/lawrence/src/cardano-lottery/work/lotto-utxo-in.json /home/lawrence/src/cardano-lottery/work/lotto-validator-utxo.json /home/lawrence/src/cardano-lottery/work/open-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/open-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/player-utxo-valid.json /home/lawrence/src/cardano-lottery/work/player-utxo.json /home/lawrence/src/cardano-lottery/work/pparms.json /home/lawrence/src/cardano-lottery/work/redeemer-ticket-mint.json /home/lawrence/src/cardano-lottery/work/startbuy-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/startbuy-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/stopbuy-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/stopbuy-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work/transfertoken-tx-alonzo.body /home/lawrence/src/cardano-lottery/work/transfertoken-tx-alonzo.tx /home/lawrence/src/cardano-lottery/work-backup
++ /home/lawrence/.local/bin/cardano-cli query protocol-parameters --testnet-magic 1097911063 --out-file /home/lawrence/src/cardano-lottery/work/pparms.json
++ lotto_validator_script=/home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/lotto-validator.plutus
+++ /home/lawrence/.local/bin/cardano-cli address build --payment-script-file /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/lotto-validator.plutus --testnet-magic 1097911063
++ lotto_validator_script_addr=addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q
+++ cat /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/lotto-token-name.json
+++ jq -r .bytes
++ lotto_token_name=11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d
+++ cat /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/buy-token-name.json
+++ jq -r .bytes
++ buy_token_name=086eb10b693d3663558d2fa2a91fbf5c12ad93c94cd362fefce0cb8e00499ddf
+++ cat /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/lotto-thread-token-policy.hash
+++ jq -r .bytes
++ thread_token_mph=aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b
++ redeemer_file=/home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/redeemer-lotto-collect.json
+++ cat /home/lawrence/.local/keys/01.pkh
++ admin_pkh=4ccdbf08ac0bd876fc9cf1ac03ed86ceef4052cde7a4989c59e87819
++ echo 'starting lotto collect'
+starting lotto collect
+++ /home/lawrence/.local/bin/cardano-cli address build --testnet-magic 1097911063 --payment-verification-key-file /home/lawrence/.local/keys/01.vkey
++ admin_utxo_addr=addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5
++ /home/lawrence/.local/bin/cardano-cli query utxo --address addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5 --cardano-mode --testnet-magic 1097911063 --out-file /home/lawrence/src/cardano-lottery/work/admin-utxo.json
++ cat /home/lawrence/src/cardano-lottery/work/admin-utxo.json
++ jq -r 'to_entries[] | select(.value.value.lovelace > 10000000 ) | .key'
++ readarray admin_utxo_valid_array
+++ echo 52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58#0
+++ tr -d '\n'
++ admin_utxo_in=52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58#0
++ /home/lawrence/.local/bin/cardano-cli query utxo --address addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q --testnet-magic 1097911063 --out-file /home/lawrence/src/cardano-lottery/work/lotto-validator-utxo.json
+++ jq -r 'to_entries[] 
+| select(.value.value."aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b"."11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d") 
+| .key' /home/lawrence/src/cardano-lottery/work/lotto-validator-utxo.json
++ lotto_validator_utxo_tx_in=52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58#1
++ '[' testnet == devnet ']'
++ '[' testnet == testnet ']'
++ curl -H 'project_id: testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu' https://cardano-testnet.blockfrost.io/api/v0/addresses/addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q/utxos
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   611  100   611    0     0   3748      0 --:--:-- --:--:-- --:--:--  3748
+++ jq -r '.[0].data_hash' /home/lawrence/src/cardano-lottery/work/lotto-utxo-in.json
++ datum_hash=8c01f24add1230e2f5664f8a06de4d41c245efeb0207876c1c67f24bf463ae48
++ curl -H 'project_id: testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu' https://cardano-testnet.blockfrost.io/api/v0/scripts/datum/8c01f24add1230e2f5664f8a06de4d41c245efeb0207876c1c67f24bf463ae48
++ jq -c .json_value
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1316  100  1316    0     0   2680      0 --:--:-- --:--:-- --:--:--  2674
+++ jq -r '.fields[5].int' /home/lawrence/src/cardano-lottery/work/lotto-datum-in.json
++ fees=7000000
++ cat /home/lawrence/src/cardano-lottery/work/lotto-datum-in.json
++ jq -c ' .fields[5].int  |= 0 '
+++ jq -r '.fields[2].int + .fields[4].int + .fields[5].int' /home/lawrence/src/cardano-lottery/work/lotto-datum-out.json
++ lotto_value=20000000
++ /home/lawrence/.local/bin/cardano-cli transaction build --alonzo-era --cardano-mode --testnet-magic 1097911063 --tx-in 52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58#0 --tx-in 52927d8b2e6d86e285366b7567fa15abe5349651c04fab5c4c1c54bb16b54f58#1 --tx-in-script-file /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/lotto-validator.plutus --tx-in-datum-file /home/lawrence/src/cardano-lottery/work/lotto-datum-in.json --tx-in-redeemer-file /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/data/redeemer-lotto-collect.json --tx-in-collateral 4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a#0 --tx-out 'addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q+20000000 + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.086eb10b693d3663558d2fa2a91fbf5c12ad93c94cd362fefce0cb8e00499ddf' --tx-out-datum-embed-file /home/lawrence/src/cardano-lottery/work/lotto-datum-out.json --tx-out addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5+7000000 --change-address addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5 --required-signer-hash 4ccdbf08ac0bd876fc9cf1ac03ed86ceef4052cde7a4989c59e87819 --protocol-params-file /home/lawrence/src/cardano-lottery/work/pparms.json --out-file /home/lawrence/src/cardano-lottery/work/collect-tx-alonzo.body
+Estimated transaction fee: Lovelace 1393657
++ echo 'tx has been built'
+tx has been built
++ /home/lawrence/.local/bin/cardano-cli transaction sign --tx-body-file /home/lawrence/src/cardano-lottery/work/collect-tx-alonzo.body --testnet-magic 1097911063 --signing-key-file /home/lawrence/.local/keys/01.skey --out-file /home/lawrence/src/cardano-lottery/work/collect-tx-alonzo.tx
++ echo 'tx has been signed'
+tx has been signed
++ echo 'Submit the tx with plutus script and wait 5 seconds...'
+Submit the tx with plutus script and wait 5 seconds...
++ /home/lawrence/.local/bin/cardano-cli transaction submit --tx-file /home/lawrence/src/cardano-lottery/work/collect-tx-alonzo.tx --testnet-magic 1097911063
+Transaction successfully submitted.
+
+
+
+
+
+lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1vpxvm0cg4s9asahunnc6cqldsm8w7szjehn6fxyut858sxgqvc3q5 --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+4bc07d353abd7ef6bca96162cab6d21e498791d82fcf6880a6440429f426308a     0        10000000 lovelace + TxOutDatumNone
+82be1f055d3903607efffe99f4400600decffd6579e52e61453dbca3af762d6d     0        795391085 lovelace + TxOutDatumNone
+82be1f055d3903607efffe99f4400600decffd6579e52e61453dbca3af762d6d     2        7000000 lovelace + TxOutDatumNone
+lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1wryg98688h3e44pru04d9eszk8q0ae4urt8uz87gte6cxzctwr64q --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+82be1f055d3903607efffe99f4400600decffd6579e52e61453dbca3af762d6d     1        20000000 lovelace + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.086eb10b693d3663558d2fa2a91fbf5c12ad93c94cd362fefce0cb8e00499ddf + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d + TxOutDatumHash ScriptDataInAlonzoEra "adcecd03ea4b5857568977ab815b677f10a19c71e42a4a99550977b03c3cc536"
+
+
+
+
+### MAINNET
+### May 6 ###
+
+
+
+
 

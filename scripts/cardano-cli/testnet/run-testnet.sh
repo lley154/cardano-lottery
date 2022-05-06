@@ -16,27 +16,27 @@ set -o pipefail
 #
 ###########################################################################
 
-#./init-lotto-tx.sh testnet
-#sleep 5
-#printf "\n please confirm before proceeding that you see the init tx on the blockchain"
-#read
+./init-lotto-tx.sh testnet
+sleep 5
+printf "\n please confirm before proceeding that you see the init tx on the blockchain"
+read
 
-#./open-lotto-tx.sh testnet
-#sleep 5
-#printf "\n please confirm before proceeding that you see the open tx on the blockchain"
-#read
+./open-lotto-tx.sh testnet
+sleep 5
+printf "\n please confirm before proceeding that you see the open tx on the blockchain"
+read
 
 ./startbuy-lotto-tx.sh testnet
 sleep 5
 printf "\n please confirm before proceeding that you see the startbuy tx on the blockchain"
 read
 
-for i in {0..30}
+for i in {0..9}
     do
         ./buy-lotto-tx.sh testnet $i
-        sleep 60
-        #printf "\n please confirm before proceeding that you see the buy tx on the blockchain"
-        #read
+        sleep 5
+        printf "\n please confirm before proceeding that you see the buy tx on the blockchain"
+        read
     done
 
 

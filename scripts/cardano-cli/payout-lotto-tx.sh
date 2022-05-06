@@ -21,6 +21,13 @@ ENV=$1
 MY_DIR=$(dirname $(readlink -f $0))
 source $MY_DIR/$ENV/global-export-variables.sh
 
+if [ "$ENV" == "mainnet" ];
+then
+    network="--mainnet"
+else
+    network="--testnet-magic $TESTNET_MAGIC"
+fi
+
 echo "Socket path: $CARDANO_NODE_SOCKET_PATH"
 
 ls -al "$CARDANO_NODE_SOCKET_PATH"
@@ -29,11 +36,11 @@ mkdir -p $WORK-backup
 cp -f $WORK/* $WORK-backup
 
 # generate values from cardano-cli tool
-$CARDANO_CLI query protocol-parameters --testnet-magic $TESTNET_MAGIC --out-file $WORK/pparms.json
+$CARDANO_CLI query protocol-parameters $network --out-file $WORK/pparms.json
 
 # load in local variable values
 lotto_validator_script="$BASE/scripts/cardano-cli/$ENV/data/lotto-validator.plutus"
-lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script"  --testnet-magic "$TESTNET_MAGIC")
+lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script" $network)
 redeemer_file_path="$BASE/scripts/cardano-cli/$ENV/data/redeemer-lotto-payout.json"
 lotto_token_name=$(cat $BASE/scripts/cardano-cli/$ENV/data/lotto-token-name.json | jq -r '.bytes')
 lotto_token_value=$(cat $BASE/scripts/cardano-cli/$ENV/data/lotto-token-value.json)
@@ -46,8 +53,8 @@ echo "starting lotto payout"
 if [ "$2" == "p" ];
 then
     # Step 1: Get UTXOs from player 
-    user_addr=$($CARDANO_CLI address build --testnet-magic "$TESTNET_MAGIC" --payment-verification-key-file "$PLAYER_VKEY")
-    $CARDANO_CLI query utxo --address $user_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/player-utxo.json
+    user_addr=$($CARDANO_CLI address build $network --payment-verification-key-file "$PLAYER_VKEY")
+    $CARDANO_CLI query utxo --address $user_addr $network --out-file $WORK/player-utxo.json
     cat $WORK/player-utxo.json | jq -r 'to_entries[] | select(.value.value.lovelace > '$COLLATERAL_ADA' ) | .key' > $WORK/player-utxo-valid.json
     readarray player_utxo_valid_array < $WORK/player-utxo-valid.json
     user_utxo_in=$(echo $player_utxo_valid_array | tr -d '\n')
@@ -58,8 +65,8 @@ then
 elif [ "$2" == "s" ]; 
 then
     # Step 1: Get UTXOs from sponsor
-    user_addr=$($CARDANO_CLI address build --testnet-magic "$TESTNET_MAGIC" --payment-verification-key-file "$SPONSOR_VKEY")
-    $CARDANO_CLI query utxo --address $user_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/sponsor-utxo.json
+    user_addr=$($CARDANO_CLI address build $network --payment-verification-key-file "$SPONSOR_VKEY")
+    $CARDANO_CLI query utxo --address $user_addr $network --out-file $WORK/sponsor-utxo.json
     cat $WORK/sponsor-utxo.json | jq -r 'to_entries[] | select(.value.value.lovelace > '$COLLATERAL_ADA' ) | .key' > $WORK/sponsor-utxo-valid.json
     readarray sponsor_utxo_valid_array < $WORK/sponsor-utxo-valid.json
     user_utxo_in=$(echo $sponsor_utxo_valid_array | tr -d '\n')
@@ -73,7 +80,7 @@ fi
 
 # Step 2: Get the UTXOs from the script address
 # TODO - filter for only utxo with thread token
-$CARDANO_CLI query utxo --address $lotto_validator_script_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/lotto-validator-utxo.json
+$CARDANO_CLI query utxo --address $lotto_validator_script_addr $network --out-file $WORK/lotto-validator-utxo.json
 
 # pull out the utxo that has the lotto thread token in it
 lotto_validator_utxo_tx_in=$(jq -r 'to_entries[] 
@@ -167,7 +174,7 @@ lotto_value=$(jq -r '.fields[2].int + .fields[4].int + .fields[5].int' $WORK/lot
 $CARDANO_CLI transaction build \
   --alonzo-era \
   --cardano-mode \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --tx-in "$user_utxo_in" \
   --tx-in "$lotto_validator_utxo_tx_in" \
   --tx-in-script-file "$lotto_validator_script" \
@@ -189,14 +196,14 @@ echo "tx has been built"
 
 $CARDANO_CLI transaction sign \
   --tx-body-file $WORK/payout-tx-alonzo.body \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --signing-key-file "${user_skey}" \
   --out-file $WORK/payout-tx-alonzo.tx
 
 echo "tx has been signed"
 
 echo "Submit the tx with plutus script and wait 5 seconds..."
-$CARDANO_CLI transaction submit --tx-file $WORK/payout-tx-alonzo.tx --testnet-magic "$TESTNET_MAGIC"
+$CARDANO_CLI transaction submit --tx-file $WORK/payout-tx-alonzo.tx $network
 
 
 

@@ -20,6 +20,14 @@ ENV=$1
 MY_DIR=$(dirname $(readlink -f $0))
 source $MY_DIR/$ENV/global-export-variables.sh
 
+if [ "$ENV" == "mainnet" ];
+then
+    network="--mainnet"
+else
+    network="--testnet-magic $TESTNET_MAGIC"
+fi
+
+
 echo "Socket path: $CARDANO_NODE_SOCKET_PATH"
 
 ls -al "$CARDANO_NODE_SOCKET_PATH"
@@ -29,12 +37,12 @@ cp -f $WORK/* $WORK-backup
 
 
 # Generate values from cardano-cli tool
-$CARDANO_CLI query protocol-parameters --testnet-magic $TESTNET_MAGIC --out-file $WORK/pparms.json
+$CARDANO_CLI query protocol-parameters $network --out-file $WORK/pparms.json
 lotto_validator_script="$BASE/scripts/cardano-cli/$ENV/data/lotto-validator.plutus"
 buy_validator_script="$BASE/scripts/cardano-cli/$ENV/data/buy-validator.plutus"
 minting_script="$BASE/scripts/cardano-cli/$ENV/data/ticket-policy.plutus"
-lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script"  --testnet-magic "$TESTNET_MAGIC")
-buy_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$buy_validator_script"  --testnet-magic "$TESTNET_MAGIC")
+lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script" $network)
+buy_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$buy_validator_script" $network)
 redeemer_file_path="$BASE/scripts/cardano-cli/$ENV/data/redeemer-buy-ticket.json"
 redeemer_mint_file_path="$BASE/scripts/cardano-cli/$ENV/data/redeemer-ticket-mint.json"
 buy_validator_addr=$(cat $BASE/scripts/cardano-cli/$ENV/data/buy-val-addr.json)
@@ -47,14 +55,14 @@ player_pkh=$(cat $PLAYER_PKH)
 echo "starting lotto buy"
 
 # Step 1: Get UTXOs from player 
-player_addr=$($CARDANO_CLI address build --testnet-magic $TESTNET_MAGIC --payment-verification-key-file $PLAYER_VKEY)
-$CARDANO_CLI query utxo --address $player_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/player-utxo.json
+player_addr=$($CARDANO_CLI address build $network --payment-verification-key-file $PLAYER_VKEY)
+$CARDANO_CLI query utxo --address $player_addr $network --out-file $WORK/player-utxo.json
 cat $WORK/player-utxo.json | jq -r 'to_entries[] | select(.value.value.lovelace > '$COLLATERAL_ADA' ) | .key' > $WORK/player-utxo-valid.json
 readarray player_utxo_valid_array < $WORK/player-utxo-valid.json
 player_utxo_in=$(echo $player_utxo_valid_array | tr -d '\n')
 
 # Step 2: Get the UTXOs from the script address
-$CARDANO_CLI query utxo --address $buy_validator_script_addr --testnet-magic "$TESTNET_MAGIC" --out-file $WORK/buy-validator-utxo.json
+$CARDANO_CLI query utxo --address $buy_validator_script_addr $network --out-file $WORK/buy-validator-utxo.json
 
 # Pull the utxo with the buy token in it
 buy_validator_utxo_tx_in=$(jq -r 'to_entries[] 
@@ -85,7 +93,7 @@ then
     buy_datum_test=$(cat $WORK/buy-datum-in.json)
     if [ "$buy_datum_test" == "null" ];
     then 
-        cp $WORK/buy-datum-out.json $WORK/buy-datum-in.json
+        cp $BASE/scripts/cardano-cli/$ENV/data/buy-datum-startbuy.datum $WORK/buy-datum-in.json
     fi
 elif [ "$ENV" == "mainnet" ];
 then
@@ -104,7 +112,7 @@ then
     buy_datum_test=$(cat $WORK/buy-datum-in.json)
     if [ "$buy_datum_test" == "null" ];
     then 
-        cp $WORK/buy-datum-out.json $WORK/buy-datum-in.json
+        cp $BASE/scripts/cardano-cli/$ENV/data/buy-datum-startbuy.datum $WORK/buy-datum-in.json
     fi
 else
     echo "No environment selected"
@@ -140,7 +148,7 @@ jq -c '
 $CARDANO_CLI transaction build \
   --alonzo-era \
   --cardano-mode \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --tx-in "$player_utxo_in" \
   --tx-in "$buy_validator_utxo_tx_in" \
   --tx-in-script-file "$buy_validator_script" \
@@ -164,14 +172,14 @@ echo "tx has been built"
 
 $CARDANO_CLI transaction sign \
   --tx-body-file $WORK/buy-tx-alonzo.body \
-  --testnet-magic "$TESTNET_MAGIC" \
+  $network \
   --signing-key-file "${PLAYER_SKEY}" \
   --out-file $WORK/buy-tx-alonzo.tx
 
 echo "tx has been signed"
 
 echo "Submit the tx with plutus script and wait 5 seconds..."
-$CARDANO_CLI transaction submit --tx-file $WORK/buy-tx-alonzo.tx --testnet-magic "$TESTNET_MAGIC"
+$CARDANO_CLI transaction submit --tx-file $WORK/buy-tx-alonzo.tx $network
 
 
 

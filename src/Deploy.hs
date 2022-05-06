@@ -34,6 +34,11 @@ import           OnChain
 -- These are test values and need to be replaced with real values for
 -- the appropriate enviornment (eg devnet, testnet or mainnet)
 
+
+----------------------------------------------------------------------------------
+-- Please note that to changes the following admin seetings requires this 
+-- file to be compiled again and deployed with the updated values.
+----------------------------------------------------------------------------------
 lottoAdminPubKeyHashBS :: B.ByteString
 lottoAdminPubKeyHashBS = "4ccdbf08ac0bd876fc9cf1ac03ed86ceef4052cde7a4989c59e87819"
 
@@ -41,7 +46,7 @@ sponsorPubKeyHashBS :: B.ByteString
 sponsorPubKeyHashBS = "84314878b6fdc6a65b3c98983a2bab8e2714e5d90f4e8aa5ae9f0268"
 
 txIdBS :: B.ByteString
-txIdBS = "9bf48a110b5f5620f90bf484dfadba3ccabe4ae2bc760d9f01a19dc447c27b8f"
+txIdBS = "247bb1598900f1e4164165723003e44f75866a77f465a77328685b265b637aec"
 
 txIdIdxInt :: Integer
 txIdIdxInt = 0
@@ -52,9 +57,17 @@ difficultyInt = 1
 jackpotSplitInt :: Integer
 jackpotSplitInt = 50  -- sponsor split needs to be between 0 and 100
 
+----------------------------------------------------------------------------------
+-- Please note that to change the ticket cost, this also needs to be 
+-- updated in init-lotto-tx.sh (if just starting) and open-lotto-tx.sh
+----------------------------------------------------------------------------------
 ticketCostInt :: Integer
 ticketCostInt = 20000  -- the actual ticket cost is 20,000 * 100 = 2,000,000 or 2 ADA
 
+----------------------------------------------------------------------------------
+-- Please note that to change the percentage fees, this also needs to be 
+-- updated in init-lotto-tx.sh (if just starting) and open-lotto-tx.sh 
+----------------------------------------------------------------------------------
 percentFeesInt :: Integer
 percentFeesInt = 2
 
