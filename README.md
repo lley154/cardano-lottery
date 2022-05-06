@@ -29,7 +29,6 @@ The motivation for creating a blockchain lottery is to help provide fund raising
 Feel free to reach out if you have any questions, comments, suggestions or contributions.
 
 - [Discord]() 
-- [Youtube Channel](https://www.youtube.com/channel/UC5R8HrDUms8XqZVWszqbA7A)
 
 
 Please note that I will never direct message you first or ask you for any ADA. 
