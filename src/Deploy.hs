@@ -46,7 +46,7 @@ sponsorPubKeyHashBS :: B.ByteString
 sponsorPubKeyHashBS = "84314878b6fdc6a65b3c98983a2bab8e2714e5d90f4e8aa5ae9f0268"
 
 txIdBS :: B.ByteString
-txIdBS = "247bb1598900f1e4164165723003e44f75866a77f465a77328685b265b637aec"
+txIdBS = "308395bbd1ea297ef3fb44b3f79a24151d4c240a1ec2c71fccd77612be87fc04"
 
 txIdIdxInt :: Integer
 txIdIdxInt = 0

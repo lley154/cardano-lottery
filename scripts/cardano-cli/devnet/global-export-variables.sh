@@ -12,9 +12,6 @@ set -o pipefail
 
 # Define export variables
 
-# PROJECT_ID is for blockfrost datum query, get your account here
-# https://blockfrost.io/
-export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
 export BASE=/home/lawrence/src/cardano-lottery
 export WORK=$BASE/work
 export CARDANO_CLI=/home/lawrence/.local/bin/cardano-cli

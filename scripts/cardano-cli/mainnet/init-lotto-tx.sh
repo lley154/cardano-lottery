@@ -1,0 +1,1 @@
+../init-lotto-tx.sh
