@@ -35,8 +35,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery/scripts/cardano-cli/devnet$ .
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -149,8 +149,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -310,8 +310,8 @@ e975bd76f21d986d14ce78665283a088c3467ca41d99e3b6e2f9ce7416b892bc     1        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -439,8 +439,8 @@ b69a615772a25bcdfecb9aee114ed50ad74a6cd2ff53a463d3349c4a2f56fb50     1        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -579,8 +579,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -695,8 +695,8 @@ ad95026178255b3dff4a4cf866e54cb18689247a5906e440c1978d89a777cb65     1        22
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -891,8 +891,8 @@ Total Size: 287.7kB, Cost: ExCPU 50259437796, ExMemory 137971185
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1007,8 +1007,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1153,8 +1153,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1258,8 +1258,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1390,8 +1390,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1570,8 +1570,8 @@ fa66a907ee12b8df215dd4223ea38a3cb0cfea2d3c186b1604209d72814a18eb     2        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1696,8 +1696,8 @@ Transaction successfully submitted.
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1844,8 +1844,8 @@ fa66a907ee12b8df215dd4223ea38a3cb0cfea2d3c186b1604209d72814a18eb     2        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/devnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -1989,8 +1989,8 @@ c248d582e29c03aa80d2288c0bad795f24abc5c027c078edef3a34890e5b3054     0        10
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2099,8 +2099,8 @@ lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1wzpdj
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2267,8 +2267,8 @@ fdb2d8f0a689d73996a92569b0ff8c51544e8bad44234ce12cebddee055f7ca1     1        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2413,8 +2413,8 @@ lawrence@lawrence-MacBookAir:~$ cardano-cli query utxo --address addr_test1wpjat
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2589,8 +2589,8 @@ awrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --addr
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2716,8 +2716,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -2884,8 +2884,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3007,8 +3007,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3158,8 +3158,8 @@ a8eb903716cd91167af37c2b1c8fa69f36de4e8a8bc3422ae035e414536bd0ad     1        46
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3338,8 +3338,8 @@ e5c7a5852127b170a01848f075efe13122177deabf5d204e47beb252314e2c63     1        46
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3480,8 +3480,8 @@ dfb156a63cd09dadcdc05079785da5aae127755fdefca67d9f7007608d58587f     1        46
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3646,8 +3646,8 @@ e5c7a5852127b170a01848f075efe13122177deabf5d204e47beb252314e2c63     2        20
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3800,8 +3800,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -3930,8 +3930,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
@@ -4111,8 +4111,8 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 + source /home/lawrence/src/cardano-lottery/scripts/cardano-cli/testnet/global-export-variables.sh
 ++ set -e
 ++ set -o pipefail
-++ export PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
-++ PROJECT_ID=testnetOo1ri1RaUAfnslati2pZDrLPdnURwaBu
+++ export PROJECT_ID=
+++ PROJECT_ID=
 ++ export BASE=/home/lawrence/src/cardano-lottery
 ++ BASE=/home/lawrence/src/cardano-lottery
 ++ export WORK=/home/lawrence/src/cardano-lottery/work
