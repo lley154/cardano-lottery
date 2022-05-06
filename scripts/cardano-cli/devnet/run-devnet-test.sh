@@ -5,16 +5,14 @@ set -o pipefail
 
 ##########################################################################
 # Please run before running this script
-# 1) Get a lotto admin UTXO greater than 10 Ada
-#       [nix-shell:~/src/cardano-lottery]$ cardano-cli query utxo --address addr_test1vznkvztpdrp3ww03k5hw9p74kfadpa5t5ajxyvq4v4qxgxgxzrs4v --cardano-mode --testnet-magic 42
-# 2) Grab the UTXO and update txIdBS & txIdIdxInt in Deploy.hs
+# 1) Ensure there is lotto admin utxo greater than 10 Ada
+# 2) Use that utxo and update txIdBS & txIdIdxInt in Deploy.hs
 # 3) then run 
 #       [nix-shell:~/src/cardano-lottery]$ cabal repl cardano-lottery
 # 4) then run 
 #       Prelude Types> Deploy.main
 # 5) finally, copy over the newly created data files
-#       [nix-shell:~/src/cardano-lottery]$ cd plutus-scripts/
-#       [nix-shell:~/src/cardano-lottery/plutus-scripts]$ cp * ../scripts/cardano-cli/[devnet|testnet|mainnet]/data/
+#       [nix-shell:~/src/cardano-lottery]$ cp deploy/* ../scripts/cardano-cli/[devnet|testnet|mainnet]/data/
 #
 ###########################################################################
 
