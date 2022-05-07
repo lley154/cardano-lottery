@@ -42,7 +42,6 @@ $CARDANO_CLI transaction policyid --script-file $BASE/scripts/cardano-cli/$ENV/d
 
 # load in local variable values
 lotto_validator_script="$BASE/scripts/cardano-cli/$ENV/data/lotto-validator.plutus"
-#validator_hash=$(cat $BASE/scripts/cardano-cli/$ENV/data/lotto-validator.hash)
 lotto_validator_script_addr=$($CARDANO_CLI address build --payment-script-file "$lotto_validator_script" $network)
 lotto_token_name=$(cat $BASE/scripts/cardano-cli/$ENV/data/lotto-token-name.json | jq -r '.bytes')
 buy_token_name=$(cat $BASE/scripts/cardano-cli/$ENV/data/buy-token-name.json | jq -r '.bytes')
@@ -64,7 +63,6 @@ admin_utxo_in=$(echo $admin_utxo_valid_array | tr -d '\n')
 # Step 2: Get the UTXOs from the scrpit address
 # TODO - filter for only utx with thread token
 $CARDANO_CLI query utxo --address $lotto_validator_script_addr $network --out-file $WORK/lotto-validator-utxo.json
-#lotto_validator_utxo_tx_in=$(jq -r 'keys[0]' $WORK/lotto-validator-utxo.json)
 
 # pull out the utxo that has the lotto thread token in it
 lotto_validator_utxo_tx_in=$(jq -r 'to_entries[] 
@@ -73,12 +71,6 @@ lotto_validator_utxo_tx_in=$(jq -r 'to_entries[]
 
 cat $WORK/lotto-validator-utxo.json | jq 'to_entries[] | select(.value.value."'$thread_token_mph'"."'$lotto_token_name'")' > $WORK/close-utxo.json
 
-#echo $lotto_validator_utxo_tx_in > $WORK/lotto-token-utxo.out
-#readarray lotto_token_utxo_array < $WORK/lotto-token-utxo.out
-#close_tx=$(echo \"$lotto_token_utxo_array\" | tr -d '\n' | jq 'split("#") | .[0]')
-
-#close_tx=$(cat $WORK/lotto-validator-utxo.json | jq 'keys | .[0] | split("#") | .[0]')
-#close_tx=$(echo $lotto_validator_utxo_tx_in | jq 'split("#") | .[0]')
 close_tx=$(cat $WORK/close-utxo.json | jq '.key | split("#") | .[0]')
 
 # Step 3: Get the current datum from the utxo at the script address
