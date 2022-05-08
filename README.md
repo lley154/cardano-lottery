@@ -21,6 +21,15 @@
 # The Open Source Cardano Lottery
 The Open Source Cardano Lottery is a smart contract lottery built using plutus for the Cardano Blockchain.   It is a non-custodial lottery where all interactions with the lottery are done directly with the smart contracts and do not require any 3rd party to manage and hold any lottery funds.  Equally important is that the lotto administrator only has the ability to run the lottery and does not have access to the jackpot or treasury to prevent any unauthorized access.
 
+The repo has lots of code examples that works on the testnet. In particular some key areas of interest may be:
+- a pseudo on chain random number validator
+- a PAB created from bash shell scripts
+- working state machine code
+- logic splitting between 2 validators by using thread tokens for communication
+- performance enhancements to fit the plutus code within the max 16KB TX size limits
+- other tips and tricks   
+
+
 ## Why
 The motivation for creating a blockchain lottery is to help provide fund raising for "GreenFi" and "SoGood" Cardano blockchain projects.  The reason for making this an open source project is that everyone can see the code and provide feedback, comments, suggestions and contributions which will make it a secure and trustworthy blockchain lottery.
 
