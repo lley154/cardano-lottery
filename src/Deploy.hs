@@ -40,13 +40,13 @@ import           OnChain
 -- file to be compiled again and deployed with the updated values.
 ----------------------------------------------------------------------------------
 lottoAdminPubKeyHashBS :: B.ByteString
-lottoAdminPubKeyHashBS = "4ccdbf08ac0bd876fc9cf1ac03ed86ceef4052cde7a4989c59e87819"
+lottoAdminPubKeyHashBS = "a766096168c31739f1b52ee287d5b27ad0f68ba76462301565406419"
 
 sponsorPubKeyHashBS :: B.ByteString
-sponsorPubKeyHashBS = "84314878b6fdc6a65b3c98983a2bab8e2714e5d90f4e8aa5ae9f0268"
+sponsorPubKeyHashBS = "560aef2c56509e68279d9e4ba9fcba8888e7b678a3a0e0049de83b02"
 
 txIdBS :: B.ByteString
-txIdBS = "82be1f055d3903607efffe99f4400600decffd6579e52e61453dbca3af762d6d"
+txIdBS = "aa604b873b89ea9e0f430e6c7b9af5d2bf426d88856eff97927e8469a196cdbd"
 
 txIdIdxInt :: Integer
 txIdIdxInt = 0

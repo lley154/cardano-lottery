@@ -4239,6 +4239,56 @@ lawrence@lawrence-MacBookAir:~/src/cardano-lottery$ cardano-cli query utxo --add
 82be1f055d3903607efffe99f4400600decffd6579e52e61453dbca3af762d6d     1        20000000 lovelace + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.086eb10b693d3663558d2fa2a91fbf5c12ad93c94cd362fefce0cb8e00499ddf + 1 aa35880213f8b370be5c7b55225c18ab6fd2204e2f87d48a4701e02b.11175e5c0583d0d314b32aa3a848f9e0a1c52879f1c8835f54e30ef53b5b9d2d + TxOutDatumHash ScriptDataInAlonzoEra "adcecd03ea4b5857568977ab815b677f10a19c71e42a4a99550977b03c3cc536"
 
 
+#############################################################################################
+######################## MAY7, 2022 TESTNET DEMO VIDEO ######################################
+#############################################################################################
+
+ADMIN
+lawrence@lawrence-iMac:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1vznkvztpdrp3ww03k5hw9p74kfadpa5t5ajxyvq4v4qxgxgxzrs4v --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+308395bbd1ea297ef3fb44b3f79a24151d4c240a1ec2c71fccd77612be87fc04     0        742608715 lovelace + TxOutDatumNone
+fd5cc20668b84aaf4fe87b01d7075fc250e93f790664fd95d3ce45b703db2ad0     1        10000000 lovelace + TxOutDatumNone
+lawrence@lawrence-iMac:~/src/cardano-lottery$ /home/lawrence/.local/bin/cardano-cli address build --testnet-magic
+
+
+PLAYER
+lawrence@lawrence-iMac:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1vpqvpmjtx7mdv6xmrhlh4xpz6xujcw6m6x2arur3dxdw3lggqd2dt --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+0b3dccf39a648ed0270d971ce42cdf0119b6d8c6d0bb8ffe1f38145e0a067019     0        88193679 lovelace + TxOutDatumNone
+0b3dccf39a648ed0270d971ce42cdf0119b6d8c6d0bb8ffe1f38145e0a067019     2        2000000 lovelace + 1 ee96db7254eef0b18f318d8a12055b8c577bf31dad6d28a90f13c264.3139 + TxOutDatumNone
+25efe9c4aad7159a52de309bc8da2c33b7aabd5f354169c67a8451342123fbb9     2        1500000 lovelace + 1 a0fd81fe1fe1cb308c56d795db1e66693e879c37fc8edea97e297b95.3235 + TxOutDatumNone
+cff3bf3722beb3cdf26cdf5639e3a7d20d433c9f8e49d5a27648dbc183dfb368     2        1500000 lovelace + 1 a0fd81fe1fe1cb308c56d795db1e66693e879c37fc8edea97e297b95.3135 + TxOutDatumNone
+ffd0511a84b2e10936e4a4129429224302cb55f6c4b2ca4a7a509b67c839cc54     1        10000000 lovelace + TxOutDatumNone
+
+
+SPONSOR
+lawrence@lawrence-iMac:~/src/cardano-lottery$ cardano-cli query utxo --address addr_test1vptq4mev2egfu6p8nk0yh20uh2yg3eak0z36pcqynh5rkqsdnhhv3 --cardano-mode --testnet-magic 1097911063
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+3ed9fbf13932c8b558f8d8691fb4dc0986de7bd2b77614ec2a5cd29e8b0eaeea     1        10000000 lovelace + TxOutDatumNone
+bb156c1bd9027d8dc3d3e07af194826d9ea156bc5ac4deed3082bca42e6fc422     1        10000000 lovelace + TxOutDatumNone
+
+
+
+cardano-cli transaction build \
+  --alonzo-era \
+  --cardano-mode \
+  --testnet-magic 1097911063 \
+  --tx-in "41b6cfcff8d8c2f4fa7bc3a00f72c8e53cbc2da5722f1401b2571e5aaa9301da#0" \
+  --tx-out "addr_test1vptq4mev2egfu6p8nk0yh20uh2yg3eak0z36pcqynh5rkqsdnhhv3+20000000" \
+  --change-address "addr_test1vznkvztpdrp3ww03k5hw9p74kfadpa5t5ajxyvq4v4qxgxgxzrs4v" \
+  --out-file "$WORK/transfer-tx-alonzo.body"
+
+cardano-cli transaction sign \
+  --tx-body-file "$WORK/transfer-tx-alonzo.body" \
+  --testnet-magic 1097911063 \
+  --signing-key-file "/home/lawrence/.local/keys/01.skey" \
+  --out-file "$WORK/transfer-tx-alonzo.tx"
+
+cardano-cli transaction submit --tx-file $WORK/transfer-tx-alonzo.tx --testnet-magic 42 
+
 
 
 
