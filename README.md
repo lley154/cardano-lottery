@@ -124,7 +124,7 @@ cardano-cli query utxo --address <<your address here>> --cardano-mode --testnet-
 |ticketCostInt=|This is the base amount which is multiplied by 100 (eg. 20,000 * 100 = 2,000,000 or 2 ADA)|Yes|
 |percentFeesInt=|The percentage of ticket sales that goes to the lotto admin (0-100)|Yes|
 
-4. Download the corresponding plutus-app source code here: https://github.com/input-output-hk/plutus-apps
+4. Download the corresponding plutus-app source code here: https://github.com/input-output-hk/plutus-apps (checkout tag e4d852ffcf6622e0c8359b73170a28b6e5cefc46)
 5. Go into the plutus-app directory and run nix-shell - this may take a while and 30GB+ disk space
 6. You should see the [nix-shell:~/src/plutus-apps]$  beside your command prompt which confirms that are you in a nix shell
 7. Go to the cardano-lottery directoy while still in the nix-shell
@@ -134,7 +134,7 @@ cardano-cli query utxo --address <<your address here>> --cardano-mode --testnet-
 11. You can also exit the nix-shell since we only needed it to run the Deploy.main
 12. Copy the generated plutus scripts and data into the scripts data directory 
 ```
-~/src/cardano-lottery$ cp plutus-scripts/* scripts/cardano-cli/[choose your env]/data/
+~/src/cardano-lottery$ cp deploy/* scripts/cardano-cli/[choose your env]/data/
 ```
 13. Go to the scripts directory ~/src/cardano-lottery-private/scripts/cardano-cli/[choose your env]/
 14. Update the following values in global-export-variables.sh.
