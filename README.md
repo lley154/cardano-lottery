@@ -537,7 +537,7 @@ cardano-cli transaction submit --tx-file $WORK/transfer-tx-alonzo.tx --testnet-m
 [nix-shell:~/src/cardano-lottery]$ cabal repl cardano-lottery    (this compiles the lottery)
 Prelude Types> Deploy.main          (this will create the updated data files we will need)
 Prelude Types> :q
-[nix-shell:~/src/cardano-lottery]$ cp plutus-scripts/* scripts/cardano-cli/[choose your env]/data/
+[nix-shell:~/src/cardano-lottery]$ cp deploy/* scripts/cardano-cli/[choose your env]/data/
  ```
  
  
