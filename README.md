@@ -362,7 +362,7 @@ The sponsor will get a % of the jackpot rewards if there is a winner during the 
 If you want to run the lottery locally for testing, the best way to do this is to use the PAB simluator.  This can be done by doing the following.
  
 1. Download the latest stable source code release here:  https://github.com/lley154/cardano-lottery
-2. Download the corresponding plutus-app source code here: https://github.com/input-output-hk/plutus-apps
+2. Download the corresponding plutus-app source code here: https://github.com/input-output-hk/plutus-apps (checkout tag e4d852ffcf6622e0c8359b73170a28b6e5cefc46)
 3. go into the plutus-app directory and run nix-shell - this will take a while and 30GB+ disk space
 4. you should see the [nix-shell:~/src/plutus-apps]$ beside your command prompt which confirms that are you in a nix shell
 5. cd to the cardano-lottery directoy while still in the nix-shell
