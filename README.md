@@ -38,8 +38,12 @@ The repo has lots of code examples that works on the testnet. In particular some
 - performance enhancements to fit the plutus code within the max 16KB TX size limits
 - other tips and tricks   
 
-* Please note, that this is only a pseudo random number and due to the deterministic nature of the cardano block chain, it is possible for the lotto admin to predict the winning number.   For production deployment scenarios, an oracle would be require to provide a verifiable random number that could be used to salt the winning number selection.
-
+```
+* Please note, that this is only a pseudo random number and due to the deterministic nature 
+of the cardano block chain and it is possible for the lotto admin to predict the winning number.
+For production deployment scenarios, an oracle would be require to provide a verifiable random 
+number that could be used to salt the winning number selection.
+```
 
 ## Why
 The motivation for creating a blockchain lottery is to help provide fund raising for "GreenFi" and "SoGood" Cardano blockchain projects.  The reason for making this an open source project is that everyone can see the code and provide feedback, comments, suggestions and contributions which will make it a secure and trustworthy blockchain lottery.
