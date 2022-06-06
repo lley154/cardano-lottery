@@ -39,8 +39,8 @@ The repo has lots of code examples that works on the testnet. In particular some
 - other tips and tricks   
 
 ```
-* Please note, that this is only a pseudo random number and due to the deterministic nature 
-of the cardano block chain and it is possible for the lotto admin to predict the winning number.
+* Please note that this is only a pseudo random number and due to the deterministic nature 
+of the cardano block chain, it is possible for the lotto admin to predict the winning number.
 For production deployment scenarios, an oracle would be require to provide a verifiable random 
 number that could be used to salt the winning number selection.
 ```
