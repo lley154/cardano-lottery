@@ -389,7 +389,7 @@ Log into the server with the cardano-node running with ssh and use the -L to for
 ```
 ssh -L  /path-to-node-socket-on-your-local-computer/node.socket:/path-to-the-node-socket-on-your-server/node.socket cardano-server
 
-export $CARDANO_NODE_SOCKET_PATH=/path-to-node-socket-on-your-local-computer/node.socket
+export CARDANO_NODE_SOCKET_PATH=/path-to-node-socket-on-your-local-computer/node.socket
 cardano-cli --version
 cardano-cli 1.33.0 - linux-x86_64 - ghc-8.10
 git rev 0000000000000000000000000000000000000000
